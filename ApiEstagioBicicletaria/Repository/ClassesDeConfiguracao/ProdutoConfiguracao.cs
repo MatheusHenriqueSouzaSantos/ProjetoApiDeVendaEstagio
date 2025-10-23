@@ -17,7 +17,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .IsRequired();
             builder.Property(p => p.CodigoDeBarra)
                 .HasColumnName("CODIGO_DE_BARRA")
-                .HasMaxLength(50)
+                .HasMaxLength(128)
                 .IsRequired();
             builder.Property(p => p.DataCriacao)
                 .HasColumnName("DATA_CRIACAO")
@@ -34,6 +34,9 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .IsRequired();
             builder.Property(p => p.PrecoUnitario)
                 .HasColumnName("PRECO_UNITARIO")
+                .IsRequired();
+            builder.Property(p => p.Ativo)
+                .HasColumnName("ATIVO")
                 .IsRequired();
         }
     }

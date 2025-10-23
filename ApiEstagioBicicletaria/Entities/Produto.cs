@@ -17,6 +17,8 @@
 
         public decimal PrecoUnitario { get; set; }
 
+        public bool Ativo { get; set; } = true;
+
         protected Produto()
         {
 

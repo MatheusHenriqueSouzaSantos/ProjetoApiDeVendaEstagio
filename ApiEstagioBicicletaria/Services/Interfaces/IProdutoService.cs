@@ -15,6 +15,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         Produto AtualizarProduto(Guid id, ProdutoDto dto);
 
-        bool DeletarProdutoPorId(Guid id);
+        void DeletarProdutoPorId(Guid id);
+
+        void DefinirQuantidadeEmEstoqueDeProduto(Guid id, int quantidade);
     }
 }

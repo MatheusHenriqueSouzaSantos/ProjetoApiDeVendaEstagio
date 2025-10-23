@@ -21,7 +21,7 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<Cliente> BuscarClientes()
         {
-            return _contextoDb.Clientes.Include(c=>c.Endereco).ToList();
+            return _contextoDb.Clientes.Where(c=>c.Ativo).Include(c=>c.Endereco).ToList();
         }
 
         public Cliente BuscarClientePorId(Guid id)
@@ -91,8 +91,8 @@ namespace ApiEstagioBicicletaria.Services
 
         public ClienteFisico AtualizarClienteFisico(Guid id, ClienteFisicoDto dto)
         {
-
-            if (!(dto.Cpf == "" || dto.Cpf == null))
+            //revisar
+            if (!(string.IsNullOrWhiteSpace(dto.Cpf)))
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"O Cpf deve vir vazio ou nulo, não é possivel atualizar um cpf");
             }
@@ -123,7 +123,7 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "Inscrição estadual inválida");
             }
 
-            if (!(dto.Cnpj == "" || dto.Cnpj == null))
+            if (!(string.IsNullOrWhiteSpace(dto.Cnpj)))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve vir vazio ou nulo, não é possivel atualizar um cpf");
             }
@@ -153,7 +153,7 @@ namespace ApiEstagioBicicletaria.Services
             Cliente? clienteExistente = _contextoDb.Clientes.Where(c => c.Id == id && c.Ativo).FirstOrDefault();
             if(clienteExistente == null)
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "Cliente não existe");
+                throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado");
             }
             clienteExistente.Ativo = false;
             _contextoDb.Update(clienteExistente);

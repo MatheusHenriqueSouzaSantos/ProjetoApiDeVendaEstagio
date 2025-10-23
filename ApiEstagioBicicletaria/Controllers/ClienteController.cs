@@ -20,6 +20,7 @@ namespace ApiEstagioBicicletaria.Controllers
         [HttpGet]
         public ActionResult<List<Cliente>> BuscarClientes()
         {
+            //if (!ModelState.IsValid)
             try
             {
                 return _clienteService.BuscarClientes();

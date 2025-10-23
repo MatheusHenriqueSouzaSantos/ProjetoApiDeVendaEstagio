@@ -14,9 +14,10 @@ namespace ApiEstagioBicicletaria.Controllers
         public ProdutoController(IProdutoService produtoService) {
             this._produtoService = produtoService;
         }
-
+        [HttpGet]
         public ActionResult<List<Produto>> BuscarProdutos()
         {
+            //if (!ModelState.IsValid)
             try
             {
                 return _produtoService.BuscarProdutos();
@@ -33,6 +34,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [HttpGet("{id}")]
         public ActionResult<Produto> BuscarProdutoPorId([FromRoute] Guid id)
         {
             try
@@ -48,6 +50,7 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
+        [HttpGet("busca-por-codigo-de-barra/{codigoDeBarra}")]
         public ActionResult<Produto> BuscarProdutoPorCodigoDeBarra([FromRoute] string codigoDeBarra)
         {
             try
@@ -63,8 +66,8 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
-
-        public ActionResult<Produto> CadastrarProduto([FromBody]ProdutoDto dto)
+        [HttpPost]
+        public ActionResult<Produto> CadastrarProduto([FromBody] ProdutoDto dto)
         {
             try
             {
@@ -79,11 +82,12 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
+        [HttpPut]
         public ActionResult<Produto> AtualizarProduto([FromRoute] Guid id, [FromBody] ProdutoDto dto)
         {
             try
             {
-                return _produtoService.AtualizarProduto(id,dto);
+                return _produtoService.AtualizarProduto(id, dto);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -94,12 +98,30 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
-
+        [HttpDelete]
         public ActionResult DeletarProduto([FromRoute] Guid id)
         {
             try
             {
-                return _produtoService.DeletarProdutoPorId(id);
+                _produtoService.DeletarProdutoPorId(id);
+                return Ok("Operação realizada com sucesso ");
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+        [HttpPatch("{id}/{quantidade}")]
+        public ActionResult DefinirQuantidadeEmEstoqueDeProduto([FromRoute] Guid id, [FromRoute]int quantidade)
+        {
+            try
+            {
+                _produtoService.DefinirQuantidadeEmEstoqueDeProduto(id,quantidade);
+                return Ok("Operação realizada com sucesso ");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
