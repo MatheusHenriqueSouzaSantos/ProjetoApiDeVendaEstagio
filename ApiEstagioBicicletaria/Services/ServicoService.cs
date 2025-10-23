@@ -7,64 +7,64 @@ using System.Text.RegularExpressions;
 
 namespace ApiEstagioBicicletaria.Services
 {
-    public class ProdutoService : IProdutoService
+    public class ServicoService : IServicoService
     {
         private ContextoDb _contextoDb;
 
-        public ProdutoService(ContextoDb contextoDb)
+        public ServicoService(ContextoDb contextoDb)
         {
             this._contextoDb = contextoDb;
         }
 
-        public List<Produto> BuscarProdutos()
+        public List<Servico> BuscarServicos()
         {
-            return _contextoDb.Produtos.Where(p=>p.Ativo).ToList();
+            return _contextoDb.Servicos.Where(s => s.Ativo).ToList();
         }
-        public Produto BuscarProdutoPorId(Guid id)
+        public Servico BuscarServicoPorId(Guid id)
         {
-            Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
+            Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.Id == id && s.Ativo).FirstOrDefault();
 
-            if (produtoVindoDoBanco == null)
+            if (servicoVindoDoBanco == null)
             {
-                throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
+                throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
             }
-            return produtoVindoDoBanco;
+            return servicoVindoDoBanco;
         }
 
-        public Produto BuscarProdutoPorCodigoDeBarra(string codigoDeBarra)
+        public Servico BuscarServicoPorCodigoServico(string codigoServico)
         {
 
-            Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.CodigoDeBarra == codigoDeBarra && p.Ativo).FirstOrDefault();
+            Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.CodigoServico == codigoServico && s.Ativo).FirstOrDefault();
 
-            if (produtoVindoDoBanco == null)
+            if (servicoVindoDoBanco == null)
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "Produto não encontrado");
+                throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
             }
-            return produtoVindoDoBanco;
+            return servicoVindoDoBanco;
         }
 
-        public Produto CadastrarProduto(ProdutoDto dto)
+        public Servico CadastrarProduto(ServicoDto dto)
         {
             //validar formato de codigo de barra? mais qual o formato vai utilizar?
 
-            string codigoDeBarraSomenteNumerosELetras = Regex.Replace(dto.CodigoDeBarra, @"[^a-zA-Z0-9]", "");
+            string codigoDeServicoSomenteNumerosELetras = Regex.Replace(dto.CodigoServico, @"[^a-zA-Z0-9]", "");
 
-            if (string.IsNullOrWhiteSpace(dto.CodigoDeBarra))
+            if (string.IsNullOrWhiteSpace(dto.CodigoServico))
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "O código de barra não pode ser null ou vazio");
+                throw new ExcecaoDeRegraDeNegocio(400, "O código do Serviço não pode ser null ou vazio");
             }
-            Produto? produtoVindoDoBancoComMesmoCodigoDeBarra = _contextoDb
-                .Produtos.Where(p => p.CodigoDeBarra == dto.CodigoDeBarra && p.Ativo).FirstOrDefault();
+            Servico? servicoVindoDoBancoComMesmoCodigoServico = _contextoDb
+                .Servicos.Where(s => s.CodigoServico == dto.CodigoServico && s.Ativo).FirstOrDefault();
 
-            if(produtoVindoDoBancoComMesmoCodigoDeBarra != null)
+            if (servicoVindoDoBancoComMesmoCodigoServico != null)
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um produto com esse código de barra!");
+                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um Serviço com esse código de barra!");
             }
-            Produto produtoAInserirNoBanco = new Produto(codigoDeBarraSomenteNumerosELetras,
-                dto.NomeProduto, dto.Descricao, dto.QuantidadeEmEstoque, dto.PrecoUnitario);
-            _contextoDb.Add(produtoAInserirNoBanco);
+            Servico servicoAInserirNoBanco = new Servico(codigoDeServicoSomenteNumerosELetras,
+                dto.NomeServico, dto.Descricao, dto.PrecoServico);
+            _contextoDb.Add(servicoAInserirNoBanco);
             _contextoDb.SaveChanges();
-            return produtoAInserirNoBanco;
+            return servicoAInserirNoBanco;
 
         }
 
@@ -76,13 +76,13 @@ namespace ApiEstagioBicicletaria.Services
             }
             Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
 
-            if(produtoVindoDoBanco== null)
+            if (produtoVindoDoBanco == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
             }
             produtoVindoDoBanco.NomeProduto = dto.NomeProduto;
             produtoVindoDoBanco.Descricao = dto.Descricao;
-            produtoVindoDoBanco.QuantidadeEmEstoque=dto.QuantidadeEmEstoque;
+            produtoVindoDoBanco.QuantidadeEmEstoque = dto.QuantidadeEmEstoque;
             produtoVindoDoBanco.PrecoUnitario = dto.PrecoUnitario;
             _contextoDb.Update(produtoVindoDoBanco);
             _contextoDb.SaveChanges();
@@ -93,7 +93,7 @@ namespace ApiEstagioBicicletaria.Services
         {
             Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
 
-            if(produtoVindoDoBanco== null)
+            if (produtoVindoDoBanco == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
             }
@@ -119,5 +119,4 @@ namespace ApiEstagioBicicletaria.Services
             _contextoDb.SaveChanges();
 
         }
-    }    
-}
+    }

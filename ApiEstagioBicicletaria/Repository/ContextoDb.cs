@@ -14,6 +14,8 @@ namespace ApiEstagioBicicletaria.Repositories
 
         public DbSet<Produto> Produtos { get; set; }
 
+        public DbSet<Servico> Servicos { get; set; }
+
         public ContextoDb(DbContextOptions<ContextoDb> options) : base(options)
         {
                 
@@ -26,6 +28,7 @@ namespace ApiEstagioBicicletaria.Repositories
             modelBuilder.ApplyConfiguration(new ClienteJuridicoConfiguracao());
             modelBuilder.ApplyConfiguration(new EnderecoConfiguracao());
             modelBuilder.ApplyConfiguration(new ProdutoConfiguracao());
+            modelBuilder.ApplyConfiguration(new ServicoConfiguracao());
         }
 
     }
