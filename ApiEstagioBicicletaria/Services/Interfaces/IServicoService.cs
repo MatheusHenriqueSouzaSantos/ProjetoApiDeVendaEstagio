@@ -8,7 +8,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         List<Servico> BuscarServicos();
         Servico BuscarServicoPorId(Guid id);
 
-        Servico BuscarServicoPorCodigoServico(string codigoServico);
+        Servico BuscarServicoPorCodigoServico(string codigoDoServico);
 
         Servico CadastrarServico(ServicoDto dto);
 

@@ -31,7 +31,7 @@ namespace ApiEstagioBicicletaria.Services
             return servicoVindoDoBanco;
         }
 
-        public Servico BuscarServicoPorCodigoServico(string codigoServico)
+        public Servico BuscarServicoPorCodigoDoServico(string codigoServico)
         {
 
             Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.CodigoServico == codigoServico && s.Ativo).FirstOrDefault();
@@ -43,11 +43,11 @@ namespace ApiEstagioBicicletaria.Services
             return servicoVindoDoBanco;
         }
 
-        public Servico CadastrarProduto(ServicoDto dto)
+        public Servico CadastraServico(ServicoDto dto)
         {
             //validar formato de codigo de barra? mais qual o formato vai utilizar?
 
-            string codigoDeServicoSomenteNumerosELetras = Regex.Replace(dto.CodigoServico, @"[^a-zA-Z0-9]", "");
+            string codigoServicoSomenteNumerosELetras = Regex.Replace(dto.CodigoServico, @"[^a-zA-Z0-9]", "");
 
             if (string.IsNullOrWhiteSpace(dto.CodigoServico))
             {
@@ -60,7 +60,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um Serviço com esse código de barra!");
             }
-            Servico servicoAInserirNoBanco = new Servico(codigoDeServicoSomenteNumerosELetras,
+            Servico servicoAInserirNoBanco = new Servico(codigoServicoSomenteNumerosELetras,
                 dto.NomeServico, dto.Descricao, dto.PrecoServico);
             _contextoDb.Add(servicoAInserirNoBanco);
             _contextoDb.SaveChanges();
@@ -68,55 +68,38 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
-        public Produto AtualizarProduto(Guid id, ProdutoDto dto)
+        public Servico AtualizarServico(Guid id, ServicoDto dto)
         {
-            if (!(string.IsNullOrWhiteSpace(dto.CodigoDeBarra)))
+            if (!(string.IsNullOrWhiteSpace(dto.CodigoServico)))
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "O código de barra deve vir vazio, não é possível atualizar um código de barra");
+                throw new ExcecaoDeRegraDeNegocio(400, "O código do Serviço deve vir vazio, não é possível atualizar um código do Serviço");
             }
-            Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
+            Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.Id == id && s.Ativo).FirstOrDefault();
 
-            if (produtoVindoDoBanco == null)
+            if (servicoVindoDoBanco == null)
             {
-                throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
+                throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
             }
-            produtoVindoDoBanco.NomeProduto = dto.NomeProduto;
-            produtoVindoDoBanco.Descricao = dto.Descricao;
-            produtoVindoDoBanco.QuantidadeEmEstoque = dto.QuantidadeEmEstoque;
-            produtoVindoDoBanco.PrecoUnitario = dto.PrecoUnitario;
-            _contextoDb.Update(produtoVindoDoBanco);
+            servicoVindoDoBanco.NomeServico = dto.NomeServico;
+            servicoVindoDoBanco.Descricao = dto.Descricao;
+            servicoVindoDoBanco.PrecoServico = dto.PrecoServico;
+            _contextoDb.Update(servicoVindoDoBanco);
             _contextoDb.SaveChanges();
-            return produtoVindoDoBanco;
+            return servicoVindoDoBanco;
         }
 
-        public void DeletarProdutoPorId(Guid id)
+        public void DeletarservicoPorId(Guid id)
         {
-            Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
+            Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.Id == id && s.Ativo).FirstOrDefault();
 
-            if (produtoVindoDoBanco == null)
+            if (servicoVindoDoBanco == null)
             {
-                throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
+                throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
             }
-            produtoVindoDoBanco.Ativo = false;
-            _contextoDb.Update(produtoVindoDoBanco);
+            servicoVindoDoBanco.Ativo = false;
+            _contextoDb.Update(servicoVindoDoBanco);
             _contextoDb.SaveChanges();
         }
 
-        public void DefinirQuantidadeEmEstoqueDeProduto(Guid id, int quantidade)
-        {
-            Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
-
-            if (produtoVindoDoBanco == null)
-            {
-                throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
-            }
-            if (quantidade < 0 || quantidade > 3000)
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "O valor de QuantidadeEmEstoque deve estar no intervalo de 0 até 3000");
-            }
-            produtoVindoDoBanco.QuantidadeEmEstoque = quantidade;
-            _contextoDb.Update(produtoVindoDoBanco);
-            _contextoDb.SaveChanges();
-
-        }
     }
+}
