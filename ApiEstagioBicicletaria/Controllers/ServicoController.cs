@@ -3,6 +3,7 @@ using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiEstagioBicicletaria.Controllers
 {
@@ -35,7 +36,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Servico> BuscarServicoPorId([FromRoute] Guid id)
+        public ActionResult<Servico> BuscarServicoPorId([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
         {
             try
             {
@@ -51,12 +52,12 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         //mudar para codigo do serviço em tudo ou deixa como esta?
-        [HttpGet("busca-por-codigo-servico/{codigoServico}")]
-        public ActionResult<Servico> BuscarProdutoPorCodigoDeBarra([FromRoute] string codigoServico)
+        [HttpGet("busca-por-codigo-do-servico/{codigoDoServico}")]
+        public ActionResult<Servico> BuscarProdutoPorCodigoDeBarra([FromRoute, Required(ErrorMessage = "O Código do Serviço é obrigatório")] string codigoDoServico)
         {
             try
             {
-                return _servicoService.BuscarServicoPorCodigoServico(codigoServico);
+                return _servicoService.BuscarServicoPorCodigoServico(codigoDoServico);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -72,7 +73,8 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return _servicoService.CadastrarServico(dto);
+                Servico servico= _servicoService.CadastrarServico(dto);
+                return Created($"api/servico/{servico.Id}", servico);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -84,7 +86,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpPut]
-        public ActionResult<Servico> AtualizarServico([FromRoute] Guid id, [FromBody] ServicoDto dto)
+        public ActionResult<Servico> AtualizarServico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ServicoDto dto)
         {
             try
             {
@@ -100,7 +102,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpDelete]
-        public ActionResult DeletarServico([FromRoute] Guid id)
+        public ActionResult DeletarServico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
         {
             try
             {

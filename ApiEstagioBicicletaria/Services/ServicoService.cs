@@ -31,10 +31,10 @@ namespace ApiEstagioBicicletaria.Services
             return servicoVindoDoBanco;
         }
 
-        public Servico BuscarServicoPorCodigoDoServico(string codigoServico)
+        public Servico BuscarServicoPorCodigoDoServico(string codigoDoServico)
         {
 
-            Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.CodigoServico == codigoServico && s.Ativo).FirstOrDefault();
+            Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.CodigoDoServico == codigoDoServico && s.Ativo).FirstOrDefault();
 
             if (servicoVindoDoBanco == null)
             {
@@ -47,20 +47,20 @@ namespace ApiEstagioBicicletaria.Services
         {
             //validar formato de codigo de barra? mais qual o formato vai utilizar?
 
-            string codigoServicoSomenteNumerosELetras = Regex.Replace(dto.CodigoServico, @"[^a-zA-Z0-9]", "");
-
-            if (string.IsNullOrWhiteSpace(dto.CodigoServico))
+            if (string.IsNullOrWhiteSpace(dto.CodigoDoServico))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O código do Serviço não pode ser null ou vazio");
             }
-            Servico? servicoVindoDoBancoComMesmoCodigoServico = _contextoDb
-                .Servicos.Where(s => s.CodigoServico == dto.CodigoServico && s.Ativo).FirstOrDefault();
+            string codigoDoServicoSomenteNumerosELetras = Regex.Replace(dto.CodigoDoServico, @"[^a-zA-Z0-9]", "");
 
-            if (servicoVindoDoBancoComMesmoCodigoServico != null)
+            Servico? servicoVindoDoBancoComMesmoCodigoDoServico = _contextoDb
+                .Servicos.Where(s => s.CodigoDoServico == dto.CodigoDoServico && s.Ativo).FirstOrDefault();
+
+            if (servicoVindoDoBancoComMesmoCodigoDoServico != null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um Serviço com esse código de barra!");
             }
-            Servico servicoAInserirNoBanco = new Servico(codigoServicoSomenteNumerosELetras,
+            Servico servicoAInserirNoBanco = new Servico(codigoDoServicoSomenteNumerosELetras,
                 dto.NomeServico, dto.Descricao, dto.PrecoServico);
             _contextoDb.Add(servicoAInserirNoBanco);
             _contextoDb.SaveChanges();
@@ -70,7 +70,7 @@ namespace ApiEstagioBicicletaria.Services
 
         public Servico AtualizarServico(Guid id, ServicoDto dto)
         {
-            if (!(string.IsNullOrWhiteSpace(dto.CodigoServico)))
+            if (!(string.IsNullOrWhiteSpace(dto.CodigoDoServico)))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O código do Serviço deve vir vazio, não é possível atualizar um código do Serviço");
             }

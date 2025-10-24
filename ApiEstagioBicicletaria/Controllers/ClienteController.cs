@@ -3,6 +3,7 @@ using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiEstagioBicicletaria.Controllers
 {
@@ -20,7 +21,6 @@ namespace ApiEstagioBicicletaria.Controllers
         [HttpGet]
         public ActionResult<List<Cliente>> BuscarClientes()
         {
-            //if (!ModelState.IsValid)
             try
             {
                 return _clienteService.BuscarClientes();
@@ -38,10 +38,16 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Cliente> BuscarClientePorId([FromRoute] Guid id )
+        public ActionResult<Cliente> BuscarClientePorId([FromRoute,Required(ErrorMessage ="O id é obrigatório")] Guid id )
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 return _clienteService.BuscarClientePorId(id);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -61,6 +67,13 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
+
                 ClienteFisico clienteFisico= _clienteService.CadastrarClienteFisico(dto);
                 return Created($"api/cliente/{clienteFisico.Id}", clienteFisico); 
             }
@@ -81,7 +94,14 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return _clienteService.CadastrarClienteJuridico(dto);
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
+                ClienteJuridico clienteJuridico = _clienteService.CadastrarClienteJuridico(dto);
+                return Created($"api/cliente/{clienteJuridico.Id}", clienteJuridico);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -96,10 +116,17 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPut("fisico/{id}")]
-        public ActionResult<ClienteFisico> AtualizarClienteFisico([FromRoute] Guid id, [FromBody]ClienteFisicoDto dto)
+        public ActionResult<ClienteFisico> AtualizarClienteFisico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody]ClienteFisicoDto dto)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
+
                 return _clienteService.AtualizarClienteFisico(id, dto);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -115,10 +142,16 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPut("juridico/{id}")]
-        public ActionResult<ClienteJuridico> AtualizarClienteJuridico([FromRoute]Guid id, [FromBody] ClienteJuridicoDto dto)
+        public ActionResult<ClienteJuridico> AtualizarClienteJuridico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ClienteJuridicoDto dto)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 return _clienteService.AtualizarClienteJuridico(id, dto);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -134,11 +167,17 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeletarClientePorId([FromRoute]Guid id)
+        public ActionResult DeletarClientePorId([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
         {
             //revisar esssa lógica
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 _clienteService.DeletarCLientePorId(id);
                 return Ok("Operação realizada com sucesso ");
             }

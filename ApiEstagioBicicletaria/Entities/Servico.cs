@@ -4,7 +4,7 @@
     {
         public Guid Id { get; private set; } = new Guid();
 
-        public string CodigoServico { get; private set; }
+        public string CodigoDoServico { get; private set; }
 
         public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
@@ -20,9 +20,9 @@
         protected Servico() { 
         }
 
-        public Servico(string codigoServico, string nomeServico, string descricao, decimal precoServico)
+        public Servico(string codigoDoServico, string nomeServico, string descricao, decimal precoServico)
         {
-            CodigoServico = codigoServico;
+            CodigoDoServico = codigoServico;
             NomeServico = nomeServico;
             Descricao = descricao;
             PrecoServico = precoServico;

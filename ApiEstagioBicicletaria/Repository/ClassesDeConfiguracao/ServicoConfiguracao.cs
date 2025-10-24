@@ -15,8 +15,8 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .HasColumnType("binary(16)")
                 .HasColumnName("ID")
                 .IsRequired();
-            builder.Property(p => p.CodigoServico)
-                .HasColumnName("CODIGO_SERVICO")
+            builder.Property(p => p.CodigoDoServico)
+                .HasColumnName("CODIGO_DO_SERVICO")
                 .HasMaxLength(128)
                 .IsRequired();
             builder.Property(p => p.DataCriacao)

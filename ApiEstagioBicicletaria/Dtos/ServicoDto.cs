@@ -5,7 +5,7 @@ namespace ApiEstagioBicicletaria.Dtos
     public class ServicoDto
     {
         [MaxLength(128,ErrorMessage = "O campo Codigo Serviço deve ter no máximo 128 caracteres")]
-        public string CodigoServico { get; set;}=string.Empty;
+        public string CodigoDoServico { get; set;}=string.Empty;
 
         [Required(ErrorMessage ="O campo nome é obrigatório")]
         [MaxLength(50,ErrorMessage = "O campo Nome deve ter no máximo 50 caracteres")]
@@ -23,9 +23,9 @@ namespace ApiEstagioBicicletaria.Dtos
 
         }
 
-        public ServicoDto(string codigoServico, string nomeServico, string descricao, decimal precoServico)
+        public ServicoDto(string codigoDoServico, string nomeServico, string descricao, decimal precoServico)
         {
-            CodigoServico = codigoServico;
+            CodigoDoServico = codigoDoServico;
             NomeServico = nomeServico;
             Descricao = descricao;
             PrecoServico = precoServico;

@@ -3,6 +3,7 @@ using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiEstagioBicicletaria.Controllers
 {
@@ -35,7 +36,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Produto> BuscarProdutoPorId([FromRoute] Guid id)
+        public ActionResult<Produto> BuscarProdutoPorId([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
         {
             try
             {
@@ -51,7 +52,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpGet("busca-por-codigo-de-barra/{codigoDeBarra}")]
-        public ActionResult<Produto> BuscarProdutoPorCodigoDeBarra([FromRoute] string codigoDeBarra)
+        public ActionResult<Produto> BuscarProdutoPorCodigoDeBarra([FromRoute, Required(ErrorMessage = "O Código de Barras é obrigatório")] string codigoDeBarra)
         {
             try
             {
@@ -71,7 +72,8 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return _produtoService.CadastrarProduto(dto);
+                Produto produto= _produtoService.CadastrarProduto(dto);
+                return Created($"api/produto/{produto.Id}",produto);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -83,7 +85,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpPut]
-        public ActionResult<Produto> AtualizarProduto([FromRoute] Guid id, [FromBody] ProdutoDto dto)
+        public ActionResult<Produto> AtualizarProduto([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ProdutoDto dto)
         {
             try
             {
@@ -116,7 +118,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpPatch("{id}/{quantidade}")]
-        public ActionResult DefinirQuantidadeEmEstoqueDeProduto([FromRoute] Guid id, [FromRoute]int quantidade)
+        public ActionResult DefinirQuantidadeEmEstoqueDeProduto([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromRoute]int quantidade)
         {
             try
             {
