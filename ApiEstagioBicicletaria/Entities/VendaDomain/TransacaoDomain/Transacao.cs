@@ -12,6 +12,8 @@
 
         public MeioPagamaneto MeioPagamaneto { get; set; }
 
+        public bool TransacaoEmCurso { get; set; } = false;
+
         public bool Pago { get; set; } = false;
 
         protected Transacao()

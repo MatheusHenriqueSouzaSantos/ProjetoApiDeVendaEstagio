@@ -21,7 +21,24 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<Cliente> BuscarClientes()
         {
-            return _contextoDb.Clientes.Where(c=>c.Ativo).Include(c=>c.Endereco).ToList();
+            List<ClienteFisico> clientesFisicos = _contextoDb.Clientes
+                .OfType<ClienteFisico>()
+                .Include(c => c.Endereco)
+                .Where(c => c.Ativo)
+                .ToList();
+
+            List<ClienteJuridico> clientesJuridicos = _contextoDb.Clientes
+                .OfType<ClienteJuridico>()
+                .Include(c => c.Endereco)
+                .Where(c => c.Ativo)
+                .ToList();
+
+            List<Cliente> todosClientes = new List<Cliente>();
+            todosClientes.AddRange(clientesFisicos);
+            todosClientes.AddRange(clientesJuridicos);
+
+            return todosClientes;
+
         }
 
         public Cliente BuscarClientePorId(Guid id)

@@ -42,6 +42,8 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
             builder.Property(c=>c.Ativo)
                 .HasColumnName("ATIVO")
                 .IsRequired();
+
+
         }
     }
 }

@@ -13,9 +13,11 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 
             //banco já faz isso:
 
-            //builder.Property(c => c.Id)
-            //    .HasColumnType("Binary(16)")
-            //    .IsRequired();
+            builder.Property(c => c.Id)
+                .HasColumnType("Binary(16)")
+                .IsRequired();
+
+
             builder.Property(c => c.RazaoSocial)
                 .HasMaxLength(70)
                 .HasColumnName("RAZAO_SOCIAL")

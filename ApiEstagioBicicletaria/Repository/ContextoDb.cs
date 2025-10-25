@@ -31,6 +31,18 @@ namespace ApiEstagioBicicletaria.Repositories
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Cliente>()
+            .ToTable("cliente");
+
+            modelBuilder.Entity<ClienteFisico>()
+                .ToTable("cliente_fisico")
+                .HasBaseType<Cliente>(); 
+
+            modelBuilder.Entity<ClienteJuridico>()
+                .ToTable("cliente_juridico")
+                .HasBaseType<Cliente>(); 
+
             modelBuilder.ApplyConfiguration(new ClienteConfiguracao());
             modelBuilder.ApplyConfiguration(new ClienteFisicoConfiguracao());
             modelBuilder.ApplyConfiguration(new ClienteJuridicoConfiguracao());
