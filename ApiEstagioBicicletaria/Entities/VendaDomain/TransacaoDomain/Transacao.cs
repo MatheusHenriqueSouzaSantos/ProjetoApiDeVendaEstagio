@@ -1,5 +1,4 @@
 ﻿namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
-//alterar namespaces
 {
     public class Transacao
     {

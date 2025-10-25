@@ -14,7 +14,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
         public decimal Desconto { get; set; } = 0.0m;
 
         public decimal ValorTotalVenda { get; set; } = 0.0m;
-
+        //venda aberta?
         public bool Ativo { get; set; } = true;
 
         protected Venda()

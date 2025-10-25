@@ -19,6 +19,12 @@ namespace ApiEstagioBicicletaria.Controllers
         [HttpPost]
         public ActionResult ValidarUsuario(UsuarioDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                return BadRequest(mensagensDeErro);
+            }
             try
             {
                 bool resultadoValidacao=_usuarioService.ValidarUsuario(dto);

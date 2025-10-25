@@ -40,6 +40,12 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 return _servicoService.BuscarServicoPorId(id);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -53,11 +59,17 @@ namespace ApiEstagioBicicletaria.Controllers
         }
         //mudar para codigo do serviço em tudo ou deixa como esta?
         [HttpGet("busca-por-codigo-do-servico/{codigoDoServico}")]
-        public ActionResult<Servico> BuscarProdutoPorCodigoDeBarra([FromRoute, Required(ErrorMessage = "O Código do Serviço é obrigatório")] string codigoDoServico)
+        public ActionResult<Servico> BuscarServicoPorCodigoDoServico([FromRoute, Required(ErrorMessage = "O Código do Serviço é obrigatório")] string codigoDoServico)
         {
             try
             {
-                return _servicoService.BuscarServicoPorCodigoServico(codigoDoServico);
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
+                return _servicoService.BuscarServicoPorCodigoDoServico(codigoDoServico);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -73,6 +85,12 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 Servico servico= _servicoService.CadastrarServico(dto);
                 return Created($"api/servico/{servico.Id}", servico);
             }
@@ -90,6 +108,12 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 return _servicoService.AtualizarServico(id, dto);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -106,6 +130,12 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 _servicoService.DeletarServicoPorId(id);
                 return Ok("Operação realizada com sucesso ");
             }

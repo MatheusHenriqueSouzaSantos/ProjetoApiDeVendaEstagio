@@ -18,7 +18,7 @@ namespace ApiEstagioBicicletaria.Controllers
         [HttpGet]
         public ActionResult<List<Produto>> BuscarProdutos()
         {
-            //if (!ModelState.IsValid)
+            
             try
             {
                 return _produtoService.BuscarProdutos();
@@ -40,7 +40,13 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return _produtoService.BuscarProdutoPorId(id);
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
+                    return _produtoService.BuscarProdutoPorId(id);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -56,6 +62,12 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 return _produtoService.BuscarProdutoPorCodigoDeBarra(codigoDeBarra);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -72,6 +84,12 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 Produto produto= _produtoService.CadastrarProduto(dto);
                 return Created($"api/produto/{produto.Id}",produto);
             }
@@ -89,6 +107,12 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 return _produtoService.AtualizarProduto(id, dto);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -105,6 +129,12 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 _produtoService.DeletarProdutoPorId(id);
                 return Ok("Operação realizada com sucesso ");
             }
@@ -122,6 +152,12 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 _produtoService.DefinirQuantidadeEmEstoqueDeProduto(id,quantidade);
                 return Ok("Operação realizada com sucesso ");
             }

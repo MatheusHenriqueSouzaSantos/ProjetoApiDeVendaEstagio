@@ -23,7 +23,7 @@
 
         public Servico(string codigoDoServico, string nomeServico, string descricao, decimal precoServico)
         {
-            CodigoDoServico = codigoServico;
+            CodigoDoServico = codigoDoServico;
             NomeServico = nomeServico;
             Descricao = descricao;
             PrecoServico = precoServico;
