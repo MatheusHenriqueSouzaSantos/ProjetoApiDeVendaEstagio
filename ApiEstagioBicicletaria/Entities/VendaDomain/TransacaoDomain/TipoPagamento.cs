@@ -1,4 +1,4 @@
-﻿namespace ApiEstagioBicicletaria.Entities.Venda
+﻿namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
 {
     public enum TipoPagamento
     {

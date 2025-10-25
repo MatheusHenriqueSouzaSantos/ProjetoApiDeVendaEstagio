@@ -3,6 +3,7 @@
     public abstract class Cliente
     {
         //mudar atributos para set private e criar metodos especificos!!!
+        //!!!new Guid() , Guid.NewGuid()
         public Guid Id { get; private set; } = Guid.NewGuid();
         //usar UUID
         public Endereco Endereco { get; set; }

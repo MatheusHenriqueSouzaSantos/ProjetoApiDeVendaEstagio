@@ -1,7 +1,5 @@
-﻿using ApiEstagioBicicletaria.Entities.Venda;
-
-namespace ApiEstagioBicicletaria.Entities.VendaDomain
-    //alterar namespaces
+﻿namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
+//alterar namespaces
 {
     public class Transacao
     {
@@ -11,11 +9,11 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
-        public TipoPagamento TipoPagamento { get;  set; }
+        public TipoPagamento TipoPagamento { get; set; }
 
         public MeioPagamaneto MeioPagamaneto { get; set; }
 
-        public bool Pago { get; set; }=false;
+        public bool Pago { get; set; } = false;
 
         protected Transacao()
         {

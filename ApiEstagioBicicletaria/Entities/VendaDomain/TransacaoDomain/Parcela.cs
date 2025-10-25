@@ -1,4 +1,4 @@
-﻿namespace ApiEstagioBicicletaria.Entities.VendaDomain
+﻿namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
 {
     public class Parcela
     {

@@ -1,4 +1,4 @@
-﻿namespace ApiEstagioBicicletaria.Entities.Servico
+﻿namespace ApiEstagioBicicletaria.Entities.ServicoDomain
 {
     public class Servico
     {

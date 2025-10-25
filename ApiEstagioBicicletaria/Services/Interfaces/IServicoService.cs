@@ -1,5 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
-using ApiEstagioBicicletaria.Entities.Servico;
+using ApiEstagioBicicletaria.Entities.ServicoDomain;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces
 {

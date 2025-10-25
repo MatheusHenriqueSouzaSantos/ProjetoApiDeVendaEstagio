@@ -1,4 +1,4 @@
-﻿namespace ApiEstagioBicicletaria.Entities.Produto
+﻿namespace ApiEstagioBicicletaria.Entities.ProdutoDomain
 {
     public class Produto
     {

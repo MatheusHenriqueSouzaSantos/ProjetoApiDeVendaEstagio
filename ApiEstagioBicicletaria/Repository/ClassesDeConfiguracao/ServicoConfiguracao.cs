@@ -1,4 +1,4 @@
-﻿using ApiEstagioBicicletaria.Entities.Servico;
+﻿using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

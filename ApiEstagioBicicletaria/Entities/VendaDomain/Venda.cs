@@ -1,4 +1,6 @@
-﻿namespace ApiEstagioBicicletaria.Entities.VendaDomain
+﻿using ApiEstagioBicicletaria.Entities.ClienteDomain;
+
+namespace ApiEstagioBicicletaria.Entities.VendaDomain
 {
     public class Venda
     {
