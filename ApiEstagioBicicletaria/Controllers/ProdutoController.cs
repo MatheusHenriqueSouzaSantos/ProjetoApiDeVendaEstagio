@@ -124,7 +124,7 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult DeletarProduto([FromRoute] Guid id)
         {
             try

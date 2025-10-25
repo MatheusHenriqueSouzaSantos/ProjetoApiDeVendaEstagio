@@ -18,6 +18,7 @@ namespace ApiEstagioBicicletaria
             options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<IClienteService, ClienteService>();
             builder.Services.AddScoped<IProdutoService, ProdutoService>();
+            builder.Services.AddScoped<IServicoService, ServicoService>();
             builder.Services.AddCors(options =>
             {
                 //mudar quando rodar o sistema

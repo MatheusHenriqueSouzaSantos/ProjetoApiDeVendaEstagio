@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace ApiEstagioBicicletaria.Controllers
 {
     [ApiController]
-    [Route("/api[controller]")]
+    [Route("api/[controller]")]
     public class ServicoController : ControllerBase
     {
         private IServicoService _servicoService;
@@ -125,7 +125,7 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult DeletarServico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
         {
             try
