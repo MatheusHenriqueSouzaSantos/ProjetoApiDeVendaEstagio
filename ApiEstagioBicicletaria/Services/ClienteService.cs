@@ -79,16 +79,16 @@ namespace ApiEstagioBicicletaria.Services
         public ClienteJuridico CadastrarClienteJuridico(ClienteJuridicoDto dto)
         {
 
-            if (!ClienteValidacao.validarInscricaoEstadual(dto.InscricaoEstadual))
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "Inscrição estadual inválida");
-            }
+            //if (!ClienteValidacao.validarInscricaoEstadual(dto.InscricaoEstadual))
+            //{
+            //    throw new ExcecaoDeRegraDeNegocio(400, "Inscrição estadual inválida");
+            //}
             string cnpjSemPontoETracos = ClienteValidacao.RetirarPontosETracos(dto.Cnpj);
             if (string.IsNullOrWhiteSpace(cnpjSemPontoETracos))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cnpj não pode estar sem valor");
             }
-            if (!ClienteValidacao.ValidarCnpj(dto.Cnpj))
+            if (!ClienteValidacao.ValidarCnpj(cnpjSemPontoETracos))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cnpj inválido");
             }
@@ -113,7 +113,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"O Cpf deve vir vazio ou nulo, não é possivel atualizar um cpf");
             }
-            ClienteFisico? clienteFisicoVindoDoBanco= _contextoDb.ClientesFisicos.Where(c=>c.Id==id && c.Ativo).FirstOrDefault();
+            ClienteFisico? clienteFisicoVindoDoBanco= _contextoDb.ClientesFisicos.Include(c => c.Endereco).Where(c=>c.Id==id && c.Ativo).FirstOrDefault();
             if(clienteFisicoVindoDoBanco== null)
             {
                 throw new ExcecaoDeRegraDeNegocio(404,"Cliente não encontrado");
@@ -135,16 +135,16 @@ namespace ApiEstagioBicicletaria.Services
         public ClienteJuridico AtualizarClienteJuridico(Guid id, ClienteJuridicoDto dto)
         {
 
-            if (!ClienteValidacao.validarInscricaoEstadual(dto.InscricaoEstadual))
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "Inscrição estadual inválida");
-            }
+            //if (!ClienteValidacao.validarInscricaoEstadual(dto.InscricaoEstadual))
+            //{
+            //    throw new ExcecaoDeRegraDeNegocio(400, "Inscrição estadual inválida");
+            //}
 
             if (!(string.IsNullOrWhiteSpace(dto.Cnpj)))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve vir vazio ou nulo, não é possivel atualizar um cpf");
             }
-            ClienteJuridico? clienteJuridicoVindoDoBanco = _contextoDb.ClientesJuridicos.Where(c => c.Id == id && c.Ativo).FirstOrDefault();
+            ClienteJuridico? clienteJuridicoVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c=>c.Endereco).Where(c => c.Id == id && c.Ativo).FirstOrDefault();
             if (clienteJuridicoVindoDoBanco == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Empresa não encontrado");
