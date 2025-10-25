@@ -1,4 +1,6 @@
-﻿using ApiEstagioBicicletaria.Entities;
+﻿using ApiEstagioBicicletaria.Entities.ClienteDomain;
+using ApiEstagioBicicletaria.Entities.Produto;
+using ApiEstagioBicicletaria.Entities.Servico;
 using ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao;
 using Microsoft.EntityFrameworkCore;
 

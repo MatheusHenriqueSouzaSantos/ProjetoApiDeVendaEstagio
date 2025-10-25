@@ -1,5 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
-using ApiEstagioBicicletaria.Entities;
+using ApiEstagioBicicletaria.Entities.Servico;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Services.Interfaces;
@@ -43,7 +43,7 @@ namespace ApiEstagioBicicletaria.Services
             return servicoVindoDoBanco;
         }
 
-        public Servico CadastraServico(ServicoDto dto)
+        public Servico CadastrarServico(ServicoDto dto)
         {
             //validar formato de codigo de barra? mais qual o formato vai utilizar?
 
@@ -88,7 +88,7 @@ namespace ApiEstagioBicicletaria.Services
             return servicoVindoDoBanco;
         }
 
-        public void DeletarservicoPorId(Guid id)
+        public void DeletarServicoPorId(Guid id)
         {
             Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.Id == id && s.Ativo).FirstOrDefault();
 

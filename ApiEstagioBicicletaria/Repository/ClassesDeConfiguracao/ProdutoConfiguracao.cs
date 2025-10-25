@@ -1,4 +1,4 @@
-﻿using ApiEstagioBicicletaria.Entities;
+﻿using ApiEstagioBicicletaria.Entities.Produto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

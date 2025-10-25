@@ -1,4 +1,4 @@
-﻿namespace ApiEstagioBicicletaria.Entities
+﻿namespace ApiEstagioBicicletaria.Entities.Servico
 {
     public class Servico
     {
@@ -17,7 +17,8 @@
         public bool Ativo { get; set; } = true;
 
 
-        protected Servico() { 
+        protected Servico()
+        {
         }
 
         public Servico(string codigoDoServico, string nomeServico, string descricao, decimal precoServico)

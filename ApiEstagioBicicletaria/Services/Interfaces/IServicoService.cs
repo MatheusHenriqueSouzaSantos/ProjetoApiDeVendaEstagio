@@ -1,5 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
-using ApiEstagioBicicletaria.Entities;
+using ApiEstagioBicicletaria.Entities.Servico;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces
 {
@@ -8,7 +8,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         List<Servico> BuscarServicos();
         Servico BuscarServicoPorId(Guid id);
 
-        Servico BuscarServicoPorCodigoServico(string codigoDoServico);
+        Servico BuscarServicoPorCodigoDoServico(string codigoDoServico);
 
         Servico CadastrarServico(ServicoDto dto);
 

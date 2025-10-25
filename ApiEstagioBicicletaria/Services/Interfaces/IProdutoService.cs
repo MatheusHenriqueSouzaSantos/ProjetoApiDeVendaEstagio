@@ -1,5 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
-using ApiEstagioBicicletaria.Entities;
+using ApiEstagioBicicletaria.Entities.Produto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces

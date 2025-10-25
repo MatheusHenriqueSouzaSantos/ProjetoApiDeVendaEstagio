@@ -1,5 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
-using ApiEstagioBicicletaria.Entities;
+using ApiEstagioBicicletaria.Entities.Servico;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;

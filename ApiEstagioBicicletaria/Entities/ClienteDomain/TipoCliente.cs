@@ -1,4 +1,4 @@
-﻿namespace ApiEstagioBicicletaria.Entities
+﻿namespace ApiEstagioBicicletaria.Entities.ClienteDomain
 {
     public enum TipoCliente
     {
