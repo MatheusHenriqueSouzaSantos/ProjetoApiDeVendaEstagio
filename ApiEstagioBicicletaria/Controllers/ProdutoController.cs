@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace ApiEstagioBicicletaria.Controllers
 {
     [ApiController]
-    [Route("/api[controller]")]
+    [Route("api/[controller]")]
     public class ProdutoController : ControllerBase
     {
         private IProdutoService _produtoService;

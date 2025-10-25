@@ -17,13 +17,14 @@ namespace ApiEstagioBicicletaria
             builder.Services.AddDbContext<ContextoDb>(options =>
             options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<IClienteService, ClienteService>();
+            builder.Services.AddScoped<IProdutoService, ProdutoService>();
             builder.Services.AddCors(options =>
             {
                 //mudar quando rodar o sistema
                 options.AddPolicy("PermitirTudo", policy =>
                 {
                     policy.AllowAnyOrigin()
-                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
                     .AllowAnyHeader();
 
                 });
@@ -63,10 +64,10 @@ namespace ApiEstagioBicicletaria
 
             // Configure the HTTP request pipeline.
 
+            app.UseCors("PermitirTudo");
             app.UseHttpsRedirection();
 
             //app.UseAuthorization();
-            app.UseCors("PermitirTudo");
 
             app.MapControllers();
 

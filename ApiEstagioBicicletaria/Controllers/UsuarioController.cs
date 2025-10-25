@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ApiEstagioBicicletaria.Controllers
 {
     [ApiController]
-    [Route("/api[controller]")]
+    [Route("api/[controller]")]
     public class UsuarioController :ControllerBase
     {
         private IUsuarioService _usuarioService;
