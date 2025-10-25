@@ -19,6 +19,7 @@ namespace ApiEstagioBicicletaria
             builder.Services.AddScoped<IClienteService, ClienteService>();
             builder.Services.AddScoped<IProdutoService, ProdutoService>();
             builder.Services.AddScoped<IServicoService, ServicoService>();
+            builder.Services.AddScoped<IUsuarioService, UsuarioService>();
             builder.Services.AddCors(options =>
             {
                 //mudar quando rodar o sistema
