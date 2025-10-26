@@ -10,7 +10,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
         public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
         public decimal Desconto { get; set; } = 0.0m;
-
+        //pegar o valor total pela soma de todos os itens menos o desconto
         public decimal ValorTotal { get; set; } = 0.0m;
 
         public bool Ativo { get; set; } = true;

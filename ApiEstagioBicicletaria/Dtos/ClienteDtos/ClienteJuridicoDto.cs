@@ -1,7 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Entities;
 using System.ComponentModel.DataAnnotations;
 
-namespace ApiEstagioBicicletaria.Dtos
+namespace ApiEstagioBicicletaria.Dtos.ClienteDtos
 {
     public class ClienteJuridicoDto : ClienteDto
     {
@@ -27,10 +27,10 @@ namespace ApiEstagioBicicletaria.Dtos
             string razaoSocial, string nomeFantasia, string inscricaoEstadual, string cnpj) 
             : base(endereco,telefone,email)
         {
-            this.RazaoSocial = razaoSocial;
-            this.NomeFantasia = nomeFantasia ?? "";
-            this.InscricaoEstadual = inscricaoEstadual ?? "";
-            this.Cnpj = cnpj;
+            RazaoSocial = razaoSocial;
+            NomeFantasia = nomeFantasia ?? "";
+            InscricaoEstadual = inscricaoEstadual ?? "";
+            Cnpj = cnpj;
         }
     }
 }

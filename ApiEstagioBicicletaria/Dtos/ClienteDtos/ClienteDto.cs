@@ -1,7 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Entities;
 using System.ComponentModel.DataAnnotations;
 
-namespace ApiEstagioBicicletaria.Dtos
+namespace ApiEstagioBicicletaria.Dtos.ClienteDtos
 {
     public abstract class ClienteDto
     {
@@ -21,9 +21,9 @@ namespace ApiEstagioBicicletaria.Dtos
 
         protected ClienteDto(EnderecoDto endereco, string telefone, string email)
         {
-            this.Endereco = endereco;
-            this.Telefone = telefone;
-            this.Email = email;
+            Endereco = endereco;
+            Telefone = telefone;
+            Email = email;
         }
     }
 }

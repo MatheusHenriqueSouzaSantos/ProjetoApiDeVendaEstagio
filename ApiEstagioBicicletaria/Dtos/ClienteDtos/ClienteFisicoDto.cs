@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Entities;
+﻿using ApiEstagioBicicletaria.Dtos.ClienteDtos;
+using ApiEstagioBicicletaria.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace ApiEstagioBicicletaria.Dtos
