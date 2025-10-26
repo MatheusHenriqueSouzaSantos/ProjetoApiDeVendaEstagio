@@ -2,6 +2,8 @@
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
+using ApiEstagioBicicletaria.Entities.VendaDomain;
+using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
 using ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +25,16 @@ namespace ApiEstagioBicicletaria.Repositories
         public DbSet<Servico> Servicos { get; set; }
 
         public DbSet<Usuario> Usuarios { get; set; }
+
+        public DbSet<Venda> Vendas { get; set; }
+
+        public DbSet<Transacao> Transacoes { get; set; }
+
+        public DbSet<Parcela> Parcelas { get; set; }
+
+        public DbSet<ItemVenda> ItensVendas { get; set; }
+
+        public DbSet<ServicoVenda> ServicosVendas { get; set; }
 
         public ContextoDb(DbContextOptions<ContextoDb> options) : base(options)
         {
@@ -50,6 +62,11 @@ namespace ApiEstagioBicicletaria.Repositories
             modelBuilder.ApplyConfiguration(new ProdutoConfiguracao());
             modelBuilder.ApplyConfiguration(new ServicoConfiguracao());
             modelBuilder.ApplyConfiguration(new UsuarioConfiguracao());
+            modelBuilder.ApplyConfiguration(new VendaConfiguracao());
+            modelBuilder.ApplyConfiguration(new TransacaoConfiguracao());
+            modelBuilder.ApplyConfiguration(new ParcelaConfiguracao());
+            modelBuilder.ApplyConfiguration(new ItemVendaConfiguracao());
+            modelBuilder.ApplyConfiguration(new ServicoVendaConfiguracao());
         }
 
     }

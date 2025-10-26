@@ -12,11 +12,15 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public Produto Produto { get; private set; }
 
-        public int Quantidade { get; private  set; }
+        public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
-        public decimal DescontoPorUnidade { get; private set; }
+        public int Quantidade { get; set; }
 
-        public decimal PrecoUnitarioNaVenda { get; private set; }
+        public decimal DescontoUnitario { get;  set; }
+
+        public decimal PrecoUnitarioNaVenda { get;  set; }
+
+        public bool Ativo { get; set; } = true;
 
         protected ItemVenda()
         {

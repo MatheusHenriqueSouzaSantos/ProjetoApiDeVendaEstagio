@@ -5,20 +5,19 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 {
     public class ServicoVenda
     {
-        //criar a venda no momento do envio ou criar ela e ir mandando adição de item...(mais complexo/melhor)
         public Guid Id { get; private set; } = new Guid();
 
         public Venda Venda { get; private set; }
 
         public Servico Servico { get; private set; }
 
-        //deixar essa prop??
+        public DateTime DataCriacao { get; private set; }=DateTime.Now;
 
-        public decimal DescontoServico { get; private set; }
+        public decimal DescontoServico { get; set; }
 
-        public decimal PrecoServicoNaVenda { get; private set; }
+        public decimal PrecoServicoNaVenda { get;  set; }
 
-        //não usar delete lógico e sim fisico, não sei se vai ter como alterar venda
+        public bool Ativo { get; set; }=true;
 
         public ServicoVenda(Venda venda, Servico servico, decimal descontoServico, decimal precoServicoNaVenda)
         {

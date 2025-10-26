@@ -6,12 +6,15 @@
 
         public Transacao Transacao { get; private set; }
 
-        //coluna necessária?
+        public DateTime DataCriacao { get; private set; }=DateTime.Now;
+
         public int NumeroDaParecelaDaVenda { get; set; }
 
         public decimal ValorParcela { get; set; } = 0.0m;
 
-        public bool pago { get; set; } = false;
+        public bool Pago { get; set; } = false;
+
+        public bool Ativo { get; set; } = true;
 
         protected Parcela()
         {

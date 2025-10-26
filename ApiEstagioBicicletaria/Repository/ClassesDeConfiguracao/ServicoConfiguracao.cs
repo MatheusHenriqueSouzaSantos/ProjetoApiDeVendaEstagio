@@ -9,30 +9,30 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
         public void Configure(EntityTypeBuilder<Servico> builder)
         {
             builder.ToTable("servico");
-            builder.HasKey(p => p.Id);
+            builder.HasKey(s => s.Id);
 
-            builder.Property(p => p.Id)
+            builder.Property(s => s.Id)
                 .HasColumnType("binary(16)")
                 .HasColumnName("ID")
                 .IsRequired();
-            builder.Property(p => p.CodigoDoServico)
+            builder.Property(s => s.CodigoDoServico)
                 .HasColumnName("CODIGO_DO_SERVICO")
                 .HasMaxLength(128)
                 .IsRequired();
-            builder.Property(p => p.DataCriacao)
+            builder.Property(s => s.DataCriacao)
                 .HasColumnName("DATA_CRIACAO")
                 .IsRequired();
-            builder.Property(p => p.NomeServico)
+            builder.Property(s => s.NomeServico)
                 .HasColumnName("NOME_SERVICO")
                 .HasMaxLength(50)
                 .IsRequired();
-            builder.Property(p => p.Descricao)
+            builder.Property(s => s.Descricao)
                 .HasMaxLength(150)
                 .HasColumnName("DESCRICAO");
-            builder.Property(p => p.PrecoServico)
+            builder.Property(s => s.PrecoServico)
                 .HasColumnName("PRECO_SERVICO")
                 .IsRequired();
-            builder.Property(p => p.Ativo)
+            builder.Property(s => s.Ativo)
                 .HasColumnName("ATIVO")
                 .IsRequired();
         }

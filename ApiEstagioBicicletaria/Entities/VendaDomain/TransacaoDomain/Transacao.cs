@@ -10,11 +10,13 @@
 
         public TipoPagamento TipoPagamento { get; set; }
 
-        public MeioPagamaneto MeioPagamaneto { get; set; }
+        public MeioPagamaneto MeioPagamento { get; set; }
 
         public bool TransacaoEmCurso { get; set; } = false;
 
         public bool Pago { get; set; } = false;
+
+        public bool Ativo { get; set; } = true;
 
         protected Transacao()
         {
