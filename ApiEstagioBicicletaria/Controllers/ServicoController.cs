@@ -103,7 +103,7 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
-        [HttpPut]
+        [HttpPut("{id}")]
         public ActionResult<Servico> AtualizarServico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ServicoDto dto)
         {
             try
