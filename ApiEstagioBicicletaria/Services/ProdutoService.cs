@@ -118,6 +118,10 @@ namespace ApiEstagioBicicletaria.Services
             _contextoDb.Update(produtoVindoDoBanco);
             _contextoDb.SaveChanges();
 
+        } 
+        public List<Produto> BuscarProdutosPorNome(string nome)
+        {
+            return _contextoDb.Produtos.Where(p => p.NomeProduto.Contains(nome)).Take(10).ToList();
         }
     }    
 }

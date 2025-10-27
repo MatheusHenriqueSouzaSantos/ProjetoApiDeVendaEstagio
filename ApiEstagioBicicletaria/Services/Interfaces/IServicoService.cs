@@ -16,5 +16,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         void DeletarServicoPorId(Guid id);
 
+        List<Servico> BuscarServicosPorNome(string nome);
+
     }
 }

@@ -1,6 +1,8 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
+using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Excecoes;
+using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
@@ -101,6 +103,7 @@ namespace ApiEstagioBicicletaria.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
             }
         }
         [HttpPut("{id}")]
@@ -148,6 +151,29 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
-       
+
+        [HttpGet("buscar-servicos-por-nome/{nome}")]
+        public ActionResult<List<Servico>> BuscarServicosPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
+                return _servicoService.BuscarServicosPorNome(nome);
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+
     }
 }

@@ -9,7 +9,11 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public Venda Venda { get; private set; }
 
+        public Guid IdVenda { get; private set; }
+
         public Servico Servico { get; private set; }
+
+        public Guid IdServico {  get; private set; }
 
         public DateTime DataCriacao { get; private set; }=DateTime.Now;
 
@@ -18,6 +22,11 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
         public decimal PrecoServicoNaVenda { get;  set; }
 
         public bool Ativo { get; set; }=true;
+
+        protected ServicoVenda()
+        {
+
+        }
 
         public ServicoVenda(Venda venda, Servico servico, decimal descontoServico, decimal precoServicoNaVenda)
         {

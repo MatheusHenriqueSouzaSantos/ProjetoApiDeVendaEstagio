@@ -6,6 +6,8 @@
 
         public Transacao Transacao { get; private set; }
 
+        public Guid IdTransacao { get; private set; }
+
         public DateTime DataCriacao { get; private set; }=DateTime.Now;
 
         public int NumeroDaParecelaDaVenda { get; set; }

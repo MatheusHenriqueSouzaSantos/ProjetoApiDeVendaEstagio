@@ -10,7 +10,11 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public Venda Venda { get; private set; }
 
+        public Guid IdVenda { get; private set; }
+
         public Produto Produto { get; private set; }
+
+        public Guid IdProduto { get; private set; }
 
         public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
@@ -33,7 +37,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
             Venda = venda;
             Produto = produto;
             Quantidade = quantidade;
-            DescontoPorUnidade = descontoPorUnidade;
+            DescontoUnitario = descontoPorUnidade;
             PrecoUnitarioNaVenda = precoUnitarioNaVenda;
         }
     }

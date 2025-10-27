@@ -1,9 +1,12 @@
-﻿using ApiEstagioBicicletaria.Entities.VendaDomain;
+﻿using ApiEstagioBicicletaria.Dtos.VendaDtos;
+using ApiEstagioBicicletaria.Entities.VendaDomain;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces
 {
     public interface IVendaService
     {
-        Venda CriarVenda(VendaDto)
+        Venda CriarVenda(VendaTransacaoDto vendaTransacaoDto);
+
     }
+
 }

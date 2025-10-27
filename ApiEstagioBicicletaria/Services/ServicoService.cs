@@ -1,4 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
+using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
@@ -99,6 +100,11 @@ namespace ApiEstagioBicicletaria.Services
             servicoVindoDoBanco.Ativo = false;
             _contextoDb.Update(servicoVindoDoBanco);
             _contextoDb.SaveChanges();
+        }
+
+        public List<Servico> BuscarServicosPorNome(string nome)
+        {
+            return _contextoDb.Servicos.Where(s => s.NomeServico.Contains(nome)).Take(10).ToList();
         }
 
     }

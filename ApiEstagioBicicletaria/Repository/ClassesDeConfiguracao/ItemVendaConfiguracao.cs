@@ -18,11 +18,18 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .IsRequired();
             builder.HasOne(i => i.Venda)
                 .WithMany()
-                .HasForeignKey("ID_VENDA")
+                .HasForeignKey(i=>i.IdVenda)
                 .IsRequired();
+            builder.Property(i => i.IdVenda)
+                .HasColumnType("binary(16)")
+                .HasColumnName("ID_VENDA");
             builder.HasOne(i=>i.Produto)
                 .WithMany()
-                .HasForeignKey("ID_PRODUTO")
+                .HasForeignKey(i=>i.IdProduto)
+                .IsRequired();
+            builder.Property(i=>i.IdProduto)
+                .HasColumnType("binary(16)")
+                .HasColumnName("ID_PRODUTO")
                 .IsRequired();
             builder.Property(i=>i.DataCriacao)
                 .HasColumnName("DATA_CRIACAO")

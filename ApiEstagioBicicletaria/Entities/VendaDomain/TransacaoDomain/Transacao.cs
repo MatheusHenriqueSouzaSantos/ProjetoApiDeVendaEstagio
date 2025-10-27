@@ -6,6 +6,8 @@
 
         public Venda Venda { get; private set; }
 
+        public Guid IdVenda { get; private set; }
+
         public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
         public TipoPagamento TipoPagamento { get; set; }
@@ -26,8 +28,8 @@
         public Transacao(Venda venda, TipoPagamento tipoPagamento, MeioPagamaneto meioPagamaneto)
         {
             Venda = venda;
-            TipoPagamento = tipoPagamento;
-            MeioPagamaneto = meioPagamaneto;
+            this.TipoPagamento = tipoPagamento;
+            this.MeioPagamento = meioPagamaneto;
         }
     }
 }

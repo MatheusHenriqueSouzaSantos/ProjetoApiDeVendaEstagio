@@ -148,7 +148,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpPatch("{id}/{quantidade}")]
-        public ActionResult DefinirQuantidadeEmEstoqueDeProduto([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromRoute]int quantidade)
+        public ActionResult DefinirQuantidadeEmEstoqueDeProduto([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromRoute, Required(ErrorMessage ="A quantidade é obrigatória")]int quantidade)
         {
             try
             {
@@ -160,6 +160,28 @@ namespace ApiEstagioBicicletaria.Controllers
                 }
                 _produtoService.DefinirQuantidadeEmEstoqueDeProduto(id,quantidade);
                 return Ok("Operação realizada com sucesso ");
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+        [HttpGet("buscar-produtos-por-nome")]
+        public ActionResult<List<Produto>> BuscarProdutosPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
+                return _produtoService.BuscarProdutosPorNome(nome);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {

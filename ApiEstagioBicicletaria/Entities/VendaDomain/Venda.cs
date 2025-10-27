@@ -7,6 +7,8 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
         public Guid Id { get; private set; } = new Guid();
         public Cliente Cliente { get;  set; }
 
+        public Guid IdCliente { get; private set; }
+
         public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
         public decimal Desconto { get; set; } = 0.0m;
@@ -20,11 +22,11 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         }
 
-        public Venda(Cliente cliente, decimal desconto, decimal valorTotalVenda)
+        public Venda(Cliente cliente, decimal desconto, decimal valorTotal)
         {
             Cliente = cliente;
             Desconto = desconto;
-            ValorTotalVenda = valorTotalVenda;
+            ValorTotal = valorTotal;
         }
     }
 }
