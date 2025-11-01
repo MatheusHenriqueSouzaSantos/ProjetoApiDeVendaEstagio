@@ -74,6 +74,8 @@ namespace ApiEstagioBicicletaria
             app.MapControllers();
 
             app.Run();
+          
+
         }
     }
 }

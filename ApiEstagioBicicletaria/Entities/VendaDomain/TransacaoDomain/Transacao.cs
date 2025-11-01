@@ -2,7 +2,7 @@
 {
     public class Transacao
     {
-        public Guid Id { get; private set; } = new Guid();
+        public Guid Id { get; private set; } = Guid.NewGuid();
 
         public Venda Venda { get; private set; }
 

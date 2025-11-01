@@ -5,7 +5,16 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 {
     public interface IVendaService
     {
-        Venda CriarVenda(VendaTransacaoDto vendaTransacaoDto);
+        List<VendaTransacaoOutputDto> BuscarTodasVendas();
+
+        VendaTransacaoOutputDto BuscarVendaPorId(Guid id);
+
+        VendaTransacaoOutputDto CadastrarVenda(VendaTransacaoInputDto dto);
+
+        VendaTransacaoOutputDto AtualizarVenda(Guid id, VendaTransacaoInputDto dto);
+
+        void DeletarVendaPorId(Guid id);
+
 
     }
 

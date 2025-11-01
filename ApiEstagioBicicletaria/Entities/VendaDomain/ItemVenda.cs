@@ -6,7 +6,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
     {
         //todos os atributos deixo que nunca podme ser alterados? se errou crie outro item venda?
         //deixar privado pois ao enviar a venda já esta concluida
-        public Guid Id { get; private set; } = new Guid();
+        public Guid Id { get; private set; } = Guid.NewGuid();
 
         public Venda Venda { get; private set; }
 

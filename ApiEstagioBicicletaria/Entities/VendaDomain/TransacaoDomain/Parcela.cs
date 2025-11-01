@@ -2,7 +2,7 @@
 {
     public class Parcela
     {
-        public Guid Id { get; private set; } = new Guid();
+        public Guid Id { get; private set; }  = Guid.NewGuid();
 
         public Transacao Transacao { get; private set; }
 

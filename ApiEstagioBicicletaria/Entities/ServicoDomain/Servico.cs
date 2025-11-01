@@ -2,7 +2,7 @@
 {
     public class Servico
     {
-        public Guid Id { get; private set; } = new Guid();
+        public Guid Id { get; private set; } =  Guid.NewGuid();
 
         public string CodigoDoServico { get; private set; }
 

@@ -2,7 +2,7 @@
 {
     public class Usuario
     {
-        public Guid Id { get; private set; } = new Guid();
+        public Guid Id { get; private set; } = Guid.NewGuid();
 
         public string Email { get; set; }=string.Empty;
 

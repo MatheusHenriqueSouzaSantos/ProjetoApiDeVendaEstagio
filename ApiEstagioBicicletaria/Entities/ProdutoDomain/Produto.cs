@@ -2,7 +2,7 @@
 {
     public class Produto
     {
-        public Guid Id { get; private set; } = new Guid();
+        public Guid Id { get; private set; } = Guid.NewGuid();
 
         //deixar alterar codigo de barra?
         public string CodigoDeBarra { get; private set; }
