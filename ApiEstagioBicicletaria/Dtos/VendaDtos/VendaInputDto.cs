@@ -20,7 +20,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         }
 
-        public VendaInputDto(Guid idCliente, decimal? desconto, List<ProdutoDto> itensVenda, List<ServicoVendaInputDto> servicosVenda)
+        public VendaInputDto(Guid idCliente, decimal? desconto, List<ItemVendaInputDto> itensVenda, List<ServicoVendaInputDto> servicosVenda)
         {
             IdCliente = idCliente;
             Desconto = desconto;

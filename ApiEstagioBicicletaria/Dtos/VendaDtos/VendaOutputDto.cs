@@ -15,15 +15,15 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         public Cliente Cliente { get; set; }
         
-        public List<ItemVenda> ItensVenda { get; set; }
-        public List<ServicoVenda> ServicosVenda { get; set; }
+        public List<ItemVendaOutputDto> ItensVenda { get; set; }
+        public List<ServicoVendaOutputDto> ServicosVenda { get; set; }
 
         protected VendaOutputDto()
         {
 
         }
 
-        public VendaOutputDto(Guid idVenda, DateTime dataCriacao, decimal? desconto, decimal valorTotal, Cliente cliente, List<ItemVenda> itensVenda, List<ServicoVenda> servicosVenda)
+        public VendaOutputDto(Guid idVenda, DateTime dataCriacao, decimal? desconto, decimal valorTotal, Cliente cliente, List<ItemVendaOutputDto> itensVenda, List<ServicoVendaOutputDto> servicosVenda)
         {
             IdVenda = idVenda;
             DataCriacao = dataCriacao;
