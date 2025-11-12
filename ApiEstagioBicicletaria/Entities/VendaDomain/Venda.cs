@@ -22,11 +22,21 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         }
 
-        public Venda(Cliente cliente, decimal desconto, decimal valorTotal)
+        public Venda(Cliente cliente, Guid idCliente, decimal desconto, decimal valorTotal)
         {
-            Cliente = cliente;
+            Cliente = cliente ;
+            IdCliente = idCliente;
             Desconto = desconto;
             ValorTotal = valorTotal;
         }
+
+
+
+        //public Venda(Cliente cliente, decimal desconto, decimal valorTotal)
+        //{
+        //    Cliente = cliente;
+        //    Desconto = desconto;
+        //    ValorTotal = valorTotal;
+        //}
     }
 }

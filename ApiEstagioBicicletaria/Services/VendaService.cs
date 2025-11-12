@@ -1,5 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ClienteDomain;
+using ApiEstagioBicicletaria.Entities.ProdutoDomain;
+using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
 using ApiEstagioBicicletaria.Excecoes;
@@ -24,7 +26,7 @@ namespace ApiEstagioBicicletaria.Services
             /*"SELECT * FROM VENDA V, TRANSACAO T
              * WHERE V.ID = T.VENDA_ID "*/;
 
-            List<VendaTransacaoOutputDto> vendasTransacoes=new List<VendaTransacaoOutputDto>();
+            List<VendaTransacaoOutputDto> ListaComTodasVendasTransacoes=new List<VendaTransacaoOutputDto>();
 
             foreach(Venda venda in vendas)
             {
@@ -59,10 +61,10 @@ namespace ApiEstagioBicicletaria.Services
                     transacaoDaVenda.MeioPagamento, transacaoDaVenda.Pago, transacaoDaVenda.TransacaoEmCurso,QuantidadeDeParcelasVenda,QuantidadeDeParcelasPagasVenda,valorPago);
 
                 VendaTransacaoOutputDto vendaTransacaoOutputDto = new VendaTransacaoOutputDto(vendaOutputDto, transacaoOutputDto);
-                vendasTransacoes.Add(vendaTransacaoOutputDto);
+                ListaComTodasVendasTransacoes.Add(vendaTransacaoOutputDto);
             }
 
-            return vendasTransacoes;
+            return ListaComTodasVendasTransacoes;
 
         }
         
@@ -116,10 +118,40 @@ namespace ApiEstagioBicicletaria.Services
             Cliente? clienteDaVenda = _contexto.Clientes.Where(c => c.Id == dto.Venda.IdCliente && c.Ativo).FirstOrDefault();
             if (clienteDaVenda == null)
             {
-                throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrada!!!");
+                throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado!!!");
             }
-            List<ItemVenda> item 
-            Venda vendaASerCriada= new Venda(clienteDaVenda,clienteDaVenda.Id,dto.Venda.Desconto,dto.Venda.//colocar o valor da soma de todas as parcelas)
+            List<ItemVendaInputDto> itensVenda = dto.Venda.ItensVenda;
+            List<ServicoVendaInputDto> servicosVenda = dto.Venda.ServicosVenda;
+            decimal totalDaVenda=CalcularTotalVenda(itensVenda,servicosVenda);
+
+            Venda vendaASerCriada = new Venda(clienteDaVenda, clienteDaVenda.Id, (dto.Venda.Desconto ?? 0.0m), totalDaVenda);
+        }
+        public decimal CalcularTotalVenda(List<ItemVendaInputDto> itensVenda, List<ServicoVendaInputDto> servicosVenda)
+        {
+            decimal totalVenda=0;
+            foreach (ItemVendaInputDto itemIterado in itensVenda)
+            {
+                Produto? produtoVindoDoBanco = _contexto.Produtos.FirstOrDefault(p => p.Id == itemIterado.IdProduto && p.Ativo);
+                if (produtoVindoDoBanco == null)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(404,$"Produto com id {itemIterado.IdProduto} não encontrado");
+                }
+                decimal precoDoProdutoComDescontoAplicado = produtoVindoDoBanco.PrecoUnitario - (itemIterado.DescontoUnitario ?? 0.0m);
+                decimal totalItem = precoDoProdutoComDescontoAplicado * itemIterado.Quantidade;
+                totalVenda += totalItem;
+            }
+            foreach (ServicoVendaInputDto servicoIterado in servicosVenda)
+            {
+                Servico? servicoVindoDoBAnco = _contexto.Servicos.FirstOrDefault(s=>s.Id==servicoIterado.IdServico && s.Ativo);
+                if (servicoVindoDoBAnco == null)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(404, $"Serviço com id {servicoIterado.IdServico} não encontrado");
+                }
+                decimal precoDoServicoComDescontoAplicado = servicoVindoDoBAnco.PrecoServico - (servicoIterado.DescontoServico ?? 0.0m);
+                decimal totalServico = precoDoServicoComDescontoAplicado;
+                totalVenda += totalServico;
+            }
+            return totalVenda;
         }
     }
 }
