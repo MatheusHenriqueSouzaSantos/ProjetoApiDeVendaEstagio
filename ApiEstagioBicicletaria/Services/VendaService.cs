@@ -123,8 +123,58 @@ namespace ApiEstagioBicicletaria.Services
             List<ItemVendaInputDto> itensVenda = dto.Venda.ItensVenda;
             List<ServicoVendaInputDto> servicosVenda = dto.Venda.ServicosVenda;
             decimal totalDaVenda=CalcularTotalVenda(itensVenda,servicosVenda);
+            decimal descontoVenda = dto.Venda.Desconto ?? 0.0m;
 
-            Venda vendaASerCriada = new Venda(clienteDaVenda, clienteDaVenda.Id, (dto.Venda.Desconto ?? 0.0m), totalDaVenda);
+            Venda vendaCriada = new Venda(clienteDaVenda, clienteDaVenda.Id, descontoVenda, totalDaVenda);
+
+            foreach(ItemVendaInputDto itemEnviado in dto.Venda.ItensVenda.ToList())
+            {
+                Produto? produtoDoItem = _contexto.Produtos.FirstOrDefault(p => p.Id == itemEnviado.IdProduto && p.Ativo);
+
+                if(produtoDoItem == null)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado!!!");
+                }
+                if(produtoDoItem.QuantidadeEmEstoque< itemEnviado.Quantidade)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(400, "Estoque do produto: " + produtoDoItem.NomeProduto + " insuficiente, pois tem apenas: " +
+                        produtoDoItem.QuantidadeEmEstoque + " unidades em estoque");
+                }
+                decimal descontoPorUnidade = itemEnviado.DescontoUnitario ?? 0.0m;
+                if (itemEnviado.DescontoUnitario > produtoDoItem.PrecoUnitario)
+                {
+                    //coloco essa validação??
+                    throw new ExcecaoDeRegraDeNegocio(400, "O desconto unitário não dever ser maior do que o valor do produto");
+                }
+
+                ItemVenda itemCriado = new ItemVenda(vendaCriada, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.PrecoUnitario);
+                _contexto.ItensVendas.Add(itemCriado);
+                //coloco o save changes a cada interação no for each ou no final?
+            }
+
+            foreach(ServicoVendaInputDto servicoEnviado in dto.Venda.ServicosVenda)
+            {
+                Servico? servicoDaVenda = _contexto.Servicos.FirstOrDefault(s=>s.Id==servicoEnviado.IdServico && s.Ativo);
+                if(servicoDaVenda == null)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado!!!");
+                }
+                decimal descontoDoServico = servicoEnviado.DescontoServico ?? 0.0m;
+                ServicoVenda servicoDaVendaCriado = new ServicoVenda(vendaCriada, servicoDaVenda, descontoDoServico, servicoDaVenda.PrecoServico);
+                _contexto.ServicosVendas.Add(servicoDaVendaCriado);
+            }
+
+            Transacao transacaoCriada = new Transacao(vendaCriada, dto.Transacao.TipoPagamento, dto.Transacao.MeioPagamaneto);
+            //validar se valores são maior que 0, já fiz essa validação???
+            decimal valorDeCadaParcela = vendaCriada.ValorTotal / dto.Transacao.QuantidadeDeParcelas;
+
+            for (int i=0;i<dto.Transacao.QuantidadeDeParcelas; i++)
+            {
+                Parcela parcelaCriada = new Parcela(transacaoCriada, (i + 1), valorDeCadaParcela);
+                _contexto.Parcelas.Add(parcelaCriada);
+            }
+            _contexto.SaveChanges();
+
         }
         public decimal CalcularTotalVenda(List<ItemVendaInputDto> itensVenda, List<ServicoVendaInputDto> servicosVenda)
         {

@@ -31,9 +31,8 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         }
 
-        public ItemVenda(Guid id, Venda venda, Produto produto, int quantidade, decimal descontoPorUnidade, decimal precoUnitarioNaVenda)
+        public ItemVenda(Venda venda, Produto produto, int quantidade, decimal descontoPorUnidade, decimal precoUnitarioNaVenda)
         {
-            Id = id;
             Venda = venda;
             Produto = produto;
             Quantidade = quantidade;
