@@ -130,5 +130,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        //fazer um endpoint para registrar pagamento de venda mesmo a vista, separar responsabilidade, de registrar pagamento
+
     }
 }

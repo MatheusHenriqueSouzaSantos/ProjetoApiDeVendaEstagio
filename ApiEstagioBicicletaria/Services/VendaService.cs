@@ -125,7 +125,16 @@ namespace ApiEstagioBicicletaria.Services
             decimal totalDaVenda=CalcularTotalVenda(itensVenda,servicosVenda);
             decimal descontoVenda = dto.Venda.Desconto ?? 0.0m;
 
+            if(itensVenda.Count<1 && servicosVenda.Count < 1)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"A venda deve conter pelo menos um item ou serviço");
+            }
+
             Venda vendaCriada = new Venda(clienteDaVenda, clienteDaVenda.Id, descontoVenda, totalDaVenda);
+
+            List<ItemVenda> listaDeItensDaVendaCriada = new List<ItemVenda>();
+
+            List<ServicoVenda> listaDeServicosDaVendaCriada =new List<ServicoVenda>();
 
             foreach(ItemVendaInputDto itemEnviado in dto.Venda.ItensVenda.ToList())
             {
@@ -143,13 +152,14 @@ namespace ApiEstagioBicicletaria.Services
                 decimal descontoPorUnidade = itemEnviado.DescontoUnitario ?? 0.0m;
                 if (itemEnviado.DescontoUnitario > produtoDoItem.PrecoUnitario)
                 {
-                    //coloco essa validação??
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto unitário não dever ser maior do que o valor do produto");
                 }
-
+                AbaterQuantidadeEmEstoque(produtoDoItem,itemEnviado.Quantidade);
                 ItemVenda itemCriado = new ItemVenda(vendaCriada, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.PrecoUnitario);
+                listaDeItensDaVendaCriada.Add(itemCriado);
                 _contexto.ItensVendas.Add(itemCriado);
                 //coloco o save changes a cada interação no for each ou no final?
+                
             }
 
             foreach(ServicoVendaInputDto servicoEnviado in dto.Venda.ServicosVenda)
@@ -160,8 +170,18 @@ namespace ApiEstagioBicicletaria.Services
                     throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado!!!");
                 }
                 decimal descontoDoServico = servicoEnviado.DescontoServico ?? 0.0m;
+                if (descontoDoServico > servicoDaVenda.PrecoServico)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(400, "O desconto do serviço não dever ser maior do que o valor do serviço");
+                }
                 ServicoVenda servicoDaVendaCriado = new ServicoVenda(vendaCriada, servicoDaVenda, descontoDoServico, servicoDaVenda.PrecoServico);
+                listaDeServicosDaVendaCriada.Add(servicoDaVendaCriado);
                 _contexto.ServicosVendas.Add(servicoDaVendaCriado);
+            }
+
+            if(dto.Transacao.TipoPagamento== TipoPagamento.AVista && dto.Transacao.QuantidadeDeParcelas != 1)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"Uma venda à vista deve ter apenas uma parcela");
             }
 
             Transacao transacaoCriada = new Transacao(vendaCriada, dto.Transacao.TipoPagamento, dto.Transacao.MeioPagamaneto);
@@ -174,6 +194,38 @@ namespace ApiEstagioBicicletaria.Services
                 _contexto.Parcelas.Add(parcelaCriada);
             }
             _contexto.SaveChanges();
+
+            List<ItemVendaOutputDto> listaDeItensASeremRetornados= new List<ItemVendaOutputDto>();
+            List<ServicoVendaOutputDto> listaDeServicosASeremRetornados= new List<ServicoVendaOutputDto>();
+
+            foreach(ItemVenda itemNoFormatoModel in listaDeItensDaVendaCriada)
+            {
+                ItemVendaOutputDto itemNoFormatoDeOutput = new ItemVendaOutputDto(itemNoFormatoModel.Id, itemNoFormatoModel.Produto, itemNoFormatoModel.DataCriacao,
+                    itemNoFormatoModel.Quantidade, itemNoFormatoModel.DescontoUnitario, itemNoFormatoModel.PrecoUnitarioNaVenda);
+
+                listaDeItensASeremRetornados.Add(itemNoFormatoDeOutput);
+            }
+
+            foreach(ServicoVenda servicoVendaNoFormatoModel in listaDeServicosDaVendaCriada)
+            {
+                ServicoVendaOutputDto servicoVendaFormatoDeOutput = new ServicoVendaOutputDto(servicoVendaNoFormatoModel.Id,servicoVendaNoFormatoModel.Servico,servicoVendaNoFormatoModel.DataCriacao,
+                    servicoVendaNoFormatoModel.DescontoServico,servicoVendaNoFormatoModel.PrecoServicoNaVenda);
+
+                listaDeServicosASeremRetornados.Add(servicoVendaFormatoDeOutput);
+            }//regra no meio de pagamento, tipo pagamento a prazo não pode ser dinheiro??
+            VendaOutputDto vendaASerRetornadaNoFormatoOutput = new VendaOutputDto(vendaCriada.Id, vendaCriada.DataCriacao, vendaCriada.Desconto, vendaCriada.ValorTotal,
+                vendaCriada.Cliente,listaDeItensASeremRetornados,listaDeServicosASeremRetornados);
+            int quantidadeDeParcelas = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoCriada.Id && p.Ativo).Count();
+            int numeroDeParcelasPagas = 0;
+            decimal valorPago = 0.0m;
+            TransacaoOutputDto transacaoASerRetornadaNoFormatoOutput = new TransacaoOutputDto(transacaoCriada.Id, transacaoCriada.DataCriacao, transacaoCriada.TipoPagamento,
+                transacaoCriada.MeioPagamento,transacaoCriada.TransacaoEmCurso,transacaoCriada.Pago,quantidadeDeParcelas,numeroDeParcelasPagas,valorPago);
+
+            VendaTransacaoOutputDto vendaTransacaoASerRetornadaFormatoOutput = new(vendaASerRetornadaNoFormatoOutput,transacaoASerRetornadaNoFormatoOutput);
+
+            return vendaTransacaoASerRetornadaFormatoOutput;
+
+            //fazer um endpoint para registrar pagamento de venda mesmo a vista, separar responsabilidade, de registrar pagamento
 
         }
         public decimal CalcularTotalVenda(List<ItemVendaInputDto> itensVenda, List<ServicoVendaInputDto> servicosVenda)
@@ -202,6 +254,13 @@ namespace ApiEstagioBicicletaria.Services
                 totalVenda += totalServico;
             }
             return totalVenda;
+        }
+
+        public void AbaterQuantidadeEmEstoque(Produto produto, int quantidadeASerAbatida)
+        {
+            int novaQuantidadeEmEstoque = produto.QuantidadeEmEstoque - quantidadeASerAbatida;
+            produto.QuantidadeEmEstoque=novaQuantidadeEmEstoque;
+            _contexto.Produtos.Update(produto);
         }
     }
 }

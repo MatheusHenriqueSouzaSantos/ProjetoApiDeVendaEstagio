@@ -9,7 +9,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         public DateTime DataCriacao { get; set; }
 
-        public decimal? Desconto { get; set; }
+        public decimal Desconto { get; set; }
 
         public decimal ValorTotal { get; set; }
 
