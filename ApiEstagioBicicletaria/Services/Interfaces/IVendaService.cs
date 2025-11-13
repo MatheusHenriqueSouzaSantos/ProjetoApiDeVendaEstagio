@@ -15,6 +15,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         void DeletarVendaPorId(Guid id);
 
+        TransacaoOutputDto AtualizarQuantidadeDeParcelasPagasEmUmaTransacao(Guid idTransacao,int quantidadeDeParcelasPagas);
+
 
     }
 

@@ -262,5 +262,10 @@ namespace ApiEstagioBicicletaria.Services
             produto.QuantidadeEmEstoque=novaQuantidadeEmEstoque;
             _contexto.Produtos.Update(produto);
         }
+
+        public TransacaoOutputDto AtualizarQuantidadeDeParcelasPagasEmUmaTransacao(Guid idTransacao, int quantidadeDeParcelasPagas)
+        {
+
+        }
     }
 }

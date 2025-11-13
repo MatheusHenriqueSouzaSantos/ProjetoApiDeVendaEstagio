@@ -130,6 +130,31 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [HttpPatch("{idTransacao}")]
+        //so retorno a transação ou a venda também??,  receber o id da transação ou da venda???
+        //fica dificl pro front enviar o id da transação???
+        public ActionResult<TransacaoOutputDto> AtualizarQuantidadeDeParcelasPagasEmUmTransacao(string idTransacao, AtualizarQuantidadeDeParcelasPagasInputDto dto)
+        {
+            try
+            {
+                Guid idTransacaoConvertido;
+                if (!Guid.TryParse(idTransacao, out idTransacaoConvertido))
+                {
+                    return BadRequest("id no formato inválido de GUID");
+                }
+                TransacaoOutputDto transacaoASerRetornada= _vendaService.AtualizarQuantidadeDeParcelasPagasEmUmaTransacao(idTransacaoConvertido,dto.QuantidadeDeParcelasPagas);
+                return Ok(transacaoASerRetornada);
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+
         //fazer um endpoint para registrar pagamento de venda mesmo a vista, separar responsabilidade, de registrar pagamento
 
     }
