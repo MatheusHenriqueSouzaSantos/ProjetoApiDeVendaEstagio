@@ -29,8 +29,8 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .IsRequired();
             builder.Property(v => v.Desconto)
                 .HasColumnName("DESCONTO");
-            builder.Property(v=>v.ValorTotal)
-                .HasColumnName("VALOR_TOTAL")
+            builder.Property(v=>v.ValorTotalComDescontoAplicado)
+                .HasColumnName("VALOR_TOTAL_COM_DESCONTO_APLICADO")
                 .IsRequired();
             builder.Property(v=>v.Ativo)
                 .HasColumnName("ATIVO")

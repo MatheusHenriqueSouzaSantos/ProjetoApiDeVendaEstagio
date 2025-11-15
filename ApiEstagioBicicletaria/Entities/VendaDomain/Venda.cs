@@ -7,13 +7,13 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
         public Guid Id { get; private set; } = Guid.NewGuid();
         public Cliente Cliente { get;  set; }
 
-        public Guid IdCliente { get; private set; }
+        public Guid IdCliente { get;  set; }
 
         public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
         public decimal Desconto { get; set; } = 0.0m;
         //pegar o valor total pela soma de todos os itens menos o desconto
-        public decimal ValorTotal { get; set; } = 0.0m;
+        public decimal ValorTotalComDescontoAplicado { get; set; } = 0.0m;
 
         public bool Ativo { get; set; } = true;
 
@@ -27,7 +27,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
             Cliente = cliente ;
             IdCliente = idCliente;
             Desconto = desconto;
-            ValorTotal = valorTotal;
+            ValorTotalComDescontoAplicado = valorTotal;
         }
 
 
