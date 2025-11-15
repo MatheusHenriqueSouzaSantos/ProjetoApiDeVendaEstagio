@@ -142,7 +142,7 @@ namespace ApiEstagioBicicletaria.Controllers
                 {
                     return BadRequest("id no formato inválido de GUID");
                 }
-                TransacaoOutputDto transacaoASerRetornada= _vendaService.AtualizarQuantidadeDeParcelasPagasEmUmaTransacao(idTransacaoConvertido,dto.QuantidadeDeParcelasPagas);
+                TransacaoOutputDto transacaoASerRetornada= _vendaService.AtualizarQuantidadeDeParcelasPagasEmUmaTransacao(idTransacaoConvertido,dto.QuantidadeDeParcelasPagasASerAtualizadaParaPaga);
                 return Ok(transacaoASerRetornada);
             }
             catch (ExcecaoDeRegraDeNegocio ex)

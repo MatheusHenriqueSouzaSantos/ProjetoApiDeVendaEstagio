@@ -18,7 +18,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         public int NumeroDeParcelas { get; set; }
 
-        public int NumeroDeParcelasPagas { get; set; }
+        public int NumeroDeParcelasPagas { get; set; } = 0;
 
         public decimal ValorPago { get; set; }
 

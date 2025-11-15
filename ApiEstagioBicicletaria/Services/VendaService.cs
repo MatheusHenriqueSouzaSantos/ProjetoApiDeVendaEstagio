@@ -262,10 +262,57 @@ namespace ApiEstagioBicicletaria.Services
             produto.QuantidadeEmEstoque=novaQuantidadeEmEstoque;
             _contexto.Produtos.Update(produto);
         }
-
-        public TransacaoOutputDto AtualizarQuantidadeDeParcelasPagasEmUmaTransacao(Guid idTransacao, int quantidadeDeParcelasPagas)
+        //pode vir tanto a primeira vez para colocar parcelas como pagas, como ser a segunda...
+        //quantidade de parcelas a pagar
+        //ver esse método novamente, para fazer um segundo code review
+        public TransacaoOutputDto AtualizarQuantidadeDeParcelasPagasEmUmaTransacao(Guid idTransacaoEnviado, int quantidadeDeParcelasASerAtualizadaParaPaga)
         {
+            Transacao? transacaoReferente = _contexto.Transacoes.FirstOrDefault(t => t.Id == idTransacaoEnviado && t.Ativo);
 
+            if(transacaoReferente == null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(404,"Transação não encontrada");
+            }
+            if (transacaoReferente.Pago)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"Essa transação já esta paga, não há mais parcelas para pagar");
+            }
+            if(quantidadeDeParcelasASerAtualizadaParaPaga <= 0)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"O numero de parcelas pagas não pode ser menor ou igual a 0");
+            }
+            List<Parcela> parcelasDessaTransacao = _contexto.Parcelas.Where(p => p.IdTransacao == idTransacaoEnviado && p.Ativo).OrderBy(p=>p.NumeroDaParecelaDaVenda).ToList();
+            List<Parcela> parcelasNaoPagasDessaTransacao = parcelasDessaTransacao.Where(p => p.Pago == false).ToList();
+            int quantidadeDeParcelasNaoPagasNessaTransacao = parcelasNaoPagasDessaTransacao.Count();
+
+            if(quantidadeDeParcelasASerAtualizadaParaPaga > quantidadeDeParcelasNaoPagasNessaTransacao)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A quantidade de parcelas para ser paga é maior do que a quantidade de parcelas não pagas dessa transação!!");
+            }
+            if(!transacaoReferente.TransacaoEmCurso)
+            {
+                transacaoReferente.TransacaoEmCurso = true;
+                _contexto.Transacoes.Update(transacaoReferente);
+            }
+            //pois se apessoa quer pagar 5 como conta o 0 da 5 interações de 0 a 4
+            for(int i = 0; i < quantidadeDeParcelasASerAtualizadaParaPaga; i++)
+            {
+                Parcela parcelaIterada = parcelasNaoPagasDessaTransacao[i];
+                parcelaIterada.Pago = true;
+                _contexto.Parcelas.Update(parcelaIterada);
+            }
+            quantidadeDeParcelasNaoPagasNessaTransacao = parcelasDessaTransacao.Where(p => p.Pago==false).Count();
+            int quantidadeDeParcelasPagasDessaTransacao=parcelasDessaTransacao.Where(p=>p.Pago).Count();
+            decimal valorPago = parcelasDessaTransacao.Where(p => p.Pago).Sum(p => p.ValorParcela);
+            if (quantidadeDeParcelasPagasDessaTransacao == parcelasDessaTransacao.Count())
+            {
+                transacaoReferente.Pago = true;
+                _contexto.Transacoes.Update(transacaoReferente);
+            }
+            _contexto.SaveChanges();
+            return new TransacaoOutputDto(transacaoReferente.Id, transacaoReferente.DataCriacao, transacaoReferente.TipoPagamento,
+                transacaoReferente.MeioPagamento, transacaoReferente.TransacaoEmCurso, transacaoReferente.Pago, quantidadeDeParcelasNaoPagasNessaTransacao,
+                quantidadeDeParcelasPagasDessaTransacao,valorPago);
         }
     }
 }
