@@ -16,7 +16,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         public bool Pago { get; set; } = false;
 
-        public int NumeroDeParcelas { get; set; }
+        public int NumeroDeParcelasNaoPagas { get; set; }
 
         public int NumeroDeParcelasPagas { get; set; } = 0;
 
@@ -30,7 +30,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         }
 
-        public TransacaoOutputDto(Guid idTransacao, DateTime dataCriacao, TipoPagamento tipoPagamento, MeioPagamaneto meioPagamento, bool transacaoEmCurso, bool pago, int numeroDeParcelas, int numeroDeParcelasPagas, decimal valorPago)
+        public TransacaoOutputDto(Guid idTransacao, DateTime dataCriacao, TipoPagamento tipoPagamento, MeioPagamaneto meioPagamento, bool transacaoEmCurso, bool pago, int numeroDeParcelasNaoPagas, int numeroDeParcelasPagas, decimal valorPago)
         {
             IdTransacao = idTransacao;
             DataCriacao = dataCriacao;
@@ -38,7 +38,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
             MeioPagamento = meioPagamento;
             TransacaoEmCurso = transacaoEmCurso;
             Pago = pago;
-            NumeroDeParcelas = numeroDeParcelas;
+            NumeroDeParcelasNaoPagas = numeroDeParcelasNaoPagas;
             NumeroDeParcelasPagas = numeroDeParcelasPagas;
             ValorPago = valorPago;
         }

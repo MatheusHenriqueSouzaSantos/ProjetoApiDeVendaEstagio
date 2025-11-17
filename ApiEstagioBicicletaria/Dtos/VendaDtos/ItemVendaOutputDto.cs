@@ -16,21 +16,24 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         public decimal DescontoUnitario { get; set; }
 
-        public decimal PrecoUnitarioNaVenda { get; set; }
+        public decimal PrecoUnitarioDoProdutoNaVenda { get; set; }
+
+        public decimal PrecoUnitarioDoProdutoNaVendaComDescontoAplicado { get; set; }
 
         protected ItemVendaOutputDto()
         {
 
         }
 
-        public ItemVendaOutputDto(Guid id, Produto produto, DateTime dataCriacao, int quantidade, decimal descontoUnitario, decimal precoUnitarioNaVenda)
+        public ItemVendaOutputDto(Guid id, Produto produto, DateTime dataCriacao, int quantidade, decimal descontoUnitario, decimal precoUnitarioDoProdutoNaVenda, decimal precoUnitarioDoProdutoNaVendaComDescontoAplicado)
         {
             Id = id;
             Produto = produto;
             DataCriacao = dataCriacao;
             Quantidade = quantidade;
             DescontoUnitario = descontoUnitario;
-            PrecoUnitarioNaVenda = precoUnitarioNaVenda;
+            PrecoUnitarioDoProdutoNaVenda = precoUnitarioDoProdutoNaVenda;
+            PrecoUnitarioDoProdutoNaVendaComDescontoAplicado = precoUnitarioDoProdutoNaVendaComDescontoAplicado;
         }
     }
 }

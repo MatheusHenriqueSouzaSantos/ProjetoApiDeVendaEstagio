@@ -32,5 +32,11 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .HasColumnName("SIGLA_UF")
                 .IsRequired();
         }
+
+        public void ImplementarValidacao()
+        {
+            //ignore
+            //asgn mt-25
+        }
     }
 }

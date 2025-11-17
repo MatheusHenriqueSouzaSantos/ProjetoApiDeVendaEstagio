@@ -8,16 +8,16 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
         //fazer validação se há esse tanto de parcelas e colocar a venda em andamento
         //[Range(1,1000,ErrorMessage ="")]
         //fazer validação que tem que ser pelo menos uma parcela e não mais do que a quantidade de parcelas que existe na venda no service
-        public int QuantidadeDeParcelasPagasASerAtualizadaParaPaga { get; set; } = 0;
+        public int QuantidadeDeParcelasASerAtualizadaParaPaga { get; set; } = 0;
 
         protected AtualizarQuantidadeDeParcelasPagasInputDto()
         {
 
         }
 
-        public AtualizarQuantidadeDeParcelasPagasInputDto(int quantidadeDeParcelasPagas)
+        public AtualizarQuantidadeDeParcelasPagasInputDto(int quantidadeDeParcelasASerAtualizadaParaPaga)
         {
-            QuantidadeDeParcelasPagasASerAtualizadaParaPaga = quantidadeDeParcelasPagas;
+            QuantidadeDeParcelasASerAtualizadaParaPaga = quantidadeDeParcelasASerAtualizadaParaPaga;
         }
     }
 }

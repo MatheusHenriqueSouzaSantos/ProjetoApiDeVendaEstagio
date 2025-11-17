@@ -6,18 +6,24 @@ using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
+using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiEstagioBicicletaria.Services
 {
-    public class VendaService
+    public class VendaService : IVendaService
     {
         private ContextoDb _contexto;
 
+        public VendaService(ContextoDb contexto)
+        {
+            _contexto = contexto;
+        }
+
         public List<VendaTransacaoOutputDto> BuscarTodasVendas()
         {
-            List<Venda> vendas = _contexto.Vendas.Include(v => v.Cliente).Where(v=>v.Ativo).ToList();
+            List<Venda> vendas = _contexto.Vendas.Include(v => v.Cliente).ThenInclude(c=>c.Endereco).Where(v=>v.Ativo).ToList();
             //List<ItemVenda> itensVenda = _contexto.ItensVendas.Include(i => i.Produto).Where(v => v.Ativo).ToList();
             //List<ServicoVenda> servicosVenda = _contexto.ServicosVendas.Include(i => i.Servico).Where(v => v.Ativo).ToList();
             //List<Transacao> transacoes = _contexto.Transacoes.Where(t => t.Ativo).ToList();
@@ -35,7 +41,7 @@ namespace ApiEstagioBicicletaria.Services
                 Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == venda.Id && t.Ativo).FirstOrDefault();
                 List<Parcela> parcelasDaTranscao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Ativo).ToList();
 
-                int QuantidadeDeParcelasVenda=parcelasDaTranscao.Count();
+                int QuantidadeDeParcelasNaoPagasDaVenda=parcelasDaTranscao.Where(p=>p.Pago==false).Count();
                 int QuantidadeDeParcelasPagasVenda=parcelasDaTranscao.Where(p=>p.Pago).Count();
                 decimal valorPago = parcelasDaTranscao.Where(p => p.Pago).Sum(p => p.ValorParcela);
 
@@ -45,12 +51,12 @@ namespace ApiEstagioBicicletaria.Services
 
                 foreach(ItemVenda item in itensDaVenda)
                 {
-                    ItemVendaOutputDto itemVendaOutputDto = new ItemVendaOutputDto(item.Id,item.Produto,item.DataCriacao,item.Quantidade,item.DescontoUnitario,item.PrecoUnitarioNaVenda);
+                    ItemVendaOutputDto itemVendaOutputDto = new ItemVendaOutputDto(item.Id,item.Produto,item.DataCriacao,item.Quantidade,item.DescontoUnitario,item.PrecoUnitarioDoProdutoNaVenda,item.PrecoUnitarioDoProdutoNaVendaComDescontoAplicado);
                     itensVendaFormatoDtoOutput.Add(itemVendaOutputDto);
                 }
                 foreach (ServicoVenda servicoVenda in servicoDaVenda)
                 {
-                    ServicoVendaOutputDto servicoVendaOutputDto = new ServicoVendaOutputDto(servicoVenda.Id,servicoVenda.Servico,servicoVenda.DataCriacao,servicoVenda.DescontoServico,servicoVenda.PrecoServicoNaVenda);
+                    ServicoVendaOutputDto servicoVendaOutputDto = new ServicoVendaOutputDto(servicoVenda.Id,servicoVenda.Servico,servicoVenda.DataCriacao,servicoVenda.DescontoServico,servicoVenda.PrecoServicoNaVenda, servicoVenda.PrecoServicoNaVendaComDescontoAplicado);
                     servicosVendaFormatoDtoOutput.Add(servicoVendaOutputDto);
                 }
 
@@ -58,7 +64,7 @@ namespace ApiEstagioBicicletaria.Services
                 VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id, venda.DataCriacao, venda.Desconto, venda.ValorTotalComDescontoAplicado, venda.Cliente,
                     itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput);
                 TransacaoOutputDto transacaoOutputDto = new TransacaoOutputDto(transacaoDaVenda.Id, transacaoDaVenda.DataCriacao, transacaoDaVenda.TipoPagamento,
-                    transacaoDaVenda.MeioPagamento, transacaoDaVenda.Pago, transacaoDaVenda.TransacaoEmCurso,QuantidadeDeParcelasVenda,QuantidadeDeParcelasPagasVenda,valorPago);
+                    transacaoDaVenda.MeioPagamento,transacaoDaVenda.TransacaoEmCurso, transacaoDaVenda.Pago, QuantidadeDeParcelasNaoPagasDaVenda,QuantidadeDeParcelasPagasVenda,valorPago);
 
                 VendaTransacaoOutputDto vendaTransacaoOutputDto = new VendaTransacaoOutputDto(vendaOutputDto, transacaoOutputDto);
                 ListaComTodasVendasTransacoes.Add(vendaTransacaoOutputDto);
@@ -70,7 +76,7 @@ namespace ApiEstagioBicicletaria.Services
         
         public VendaTransacaoOutputDto BuscarVendaPorId(Guid id)
         {
-            Venda? venda = _contexto.Vendas.Include(v => v.Cliente).FirstOrDefault(v=>v.Id==id && v.Ativo);
+            Venda? venda = _contexto.Vendas.Include(v => v.Cliente).ThenInclude(c => c.Endereco).FirstOrDefault(v=>v.Id==id && v.Ativo);
             if (venda == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(404,"Venda não encontrada!!!");
@@ -83,7 +89,7 @@ namespace ApiEstagioBicicletaria.Services
             Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == venda.Id && t.Ativo).FirstOrDefault();
             List<Parcela> parcelasDaTranscao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Ativo).ToList();
 
-            int QuantidadeDeParcelasVenda = parcelasDaTranscao.Count();
+            int QuantidadeDeParcelasNaoPagasDaVenda = parcelasDaTranscao.Where(p=>p.Pago==false).Count();
             int QuantidadeDeParcelasPagasVenda = parcelasDaTranscao.Where(p => p.Pago).Count();
             decimal valorPago = parcelasDaTranscao.Where(p => p.Pago).Sum(p => p.ValorParcela);
 
@@ -93,12 +99,12 @@ namespace ApiEstagioBicicletaria.Services
 
             foreach (ItemVenda item in itensDaVenda)
             {
-                ItemVendaOutputDto itemVendaOutputDto = new ItemVendaOutputDto(item.Id, item.Produto, item.DataCriacao, item.Quantidade, item.DescontoUnitario, item.PrecoUnitarioNaVenda);
+                ItemVendaOutputDto itemVendaOutputDto = new ItemVendaOutputDto(item.Id, item.Produto, item.DataCriacao, item.Quantidade, item.DescontoUnitario, item.PrecoUnitarioDoProdutoNaVenda,item.PrecoUnitarioDoProdutoNaVendaComDescontoAplicado);
                 itensVendaFormatoDtoOutput.Add(itemVendaOutputDto);
             }
             foreach (ServicoVenda servicoVenda in servicoDaVenda)
             {
-                ServicoVendaOutputDto servicoVendaOutputDto = new ServicoVendaOutputDto(servicoVenda.Id, servicoVenda.Servico, servicoVenda.DataCriacao, servicoVenda.DescontoServico, servicoVenda.PrecoServicoNaVenda);
+                ServicoVendaOutputDto servicoVendaOutputDto = new ServicoVendaOutputDto(servicoVenda.Id, servicoVenda.Servico, servicoVenda.DataCriacao, servicoVenda.DescontoServico, servicoVenda.PrecoServicoNaVenda, servicoVenda.PrecoServicoNaVendaComDescontoAplicado);
                 servicosVendaFormatoDtoOutput.Add(servicoVendaOutputDto);
             }
 
@@ -106,24 +112,24 @@ namespace ApiEstagioBicicletaria.Services
             VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id, venda.DataCriacao, venda.Desconto, venda.ValorTotalComDescontoAplicado, venda.Cliente,
                 itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput);
             TransacaoOutputDto transacaoOutputDto = new TransacaoOutputDto(transacaoDaVenda.Id, transacaoDaVenda.DataCriacao, transacaoDaVenda.TipoPagamento,
-                transacaoDaVenda.MeioPagamento, transacaoDaVenda.Pago, transacaoDaVenda.TransacaoEmCurso, QuantidadeDeParcelasVenda, QuantidadeDeParcelasPagasVenda, valorPago);
+                transacaoDaVenda.MeioPagamento,transacaoDaVenda.TransacaoEmCurso, transacaoDaVenda.Pago, QuantidadeDeParcelasNaoPagasDaVenda, QuantidadeDeParcelasPagasVenda, valorPago);
 
             vendaTransacaoOutputDto = new VendaTransacaoOutputDto(vendaOutputDto, transacaoOutputDto);
 
             return vendaTransacaoOutputDto;
         }
-
+        //refatorar alguns métodos para separar a lógica em métodos menores
         public VendaTransacaoOutputDto CadastrarVenda(VendaTransacaoInputDto dto)
         {
-            Cliente? clienteDaVenda = _contexto.Clientes.Where(c => c.Id == dto.Venda.IdCliente && c.Ativo).FirstOrDefault();
+            Cliente? clienteDaVenda = _contexto.Clientes.Where(c => c.Id == dto.Venda.IdCliente && c.Ativo).Include(c => c.Endereco).FirstOrDefault();
             if (clienteDaVenda == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado!!!");
             }
             List<ItemVendaInputDto> itensVenda = dto.Venda.ItensVenda;
             List<ServicoVendaInputDto> servicosVenda = dto.Venda.ServicosVenda;
-            decimal valorTotalDaVendaSemDescontoAplicado=CalcularTotalVenda(itensVenda,servicosVenda);
-            decimal descontoVenda = dto.Venda.Desconto ?? 0.0m;
+            decimal valorTotalDaVendaSemDescontoAplicado=CalcularTotalVendaSemDescontoAplicado(itensVenda,servicosVenda);
+            decimal descontoVenda = dto.Venda.DescontoSobreTotalVenda ?? 0.0m;
             if (descontoVenda < 0)
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"O desconto não pode ser negativo");
@@ -166,7 +172,8 @@ namespace ApiEstagioBicicletaria.Services
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto unitário não dever ser maior do que o valor do produto");
                 }
                 AbaterQuantidadeEmEstoque(produtoDoItem,itemEnviado.Quantidade);
-                ItemVenda itemCriado = new ItemVenda(vendaCriada, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.PrecoUnitario);
+                decimal precoUnitarioDoProdutoComDescontoAplicadoNoItem=produtoDoItem.PrecoUnitario-descontoPorUnidade;
+                ItemVenda itemCriado = new ItemVenda(vendaCriada, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.PrecoUnitario,precoUnitarioDoProdutoComDescontoAplicadoNoItem);
                 listaDeItensDaVendaCriada.Add(itemCriado);
                 _contexto.ItensVendas.Add(itemCriado);
                 //coloco o save changes a cada interação no for each ou no final?
@@ -180,12 +187,13 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado!!!");
                 }
-                decimal descontoDoServico = servicoEnviado.DescontoServico ?? 0.0m;
-                if (descontoDoServico > servicoDaVenda.PrecoServico)
+                decimal descontoDoServicoNaVenda = servicoEnviado.DescontoServico ?? 0.0m;
+                if (descontoDoServicoNaVenda > servicoDaVenda.PrecoServico)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto do serviço não dever ser maior do que o valor do serviço");
                 }
-                ServicoVenda servicoDaVendaCriado = new ServicoVenda(vendaCriada, servicoDaVenda, descontoDoServico, servicoDaVenda.PrecoServico);
+                decimal precoServicoNaVendaComDescontoAplicado = servicoDaVenda.PrecoServico - descontoDoServicoNaVenda;
+                ServicoVenda servicoDaVendaCriado = new ServicoVenda(vendaCriada, servicoDaVenda, descontoDoServicoNaVenda, servicoDaVenda.PrecoServico,precoServicoNaVendaComDescontoAplicado);
                 listaDeServicosDaVendaCriada.Add(servicoDaVendaCriado);
                 _contexto.ServicosVendas.Add(servicoDaVendaCriado);
             }
@@ -212,7 +220,7 @@ namespace ApiEstagioBicicletaria.Services
             foreach(ItemVenda itemNoFormatoModel in listaDeItensDaVendaCriada)
             {
                 ItemVendaOutputDto itemNoFormatoDeOutput = new ItemVendaOutputDto(itemNoFormatoModel.Id, itemNoFormatoModel.Produto, itemNoFormatoModel.DataCriacao,
-                    itemNoFormatoModel.Quantidade, itemNoFormatoModel.DescontoUnitario, itemNoFormatoModel.PrecoUnitarioNaVenda);
+                    itemNoFormatoModel.Quantidade, itemNoFormatoModel.DescontoUnitario, itemNoFormatoModel.PrecoUnitarioDoProdutoNaVenda,itemNoFormatoModel.PrecoUnitarioDoProdutoNaVendaComDescontoAplicado);
 
                 listaDeItensASeremRetornados.Add(itemNoFormatoDeOutput);
             }
@@ -220,17 +228,17 @@ namespace ApiEstagioBicicletaria.Services
             foreach(ServicoVenda servicoVendaNoFormatoModel in listaDeServicosDaVendaCriada)
             {
                 ServicoVendaOutputDto servicoVendaFormatoDeOutput = new ServicoVendaOutputDto(servicoVendaNoFormatoModel.Id,servicoVendaNoFormatoModel.Servico,servicoVendaNoFormatoModel.DataCriacao,
-                    servicoVendaNoFormatoModel.DescontoServico,servicoVendaNoFormatoModel.PrecoServicoNaVenda);
+                    servicoVendaNoFormatoModel.DescontoServico,servicoVendaNoFormatoModel.PrecoServicoNaVenda,servicoVendaNoFormatoModel.PrecoServicoNaVendaComDescontoAplicado);
 
                 listaDeServicosASeremRetornados.Add(servicoVendaFormatoDeOutput);
             }//regra no meio de pagamento, tipo pagamento a prazo não pode ser dinheiro??
             VendaOutputDto vendaASerRetornadaNoFormatoOutput = new VendaOutputDto(vendaCriada.Id, vendaCriada.DataCriacao, vendaCriada.Desconto, vendaCriada.ValorTotalComDescontoAplicado,
                 vendaCriada.Cliente,listaDeItensASeremRetornados,listaDeServicosASeremRetornados);
-            int quantidadeDeParcelas = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoCriada.Id && p.Ativo).Count();
+            int quantidadeDeParcelasNaoPagasDessaTransacao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoCriada.Id && p.Ativo && p.Pago==false).Count();
             int numeroDeParcelasPagas = 0;
             decimal valorPago = 0.0m;
             TransacaoOutputDto transacaoASerRetornadaNoFormatoOutput = new TransacaoOutputDto(transacaoCriada.Id, transacaoCriada.DataCriacao, transacaoCriada.TipoPagamento,
-                transacaoCriada.MeioPagamento,transacaoCriada.TransacaoEmCurso,transacaoCriada.Pago,quantidadeDeParcelas,numeroDeParcelasPagas,valorPago);
+                transacaoCriada.MeioPagamento,transacaoCriada.TransacaoEmCurso,transacaoCriada.Pago,quantidadeDeParcelasNaoPagasDessaTransacao,numeroDeParcelasPagas,valorPago);
 
             VendaTransacaoOutputDto vendaTransacaoASerRetornadaFormatoOutput = new(vendaASerRetornadaNoFormatoOutput,transacaoASerRetornadaNoFormatoOutput);
 
@@ -239,7 +247,7 @@ namespace ApiEstagioBicicletaria.Services
             //fazer um endpoint para registrar pagamento de venda mesmo a vista, separar responsabilidade, de registrar pagamento
 
         }
-        public decimal CalcularTotalVenda(List<ItemVendaInputDto> itensVenda, List<ServicoVendaInputDto> servicosVenda)
+        public decimal CalcularTotalVendaSemDescontoAplicado(List<ItemVendaInputDto> itensVenda, List<ServicoVendaInputDto> servicosVenda)
         {
             decimal totalVenda=0;
             foreach (ItemVendaInputDto itemIterado in itensVenda)
@@ -301,15 +309,15 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400,"Não é possível atualizar essa venda pois ela já esta com o pagamento em andamento");
             }
 
-            Cliente? clienteAtualizadoDaVenda = _contexto.Clientes.Where(c => c.Id == dto.Venda.IdCliente && c.Ativo).FirstOrDefault();
+            Cliente? clienteAtualizadoDaVenda = _contexto.Clientes.Where(c => c.Id == dto.Venda.IdCliente && c.Ativo).Include(c => c.Endereco).FirstOrDefault();
             if (clienteAtualizadoDaVenda == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado!!!");
             }
             List<ItemVendaInputDto> itensEnviadosFormatoDto = dto.Venda.ItensVenda;
             List<ServicoVendaInputDto> servicosEnviadosFormatoDto = dto.Venda.ServicosVenda;
-            decimal valorTotalDaVendaSemDescontoAplicado = CalcularTotalVenda(itensEnviadosFormatoDto, servicosEnviadosFormatoDto);
-            decimal descontoVenda = dto.Venda.Desconto ?? 0.0m;
+            decimal valorTotalDaVendaSemDescontoAplicado = CalcularTotalVendaSemDescontoAplicado(itensEnviadosFormatoDto, servicosEnviadosFormatoDto);
+            decimal descontoVenda = dto.Venda.DescontoSobreTotalVenda ?? 0.0m;
             if (descontoVenda < 0)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O desconto não pode ser negativo");
@@ -379,7 +387,8 @@ namespace ApiEstagioBicicletaria.Services
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto unitário não dever ser maior do que o valor do produto");
                 }
                 AbaterQuantidadeEmEstoque(produtoDoItem, itemEnviado.Quantidade);
-                ItemVenda itemCriado = new ItemVenda(VendaParaAtualizar, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.PrecoUnitario);
+                decimal precoUnitarioDoProdutoComDescontoAplicadoNoItem = produtoDoItem.PrecoUnitario - descontoPorUnidade;
+                ItemVenda itemCriado = new ItemVenda(VendaParaAtualizar, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.PrecoUnitario, precoUnitarioDoProdutoComDescontoAplicadoNoItem);
                 listaDeItensAtualizadosDaVenda.Add(itemCriado);
                 _contexto.ItensVendas.Add(itemCriado);
 
@@ -392,12 +401,13 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado!!!");
                 }
-                decimal descontoDoServico = servicoEnviado.DescontoServico ?? 0.0m;
-                if (descontoDoServico > servicoDaVenda.PrecoServico)
+                decimal descontoDoServicoNaVenda = servicoEnviado.DescontoServico ?? 0.0m;
+                if (descontoDoServicoNaVenda > servicoDaVenda.PrecoServico)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto do serviço não dever ser maior do que o valor do serviço");
                 }
-                ServicoVenda servicoDaVendaCriado = new ServicoVenda(VendaParaAtualizar, servicoDaVenda, descontoDoServico, servicoDaVenda.PrecoServico);
+                decimal precoServicoNaVendaComDescontoAplicado = servicoDaVenda.PrecoServico - descontoDoServicoNaVenda;
+                ServicoVenda servicoDaVendaCriado = new ServicoVenda(VendaParaAtualizar, servicoDaVenda, descontoDoServicoNaVenda, servicoDaVenda.PrecoServico, precoServicoNaVendaComDescontoAplicado);
                 listaDeServicosAtualizadosDaVenda.Add(servicoDaVendaCriado);
                 _contexto.ServicosVendas.Add(servicoDaVendaCriado);
             }
@@ -429,7 +439,7 @@ namespace ApiEstagioBicicletaria.Services
             foreach (ItemVenda itemNoFormatoModel in listaDeItensAtualizadosDaVenda)
             {
                 ItemVendaOutputDto itemNoFormatoDeOutput = new ItemVendaOutputDto(itemNoFormatoModel.Id, itemNoFormatoModel.Produto, itemNoFormatoModel.DataCriacao,
-                    itemNoFormatoModel.Quantidade, itemNoFormatoModel.DescontoUnitario, itemNoFormatoModel.PrecoUnitarioNaVenda);
+                    itemNoFormatoModel.Quantidade, itemNoFormatoModel.DescontoUnitario, itemNoFormatoModel.PrecoUnitarioDoProdutoNaVenda,itemNoFormatoModel.PrecoUnitarioDoProdutoNaVendaComDescontoAplicado);
 
                 listaDeItensASeremRetornadosFormatoOutput.Add(itemNoFormatoDeOutput);
             }
@@ -437,7 +447,7 @@ namespace ApiEstagioBicicletaria.Services
             foreach (ServicoVenda servicoVendaNoFormatoModel in listaDeServicosAtualizadosDaVenda)
             {
                 ServicoVendaOutputDto servicoVendaFormatoDeOutput = new ServicoVendaOutputDto(servicoVendaNoFormatoModel.Id, servicoVendaNoFormatoModel.Servico, servicoVendaNoFormatoModel.DataCriacao,
-                    servicoVendaNoFormatoModel.DescontoServico, servicoVendaNoFormatoModel.PrecoServicoNaVenda);
+                    servicoVendaNoFormatoModel.DescontoServico, servicoVendaNoFormatoModel.PrecoServicoNaVenda,servicoVendaNoFormatoModel.PrecoServicoNaVendaComDescontoAplicado);
 
                 listaDeServicosASeremRetornadosFormatoOutput.Add(servicoVendaFormatoDeOutput);
             }
@@ -447,16 +457,64 @@ namespace ApiEstagioBicicletaria.Services
 
             VendaOutputDto vendaASerRetornadaNoFormatoOutput = new VendaOutputDto(VendaAtualizada.Id, VendaAtualizada.DataCriacao, VendaAtualizada.Desconto, VendaAtualizada.ValorTotalComDescontoAplicado,
                 VendaAtualizada.Cliente, listaDeItensASeremRetornadosFormatoOutput, listaDeServicosASeremRetornadosFormatoOutput);
-            int quantidadeDeParcelas = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo).Count();
+            int quantidadeDeParcelasNaoPagasDessaTransacao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo && p.Pago==false).Count();
             int numeroDeParcelasPagas = 0;
             decimal valorPago = 0.0m;
             TransacaoOutputDto transacaoASerRetornadaNoFormatoOutput = new TransacaoOutputDto(transacaoDaVendaAtualizada.Id, transacaoDaVendaAtualizada.DataCriacao, transacaoDaVendaAtualizada.TipoPagamento,
-                transacaoDaVendaAtualizada.MeioPagamento, transacaoDaVendaAtualizada.TransacaoEmCurso, transacaoDaVendaAtualizada.Pago, quantidadeDeParcelas, numeroDeParcelasPagas, valorPago);
+                transacaoDaVendaAtualizada.MeioPagamento, transacaoDaVendaAtualizada.TransacaoEmCurso, transacaoDaVendaAtualizada.Pago, quantidadeDeParcelasNaoPagasDessaTransacao, numeroDeParcelasPagas, valorPago);
 
             VendaTransacaoOutputDto vendaTransacaoASerRetornadaFormatoOutput = new(vendaASerRetornadaNoFormatoOutput, transacaoASerRetornadaNoFormatoOutput);
 
             return vendaTransacaoASerRetornadaFormatoOutput;
 
+        }
+
+        public void DeletarVendaPorId(Guid idVenda)
+        {
+            Venda? vendaASerDeletada = _contexto.Vendas.FirstOrDefault(v=>v.Id==idVenda && v.Ativo);
+
+            if(vendaASerDeletada== null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"Venda não encontrada");
+            }
+            Transacao? transacaoDaVendaASerDeletada = _contexto.Transacoes.FirstOrDefault(t=>t.IdVenda==vendaASerDeletada.Id && t.Ativo);
+
+            if (transacaoDaVendaASerDeletada == null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Transação não encontrada");
+            }
+
+            if (transacaoDaVendaASerDeletada.TransacaoEmCurso)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"A Venda não pode ser deletada pois o pagamaneto já está em andamento");
+            }
+
+            List<ItemVenda> itensDaVendaASeremDeletados=_contexto.ItensVendas.Include(i=>i.Produto).Where(i=>i.IdVenda==vendaASerDeletada.Id && i.Ativo).ToList();
+            List<ServicoVenda> servicosDaVendaASeremDeletados = _contexto.ServicosVendas.Where(s => s.IdVenda == vendaASerDeletada.Id && s.Ativo).ToList();
+
+            foreach(ItemVenda itemIterado in itensDaVendaASeremDeletados)
+            {
+                AdicionarQuantidaEmEstoque(itemIterado.Produto, itemIterado.Quantidade);
+                itemIterado.Ativo = false;
+                _contexto.Update(itemIterado);
+            }
+
+            foreach(ServicoVenda servicoVendaIterado in servicosDaVendaASeremDeletados)
+            {
+                servicoVendaIterado.Ativo = false;
+                _contexto.ServicosVendas.Update(servicoVendaIterado);
+            }
+            List<Parcela> parcelasDaTransacaoASeremDeletadas = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerDeletada.Id && p.Ativo).ToList();
+            foreach(Parcela parcelaIterada in parcelasDaTransacaoASeremDeletadas)
+            {
+                parcelaIterada.Ativo = false;
+                _contexto.Parcelas.Update(parcelaIterada);
+            }
+
+            transacaoDaVendaASerDeletada.Ativo = false;
+            _contexto.Transacoes.Update(transacaoDaVendaASerDeletada);
+            vendaASerDeletada.Ativo = false;
+            _contexto.Vendas.Update(vendaASerDeletada);
         }
  
 
