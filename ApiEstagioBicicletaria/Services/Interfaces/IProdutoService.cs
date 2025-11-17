@@ -17,8 +17,12 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         void DeletarProdutoPorId(Guid id);
 
-        void DefinirQuantidadeEmEstoqueDeProduto(Guid id, int quantidade);
+        //void DefinirQuantidadeEmEstoqueDeProduto(Guid id, int quantidade);
 
         List<Produto> BuscarProdutosPorNome(string nome);
+
+        Produto AdicionarQuantidadeEmEstoqueDeProdutoPorId(Guid idProdutoEnviado, int quantidadeAAdicionarEmEstoque);
+
+        Produto AbaterQuantidadeEmEstoqueDeProdutoPorId(Guid idProdutoEnviado, int quantidadeAAbaterEmEstoque);
     }
 }

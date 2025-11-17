@@ -147,19 +147,40 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
-        [HttpPatch("{id}/{quantidade}")]
-        public ActionResult DefinirQuantidadeEmEstoqueDeProduto([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromRoute, Required(ErrorMessage ="A quantidade é obrigatória")]int quantidade)
+
+        [HttpPatch("{idProduto}/adicionar-quantidade-em-estoque/{quantidadeAAdicionarEmEstoque}")]
+        public ActionResult<Produto> AdicionarQuantidadeEmEstoqueDeProdutoPorId(string idProduto,int quantidadeAAdicionarEmEstoque)
         {
             try
             {
-                if (!ModelState.IsValid)
+                if(!Guid.TryParse(idProduto, out Guid idProdutoConvertido))
                 {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
+                    return BadRequest("id no formato inválido de GUID");
                 }
-                _produtoService.DefinirQuantidadeEmEstoqueDeProduto(id,quantidade);
-                return Ok("Operação realizada com sucesso ");
+
+                return Ok(_produtoService.AdicionarQuantidadeEmEstoqueDeProdutoPorId(idProdutoConvertido, quantidadeAAdicionarEmEstoque));
+            }
+            catch(ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+
+        [HttpPatch("{idProduto}/abater-quantidade-em-estoque/{quantidadeAAbaterEmEstoque}")]
+        public ActionResult<Produto> AbaterQuantidadeEmEstoqueDeProdutoPorId(string idProduto,int quantidadeAAbaterEmEstoque)
+        {
+            try
+            {
+                if (!Guid.TryParse(idProduto, out Guid idProdutoConvertido))
+                {
+                    return BadRequest("id no formato inválido de GUID");
+                }
+
+                return Ok(_produtoService.AdicionarQuantidadeEmEstoqueDeProdutoPorId(idProdutoConvertido, quantidadeAAbaterEmEstoque));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -170,6 +191,30 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
+
+        //[HttpPatch("{id}/{quantidade}")]
+        //public ActionResult DefinirQuantidadeEmEstoqueDeProduto([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromRoute, Required(ErrorMessage ="A quantidade é obrigatória")]int quantidade)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //        {
+        //            var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+        //            return BadRequest(mensagensDeErro);
+        //        }
+        //        _produtoService.DefinirQuantidadeEmEstoqueDeProduto(id,quantidade);
+        //        return Ok("Operação realizada com sucesso ");
+        //    }
+        //    catch (ExcecaoDeRegraDeNegocio ex)
+        //    {
+        //        return StatusCode(ex.StatusCode, ex.Message);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, "Erro Inesperado");
+        //    }
+        //}
         [HttpGet("buscar-produtos-por-nome")]
         public ActionResult<List<Produto>> BuscarProdutosPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
         {

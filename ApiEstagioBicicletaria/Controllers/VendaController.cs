@@ -133,7 +133,7 @@ namespace ApiEstagioBicicletaria.Controllers
         [HttpPatch("{idTransacao}")]
         //so retorno a transação ou a venda também??,  receber o id da transação ou da venda???
         //fica dificl pro front enviar o id da transação???
-        public ActionResult<TransacaoOutputDto> AtualizarQuantidadeDeParcelasPagasEmUmTransacao(string idTransacao, AtualizarQuantidadeDeParcelasPagasInputDto dto)
+        public ActionResult<TransacaoOutputDto> AtualizarQuantidadeDeParcelasPagasEmUmTransacao([FromRoute]string idTransacao, [FromBody]AtualizarQuantidadeDeParcelasPagasInputDto dto)
         {
             try
             {

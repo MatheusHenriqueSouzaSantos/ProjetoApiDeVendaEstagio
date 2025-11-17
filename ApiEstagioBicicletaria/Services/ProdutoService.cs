@@ -102,26 +102,62 @@ namespace ApiEstagioBicicletaria.Services
             _contextoDb.SaveChanges();
         }
 
-        public void DefinirQuantidadeEmEstoqueDeProduto(Guid id, int quantidade)
+        public Produto AdicionarQuantidadeEmEstoqueDeProdutoPorId(Guid idProdutoEnviado, int quantidadeAAdicionarEmEstoque)
         {
-            Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
-
+            Produto? produtoVindoDoBanco = _contextoDb.Produtos.FirstOrDefault(p=>p.Id==idProdutoEnviado && p.Ativo);
+            if(produtoVindoDoBanco == null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"Produto não encontrado");
+            }
+            if (quantidadeAAdicionarEmEstoque < 0)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"Não é possível adicionar uma quantidade negativa");
+            }
+            produtoVindoDoBanco.QuantidadeEmEstoque = produtoVindoDoBanco.QuantidadeEmEstoque + quantidadeAAdicionarEmEstoque;
+            _contextoDb.Produtos.Update(produtoVindoDoBanco);
+            _contextoDb.SaveChanges();
+            return produtoVindoDoBanco;
+        }
+        public Produto AbaterQuantidadeEmEstoqueDeProdutoPorId(Guid idProdutoEnviado, int quantidadeAAbaterEmEstoque)
+        {
+            Produto? produtoVindoDoBanco = _contextoDb.Produtos.FirstOrDefault(p => p.Id == idProdutoEnviado && p.Ativo);
             if (produtoVindoDoBanco == null)
             {
-                throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
+                throw new ExcecaoDeRegraDeNegocio(400, "Produto não encontrado");
             }
-            if (quantidade < 0 || quantidade > 3000)
+            if (quantidadeAAbaterEmEstoque < 0)
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "O valor de QuantidadeEmEstoque deve estar no intervalo de 0 até 3000");
+                throw new ExcecaoDeRegraDeNegocio(400, "Não é possível abater uma quantidade negativa");
             }
-            produtoVindoDoBanco.QuantidadeEmEstoque = quantidade;
-            _contextoDb.Update(produtoVindoDoBanco);
+            if(quantidadeAAbaterEmEstoque> produtoVindoDoBanco.QuantidadeEmEstoque)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"Não existe quantidade de produto sufisciente para remover, pois o estoque não pode ser negativo!!");
+            }
+            produtoVindoDoBanco.QuantidadeEmEstoque = produtoVindoDoBanco.QuantidadeEmEstoque - quantidadeAAbaterEmEstoque;
+            _contextoDb.Produtos.Update(produtoVindoDoBanco);
             _contextoDb.SaveChanges();
+            return produtoVindoDoBanco;
+        }
 
-        } 
+        //public void DefinirQuantidadeEmEstoqueDeProduto(Guid id, int quantidade)
+        //{
+        //    Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
+
+        //    if (produtoVindoDoBanco == null)
+        //    {
+        //        throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
+        //    }
+        //    if (quantidade < 0 || quantidade > 3000)
+        //    {
+        //        throw new ExcecaoDeRegraDeNegocio(400, "O valor de QuantidadeEmEstoque deve estar no intervalo de 0 até 3000");
+        //    }
+        //    produtoVindoDoBanco.QuantidadeEmEstoque = quantidade;
+        //    _contextoDb.Update(produtoVindoDoBanco);
+        //    _contextoDb.SaveChanges();
+        //} 
         public List<Produto> BuscarProdutosPorNome(string nome)
         {
-            return _contextoDb.Produtos.Where(p => p.NomeProduto.Contains(nome)).Take(10).ToList();
+            return _contextoDb.Produtos.Where(p => p.NomeProduto.Contains(nome) && p.Ativo).Take(10).ToList();
         }
     }    
 }
