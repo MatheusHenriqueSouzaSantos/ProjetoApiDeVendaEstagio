@@ -16,7 +16,7 @@ namespace ApiEstagioBicicletaria.Controllers
             this._produtoService = produtoService;
         }
         [HttpGet]
-        public ActionResult<List<Produto>> BuscarProdutos()
+        public ActionResult<List<Produto>> GerarRelatorioDeProdutosMaisVendidos()
         {
             
             try
@@ -234,6 +234,26 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+
+        [HttpGet("relatorio-produtos-mais-vendidos")]
+        public ActionResult<byte[]> BuscarProdutos()
+        {
+            try
+            {
+                byte[] bytesPdf= _produtoService.GerarRelatorioDeProdutosMaisVendidos();
+                return File(bytesPdf, "application/pdf", "relatorioDeProdutosMaisVendidos.pdf");
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                //não retornar a mensagem pois indica exatamente o erro e há o risco de ameaças explorarem
+                //return StatusCode(500, ex.Message);
                 return StatusCode(500, "Erro Inesperado");
             }
         }

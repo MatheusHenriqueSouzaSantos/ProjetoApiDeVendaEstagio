@@ -1,8 +1,12 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
+using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
+using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
 using System.Text.RegularExpressions;
 
 namespace ApiEstagioBicicletaria.Services
@@ -159,6 +163,30 @@ namespace ApiEstagioBicicletaria.Services
         public List<Produto> BuscarProdutosPorNome(string nome)
         {
             return _contextoDb.Produtos.Where(p => p.NomeProduto.Contains(nome) && p.Ativo).Take(10).ToList();
+        }
+
+        public byte[] GerarRelatorioDeProdutosMaisVendidos()
+        {
+            List<ProdutoMaisVendidoDto> produtosMaisVendidos = _contextoDb.
+                ItensVendas.
+                Where(iv => iv.Ativo && iv.Produto.Ativo)
+                .GroupBy(iv => iv.Produto.Id)
+                .Select(g => new ProdutoMaisVendidoDto
+                {
+                    Produto= g.First().Produto,
+                    QuantidadeVendida= g.Sum(x=>x.Quantidade)
+
+                })
+                .OrderByDescending(x=>x.QuantidadeVendida)
+                .ToList();
+
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = new RelatorioProdutosMaisVendidos(produtosMaisVendidos);
+
+            byte[] pdf = documento.GeneratePdf();
+
+            return pdf;
         }
     }    
 }
