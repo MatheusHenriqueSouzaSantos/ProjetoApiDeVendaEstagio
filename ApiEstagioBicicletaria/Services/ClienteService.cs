@@ -1,6 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
 using ApiEstagioBicicletaria.Dtos.ClienteDtos;
 using ApiEstagioBicicletaria.Entities.ClienteDomain;
+using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Services.Interfaces;
@@ -177,6 +178,27 @@ namespace ApiEstagioBicicletaria.Services
             _contextoDb.Update(clienteExistente);
             _contextoDb.SaveChanges();
             
+        }
+
+        public List<Cliente> BuscarClientesPorNome(string nome)
+        {
+            List<ClienteFisico> clientesFisicos = _contextoDb.Clientes
+                .OfType<ClienteFisico>()
+                .Include(c => c.Endereco)
+                .Where(c => c.Ativo && c.Nome.Contains(nome))
+                .ToList();
+
+            List<ClienteJuridico> clientesJuridicos = _contextoDb.Clientes
+                .OfType<ClienteJuridico>()
+                .Include(c => c.Endereco)
+                .Where(c => c.Ativo && c.RazaoSocial.Contains(nome))
+                .ToList();
+
+            List<Cliente> todosClientes = new List<Cliente>();
+            todosClientes.AddRange(clientesFisicos);
+            todosClientes.AddRange(clientesJuridicos);
+
+            return todosClientes;
         }
     }
 }

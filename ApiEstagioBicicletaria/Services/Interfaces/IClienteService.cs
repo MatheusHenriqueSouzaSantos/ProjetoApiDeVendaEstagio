@@ -20,5 +20,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         ClienteJuridico AtualizarClienteJuridico(Guid id, ClienteJuridicoDto dto);
 
         void DeletarCLientePorId(Guid id);
+
+        List<Cliente> BuscarClientesPorNome(string nome);
     }
 }

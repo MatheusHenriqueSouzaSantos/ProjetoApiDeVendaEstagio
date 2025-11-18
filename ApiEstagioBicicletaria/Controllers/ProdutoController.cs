@@ -215,7 +215,7 @@ namespace ApiEstagioBicicletaria.Controllers
         //        return StatusCode(500, "Erro Inesperado");
         //    }
         //}
-        [HttpGet("buscar-produtos-por-nome")]
+        [HttpGet("buscar-produtos-por-nome/{nome}")]
         public ActionResult<List<Produto>> BuscarProdutosPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
         {
             try

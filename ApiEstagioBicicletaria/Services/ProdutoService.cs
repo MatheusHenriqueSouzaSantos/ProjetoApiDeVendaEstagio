@@ -118,6 +118,7 @@ namespace ApiEstagioBicicletaria.Services
             _contextoDb.SaveChanges();
             return produtoVindoDoBanco;
         }
+        //revisar
         public Produto AbaterQuantidadeEmEstoqueDeProdutoPorId(Guid idProdutoEnviado, int quantidadeAAbaterEmEstoque)
         {
             Produto? produtoVindoDoBanco = _contextoDb.Produtos.FirstOrDefault(p => p.Id == idProdutoEnviado && p.Ativo);
