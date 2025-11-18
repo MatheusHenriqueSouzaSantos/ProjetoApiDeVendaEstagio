@@ -13,6 +13,9 @@ namespace ApiEstagioBicicletaria.Services
 {
     public class ProdutoService : IProdutoService
     {
+
+        private readonly int _numeroMaximoDePaginas = 5;
+        private readonly int _numeroDeLinhasPorPagina = 42;
         private ContextoDb _contextoDb;
 
         public ProdutoService(ContextoDb contextoDb)
@@ -167,6 +170,7 @@ namespace ApiEstagioBicicletaria.Services
 
         public byte[] GerarRelatorioDeProdutosMaisVendidos()
         {
+            int numeroDeRegistroASerBuscados = _numeroMaximoDePaginas * _numeroDeLinhasPorPagina;
             List<ProdutoMaisVendidoDto> produtosMaisVendidos = _contextoDb.
                 ItensVendas.
                 Where(iv => iv.Ativo && iv.Produto.Ativo)
@@ -178,11 +182,30 @@ namespace ApiEstagioBicicletaria.Services
 
                 })
                 .OrderByDescending(x=>x.QuantidadeVendida)
+                .Take(numeroDeRegistroASerBuscados)
                 .ToList();
 
             QuestPDF.Settings.License = LicenseType.Community;
 
             var documento = new RelatorioProdutosMaisVendidos(produtosMaisVendidos);
+
+            byte[] pdf = documento.GeneratePdf();
+
+            return pdf;
+        }
+
+        public byte[] GerarRelatorioDeProdutosEmFalta()
+        {
+            int numeroDeRegistroASerBuscados = _numeroMaximoDePaginas * _numeroDeLinhasPorPagina;
+            List<Produto> produtosEmFalta = _contextoDb.
+                Produtos.Where(p=>p.Ativo)
+                .OrderBy(p=>p.QuantidadeEmEstoque)
+                .Take(numeroDeRegistroASerBuscados)
+                .ToList();
+
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = new RelatorioDeProdutosEmFalta(produtosEmFalta);
 
             byte[] pdf = documento.GeneratePdf();
 

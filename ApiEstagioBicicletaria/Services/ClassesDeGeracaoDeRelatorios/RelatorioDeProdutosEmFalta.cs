@@ -1,16 +1,15 @@
-﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+﻿using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 {
-    public class RelatorioProdutosMaisVendidos : IDocument
+    public class RelatorioDeProdutosEmFalta : IDocument
     {
+        private readonly List<Produto> _produtos;
 
-        private readonly List<ProdutoMaisVendidoDto> _produtos;
-
-        public RelatorioProdutosMaisVendidos(List<ProdutoMaisVendidoDto> produtos)
+        public RelatorioDeProdutosEmFalta(List<Produto> produtos)
         {
             this._produtos = produtos;
         }
@@ -27,7 +26,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                 page.Margin(2, Unit.Centimetre);
                 page.Content().Column(col =>
                 {
-                    col.Item().Text("Relatório de Produtos Mais Vendidos").FontSize(20).Bold();
+                    col.Item().Text("Relatório de Produtos Em Falta").FontSize(20).Bold();
                     col.Item().PaddingVertical(10);
                     col.Item().Table(table =>
                     {
@@ -41,23 +40,22 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         table.Header(header =>
                         {
                             header.Cell().Text("Código De Barra").Bold();
-                            header.Cell().PaddingLeft(9).Text("Nome Do Produto").Bold();
-                            header.Cell().AlignRight().PaddingRight(5).Text("Preço Unitário").Bold();
-                            header.Cell().AlignRight().Text("Quantidade Vendida").Bold();
+                            header.Cell().Text("Nome Do Produto").Bold();
+                            header.Cell().PaddingLeft(-15).PaddingRight(20).AlignRight().Text("Preço Unitário").Bold();
+                            header.Cell().PaddingLeft(-15).AlignRight().Text("Quantidade Em Estoque").Bold();
                         });
 
-                        foreach(ProdutoMaisVendidoDto dto in _produtos)
+                        foreach (Produto produto in _produtos)
                         {
-                            table.Cell().AlignRight().PaddingRight(32).Text(dto.Produto.CodigoDeBarra);
-                            table.Cell().PaddingLeft(9).Text(dto.Produto.NomeProduto);
-                            table.Cell().AlignRight().PaddingRight(5).Text($"R$  {dto.Produto.PrecoUnitario}");
-                            table.Cell().AlignRight().Text(dto.QuantidadeVendida.ToString());
+                            table.Cell().AlignRight().PaddingRight(32).Text(produto.CodigoDeBarra);
+                            table.Cell().Text(produto.NomeProduto);
+                            table.Cell().PaddingLeft(-15).PaddingRight(20).AlignRight().Text($"R$ {produto.PrecoUnitario}");
+                            table.Cell().PaddingLeft(-15).AlignRight().Text(produto.QuantidadeEmEstoque.ToString());
                         }
                     });
                 });
             });
-                
-        }
 
+        }
     }
 }

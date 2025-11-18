@@ -16,7 +16,7 @@ namespace ApiEstagioBicicletaria.Controllers
             this._produtoService = produtoService;
         }
         [HttpGet]
-        public ActionResult<List<Produto>> GerarRelatorioDeProdutosMaisVendidos()
+        public ActionResult<List<Produto>> BuscarProdutos()
         {
             
             try
@@ -239,12 +239,32 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("relatorio-produtos-mais-vendidos")]
-        public ActionResult<byte[]> BuscarProdutos()
+        public ActionResult<byte[]> GerarRelatorioDeProdutosMaisVendidos()
         {
             try
             {
                 byte[] bytesPdf= _produtoService.GerarRelatorioDeProdutosMaisVendidos();
                 return File(bytesPdf, "application/pdf", "relatorioDeProdutosMaisVendidos.pdf");
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                //não retornar a mensagem pois indica exatamente o erro e há o risco de ameaças explorarem
+                //return StatusCode(500, ex.Message);
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+
+        [HttpGet("relatorio-produtos-em-falta")]
+        public ActionResult<byte[]> GerarRelatorioDeProdutosEmFalta()
+        {
+            try
+            {
+                byte[] bytesPdf = _produtoService.GerarRelatorioDeProdutosEmFalta();
+                return File(bytesPdf, "application/pdf", "relatorioDeEmFalta.pdf");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
