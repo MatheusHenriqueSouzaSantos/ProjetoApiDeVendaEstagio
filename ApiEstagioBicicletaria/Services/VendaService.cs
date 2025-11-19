@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos.VendaDtos;
+﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
@@ -6,14 +7,20 @@ using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
+using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
+using System.Globalization;
 
 namespace ApiEstagioBicicletaria.Services
 {
     public class VendaService : IVendaService
     {
+        private readonly int _numeroMaximoDePaginas = 5;
+        private readonly int _numeroDeLinhasPorPagina = 42;
         private ContextoDb _contexto;
 
         public VendaService(ContextoDb contexto)
@@ -575,6 +582,102 @@ namespace ApiEstagioBicicletaria.Services
             return new TransacaoOutputDto(transacaoReferente.Id, transacaoReferente.DataCriacao, transacaoReferente.TipoPagamento,
                 transacaoReferente.MeioPagamento, transacaoReferente.TransacaoEmCurso, transacaoReferente.Pago, quantidadeDeParcelasNaoPagasNessaTransacao,
                 quantidadeDeParcelasPagasDessaTransacao,valorPago);
+        }
+
+
+        public byte[] GerarRelatorioDeVendasPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        {
+            DateTime dataDeInicioDoPeriodoConvertidaDateTime;
+
+            DateTime dataDeFimDoPeriodoConvertidaDateTime;
+
+            bool dataInicioDoPeriodoNoFormatoCorreto = DateOnly.TryParseExact(dto.DataDeInicioDoPeriodo,
+                "yyyy-MM-dd",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateOnly dataDeInicioDoPeriodoFormatoDateOnly);
+
+            if (!dataInicioDoPeriodoNoFormatoCorreto)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O formato da data deve estar no padrão ISO");
+            }
+
+            bool dataFimDoPeriodoNoFormatoCorreto = DateOnly.TryParseExact(dto.DataDeFimDoPeriodo,
+               "yyyy-MM-dd",
+               CultureInfo.InvariantCulture,
+               DateTimeStyles.None,
+               out DateOnly dataDeFimDoPeriodoDateOnly);
+
+            if (!dataFimDoPeriodoNoFormatoCorreto)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O formato da data deve estar no padrão ISO");
+            }
+
+            dataDeInicioDoPeriodoConvertidaDateTime = dataDeInicioDoPeriodoFormatoDateOnly.ToDateTime(TimeOnly.MinValue);
+            dataDeFimDoPeriodoConvertidaDateTime = dataDeFimDoPeriodoDateOnly.ToDateTime(TimeOnly.MaxValue);
+
+
+            int numeroDeRegistroASerBuscados = _numeroMaximoDePaginas * _numeroDeLinhasPorPagina;
+
+            List<Venda> vendasNoPeriodo = _contexto.Vendas.
+                Where(v => v.DataCriacao >= dataDeInicioDoPeriodoConvertidaDateTime && v.DataCriacao <= dataDeFimDoPeriodoConvertidaDateTime)
+                .OrderBy(v => v.DataCriacao)
+                .Take(numeroDeRegistroASerBuscados)
+                .ToList();
+
+            List<VendaNoFormatoASerExibidoRelatorioDto> listaDeVendasNoFormatoASerExibidoNoRelatorio=new List<VendaNoFormatoASerExibidoRelatorioDto>();
+
+            foreach(Venda vendaIterada in vendasNoPeriodo)
+            {
+                string nomeCliente="";
+                Cliente? cliente = _contexto.Clientes.Where(c => c.Id == vendaIterada.IdCliente && c.Ativo).FirstOrDefault();
+
+                if(cliente == null)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(500, "Cliente nunca deveria ser nulo para uma venda já realizada");
+                }
+                if (cliente.TipoCliente == TipoCliente.PessoaFisica)
+                {
+                    nomeCliente = ((ClienteFisico)cliente).Nome;
+                }
+                if (cliente.TipoCliente == TipoCliente.PessoaJuridica)
+                {
+                    nomeCliente = ((ClienteJuridico)cliente).RazaoSocial;
+                }
+                Transacao? transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == vendaIterada.Id && t.Ativo).FirstOrDefault();
+                if(transacaoDaVenda == null)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(500, "Transação nunca deveria ser nulo para uma venda já realizada");
+                }
+                string tipoDePagamento = transacaoDaVenda.TipoPagamento.ToString();
+                string meioDePagamento = transacaoDaVenda.MeioPagamento.ToString();
+                string dataDaVenda = DateOnly.FromDateTime(vendaIterada.DataCriacao).ToString();
+                decimal valorTotalPago = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Pago && p.Ativo).Sum(p => p.ValorParcela);
+                decimal valorTotalVenda = vendaIterada.ValorTotalComDescontoAplicado;
+                string pago="";
+                if (transacaoDaVenda.Pago)
+                {
+                    pago = "Sim";
+                }
+                if (!transacaoDaVenda.Pago)
+                {
+                    pago = "Não";
+                }
+
+                VendaNoFormatoASerExibidoRelatorioDto vendaNoFormatoDto = new VendaNoFormatoASerExibidoRelatorioDto(nomeCliente, tipoDePagamento, meioDePagamento,
+                    dataDaVenda, valorTotalPago, valorTotalVenda,pago);
+
+                listaDeVendasNoFormatoASerExibidoNoRelatorio.Add(vendaNoFormatoDto);
+            }
+
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = new RelatorioDeVendasPorPeriodo(listaDeVendasNoFormatoASerExibidoNoRelatorio,
+                dataDeInicioDoPeriodoFormatoDateOnly, dataDeFimDoPeriodoDateOnly);
+
+            byte[] pdf = documento.GeneratePdf();
+
+            return pdf;
         }
     }
 }

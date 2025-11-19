@@ -1,8 +1,10 @@
-﻿using ApiEstagioBicicletaria.Dtos.VendaDtos;
+﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Utilities;
 
 namespace ApiEstagioBicicletaria.Controllers
 {
@@ -155,7 +157,23 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        //fazer um endpoint para registrar pagamento de venda mesmo a vista, separar responsabilidade, de registrar pagamento
+        [HttpPost("relatorio-de-vendas-por-periodo")]
+        public ActionResult<byte[]> GerarRelatoriosDeVendaPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        {
+            try
+            {
+                byte[] bytesPdf= _vendaService.GerarRelatorioDeVendasPorPeriodo(dto);
+                return File(bytesPdf, "application/pdf", "relatorioDeVendasPorPeriodo.pdf");
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
 
     }
 }

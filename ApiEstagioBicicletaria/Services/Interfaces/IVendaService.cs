@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos.VendaDtos;
+﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.VendaDomain;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces
@@ -17,7 +18,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         TransacaoOutputDto AtualizarQuantidadeDeParcelasPagasEmUmaTransacao(Guid idTransacaoEnviado, int quantidadeDeParcelasASerAtualizadaParaPaga);
 
-
+        byte[] GerarRelatorioDeVendasPorPeriodo(DatasParaGeracaoDeRelatorioDto dto);
     }
 
 }
