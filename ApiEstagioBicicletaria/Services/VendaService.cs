@@ -627,6 +627,11 @@ namespace ApiEstagioBicicletaria.Services
 
             List<VendaNoFormatoASerExibidoRelatorioDto> listaDeVendasNoFormatoASerExibidoNoRelatorio=new List<VendaNoFormatoASerExibidoRelatorioDto>();
 
+            decimal valorTotalPagoDasVendasNessePeriodo=0;
+
+            decimal valorTotalDasVendasNessePeriodo=0;
+
+
             foreach(Venda vendaIterada in vendasNoPeriodo)
             {
                 string nomeCliente="";
@@ -653,7 +658,9 @@ namespace ApiEstagioBicicletaria.Services
                 string meioDePagamento = transacaoDaVenda.MeioPagamento.ToString();
                 string dataDaVenda = DateOnly.FromDateTime(vendaIterada.DataCriacao).ToString();
                 decimal valorTotalPago = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Pago && p.Ativo).Sum(p => p.ValorParcela);
+                valorTotalPagoDasVendasNessePeriodo += valorTotalPago;
                 decimal valorTotalVenda = vendaIterada.ValorTotalComDescontoAplicado;
+                valorTotalDasVendasNessePeriodo += valorTotalVenda;
                 string pago="";
                 if (transacaoDaVenda.Pago)
                 {
@@ -673,7 +680,7 @@ namespace ApiEstagioBicicletaria.Services
             QuestPDF.Settings.License = LicenseType.Community;
 
             var documento = new RelatorioDeVendasPorPeriodo(listaDeVendasNoFormatoASerExibidoNoRelatorio,
-                dataDeInicioDoPeriodoFormatoDateOnly, dataDeFimDoPeriodoDateOnly);
+                dataDeInicioDoPeriodoFormatoDateOnly, dataDeFimDoPeriodoDateOnly,valorTotalPagoDasVendasNessePeriodo,valorTotalDasVendasNessePeriodo);
 
             byte[] pdf = documento.GeneratePdf();
 
