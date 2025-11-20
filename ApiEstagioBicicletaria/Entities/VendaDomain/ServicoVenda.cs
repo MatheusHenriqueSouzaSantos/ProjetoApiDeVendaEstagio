@@ -19,9 +19,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public decimal DescontoServico { get; set; }
 
-        public decimal PrecoServicoNaVenda { get;  set; }
-
-        public decimal PrecoServicoNaVendaComDescontoAplicado { get; set; }
+        public decimal PrecoServicoNaVendaSemDescontoAplicado { get;  set; }
 
         public bool Ativo { get; set; }=true;
 
@@ -30,13 +28,12 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         }
 
-        public ServicoVenda(Venda venda, Servico servico, decimal descontoServico, decimal precoServicoNaVenda, decimal precoServicoNaVendaComDescontoAplicado)
+        public ServicoVenda(Venda venda, Servico servico, decimal descontoServico, decimal precoServicoNaVendaSemDescontoAplicado)
         {
             Venda = venda;
             Servico = servico;
             DescontoServico = descontoServico;
-            PrecoServicoNaVenda = precoServicoNaVenda;
-            PrecoServicoNaVendaComDescontoAplicado = precoServicoNaVendaComDescontoAplicado;
+            PrecoServicoNaVendaSemDescontoAplicado = precoServicoNaVendaSemDescontoAplicado;
         }
     }
 }

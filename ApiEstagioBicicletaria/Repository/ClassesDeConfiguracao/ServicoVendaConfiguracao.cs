@@ -38,14 +38,11 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
             builder.Property(s=>s.DescontoServico)
                 .HasColumnName("DESCONTO_SERVICO")
                 .IsRequired();
-            builder.Property(s=>s.PrecoServicoNaVenda)
-                .HasColumnName("PRECO_SERVICO_NA_VENDA")
+            builder.Property(s=>s.PrecoServicoNaVendaSemDescontoAplicado)
+                .HasColumnName("PRECO_SERVICO_NA_VENDA_SEM_DESCONTO_APLICADO")
                 .IsRequired();
             builder.Property(s=>s.Ativo)
                 .HasColumnName("ATIVO")
-                .IsRequired();
-            builder.Property(s => s.PrecoServicoNaVendaComDescontoAplicado)
-                .HasColumnName("PRECO_SERVICO_NA_VENDA_COM_DESCONTO_APLICADO")
                 .IsRequired();
         }
     }
