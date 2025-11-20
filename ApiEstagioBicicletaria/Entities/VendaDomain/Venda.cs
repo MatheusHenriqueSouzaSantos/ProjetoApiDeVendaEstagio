@@ -15,7 +15,9 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
         public decimal DescontoTotal { get; set; } = 0.0m;
         //pegar o valor total pela soma de todos os itens menos o desconto
 
-        public decimal ValorTotalComDesconto { get; set; } = 0.0m;
+        public decimal ValorTotalSemDescontoAplicado { get; set; } = 0.0m;
+
+        public decimal ValorTotalComDescontoAplicado { get; set; } = 0.0m;
 
         public bool Ativo { get; set; } = true;
 
@@ -24,12 +26,13 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         }
 
-        public Venda(Cliente cliente, Guid idCliente, decimal descontoTotal, decimal valorTotalComDesconto)
+        public Venda(Cliente cliente, Guid idCliente, decimal descontoTotal,decimal valorTotalSemDescontoAplicado, decimal valorTotalComDescontoAplicado)
         {
             Cliente = cliente ;
             IdCliente = idCliente;
             DescontoTotal = descontoTotal;
-            ValorTotalComDesconto = valorTotalComDesconto;
+            ValorTotalSemDescontoAplicado = valorTotalSemDescontoAplicado;
+            ValorTotalComDescontoAplicado = valorTotalComDescontoAplicado;
         }
 
 

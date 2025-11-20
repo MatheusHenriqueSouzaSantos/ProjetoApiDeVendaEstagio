@@ -13,6 +13,8 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         public decimal Desconto { get; set; }
 
+        public decimal ValorTotalSemDescontoAplicado { get; set; }
+
         public decimal ValorTotalComDescontoAplicado { get; set; }
 
         public Cliente Cliente { get; set; }
@@ -25,13 +27,14 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         }
 
-        public VendaOutputDto(Guid idVenda, int codigoVenda, DateTime dataCriacao, decimal desconto, decimal valorTotal, Cliente cliente, List<ItemVendaOutputDto> itensVenda, List<ServicoVendaOutputDto> servicosVenda)
+        public VendaOutputDto(Guid idVenda, int codigoVenda, DateTime dataCriacao, decimal desconto,decimal valorTotalSemDescontoAplicado, decimal valorTotalComDescontoAplicado, Cliente cliente, List<ItemVendaOutputDto> itensVenda, List<ServicoVendaOutputDto> servicosVenda)
         {
             IdVenda = idVenda;
             CodigoVenda = codigoVenda;
             DataCriacao = dataCriacao;
             Desconto = desconto;
-            ValorTotalComDescontoAplicado = valorTotal;
+            ValorTotalSemDescontoAplicado = valorTotalSemDescontoAplicado;
+            ValorTotalComDescontoAplicado = valorTotalComDescontoAplicado;
             Cliente = cliente;
             ItensVenda = itensVenda;
             ServicosVenda = servicosVenda;

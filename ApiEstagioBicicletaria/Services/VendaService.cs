@@ -70,7 +70,7 @@ namespace ApiEstagioBicicletaria.Services
                 }
 
 
-                VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id,venda.CodigoVenda, venda.DataCriacao, venda.DescontoTotal, venda.ValorTotalComDesconto, venda.Cliente,
+                VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id,venda.CodigoVenda, venda.DataCriacao, venda.DescontoTotal,venda.ValorTotalSemDescontoAplicado, venda.ValorTotalComDescontoAplicado, venda.Cliente,
                     itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput);
                 TransacaoOutputDto transacaoOutputDto = new TransacaoOutputDto(transacaoDaVenda.Id, transacaoDaVenda.DataCriacao, transacaoDaVenda.TipoPagamento,
                     transacaoDaVenda.MeioPagamento,transacaoDaVenda.TransacaoEmCurso, transacaoDaVenda.Pago, QuantidadeDeParcelasNaoPagasDaVenda,QuantidadeDeParcelasPagasVenda,valorPago);
@@ -120,7 +120,7 @@ namespace ApiEstagioBicicletaria.Services
             }
 
 
-            VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id,venda.CodigoVenda, venda.DataCriacao, venda.DescontoTotal, venda.ValorTotalComDesconto, venda.Cliente,
+            VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id,venda.CodigoVenda, venda.DataCriacao, venda.DescontoTotal,venda.ValorTotalSemDescontoAplicado, venda.ValorTotalComDescontoAplicado, venda.Cliente,
                 itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput);
             TransacaoOutputDto transacaoOutputDto = new TransacaoOutputDto(transacaoDaVenda.Id, transacaoDaVenda.DataCriacao, transacaoDaVenda.TipoPagamento,
                 transacaoDaVenda.MeioPagamento,transacaoDaVenda.TransacaoEmCurso, transacaoDaVenda.Pago, QuantidadeDeParcelasNaoPagasDaVenda, QuantidadeDeParcelasPagasVenda, valorPago);
@@ -158,7 +158,7 @@ namespace ApiEstagioBicicletaria.Services
 
             decimal valorTotalDaVendaComDescontoAplicado=valorTotalDaVendaSemDescontoTotalAplicado-descontoVenda;
 
-            Venda vendaCriada = new Venda(clienteDaVenda, clienteDaVenda.Id, descontoVenda, valorTotalDaVendaComDescontoAplicado);
+            Venda vendaCriada = new Venda(clienteDaVenda, clienteDaVenda.Id, descontoVenda,valorTotalDaVendaSemDescontoTotalAplicado, valorTotalDaVendaComDescontoAplicado);
 
             List<ItemVenda> listaDeItensDaVendaCriada = new List<ItemVenda>();
 
@@ -218,7 +218,7 @@ namespace ApiEstagioBicicletaria.Services
 
             Transacao transacaoCriada = new Transacao(vendaCriada, dto.Transacao.TipoPagamento, dto.Transacao.MeioPagamento);
             //validar se valores são maior que 0, já fiz essa validação???
-            decimal valorDeCadaParcela = vendaCriada.ValorTotalComDesconto / dto.Transacao.QuantidadeDeParcelas;
+            decimal valorDeCadaParcela = vendaCriada.ValorTotalComDescontoAplicado / dto.Transacao.QuantidadeDeParcelas;
 
             for (int i=0;i<dto.Transacao.QuantidadeDeParcelas; i++)
             {
@@ -247,7 +247,7 @@ namespace ApiEstagioBicicletaria.Services
 
                 listaDeServicosASeremRetornados.Add(servicoVendaFormatoDeOutput);
             }//regra no meio de pagamento, tipo pagamento a prazo não pode ser dinheiro??
-            VendaOutputDto vendaASerRetornadaNoFormatoOutput = new VendaOutputDto(vendaCriada.Id,vendaCriada.CodigoVenda, vendaCriada.DataCriacao, vendaCriada.DescontoTotal, vendaCriada.ValorTotalComDesconto,
+            VendaOutputDto vendaASerRetornadaNoFormatoOutput = new VendaOutputDto(vendaCriada.Id,vendaCriada.CodigoVenda, vendaCriada.DataCriacao, vendaCriada.DescontoTotal,vendaCriada.ValorTotalSemDescontoAplicado, vendaCriada.ValorTotalComDescontoAplicado,
                 vendaCriada.Cliente,listaDeItensASeremRetornados,listaDeServicosASeremRetornados);
             int quantidadeDeParcelasNaoPagasDessaTransacao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoCriada.Id && p.Ativo && p.Pago==false).Count();
             int numeroDeParcelasPagas = 0;
@@ -441,7 +441,8 @@ namespace ApiEstagioBicicletaria.Services
             VendaParaAtualizar.Cliente = clienteAtualizadoDaVenda;
             VendaParaAtualizar.IdCliente = clienteAtualizadoDaVenda.Id;
             VendaParaAtualizar.DescontoTotal = descontoVenda;
-            VendaParaAtualizar.ValorTotalComDesconto = valorTotalDaVendaComDescontoAplicado;
+            VendaParaAtualizar.ValorTotalSemDescontoAplicado = valorTotalDaVendaSemDescontoTotalAplicado;
+            VendaParaAtualizar.ValorTotalComDescontoAplicado = valorTotalDaVendaComDescontoAplicado;
 
             transacaoDaVendaASerAtualizada.TipoPagamento = dto.Transacao.TipoPagamento;
             transacaoDaVendaASerAtualizada.MeioPagamento = dto.Transacao.MeioPagamento;
@@ -474,7 +475,7 @@ namespace ApiEstagioBicicletaria.Services
             Venda VendaAtualizada = VendaParaAtualizar;
             Transacao transacaoDaVendaAtualizada = transacaoDaVendaASerAtualizada;
 
-            VendaOutputDto vendaASerRetornadaNoFormatoOutput = new VendaOutputDto(VendaAtualizada.Id,VendaAtualizada.CodigoVenda, VendaAtualizada.DataCriacao, VendaAtualizada.DescontoTotal, VendaAtualizada.ValorTotalComDesconto,
+            VendaOutputDto vendaASerRetornadaNoFormatoOutput = new VendaOutputDto(VendaAtualizada.Id,VendaAtualizada.CodigoVenda, VendaAtualizada.DataCriacao, VendaAtualizada.DescontoTotal,VendaAtualizada.ValorTotalSemDescontoAplicado, VendaAtualizada.ValorTotalComDescontoAplicado,
                 VendaAtualizada.Cliente, listaDeItensASeremRetornadosFormatoOutput, listaDeServicosASeremRetornadosFormatoOutput);
             int quantidadeDeParcelasNaoPagasDessaTransacao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo && p.Pago==false).Count();
             int numeroDeParcelasPagas = 0;
@@ -678,7 +679,7 @@ namespace ApiEstagioBicicletaria.Services
                 string dataDaVenda = DateOnly.FromDateTime(vendaIterada.DataCriacao).ToString();
                 decimal valorTotalPago = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Pago && p.Ativo).Sum(p => p.ValorParcela);
                 valorTotalPagoDasVendasNessePeriodo += valorTotalPago;
-                decimal valorTotalVenda = vendaIterada.ValorTotalComDesconto;
+                decimal valorTotalVenda = vendaIterada.ValorTotalComDescontoAplicado;
                 valorTotalDasVendasNessePeriodo += valorTotalVenda;
                 string pago="";
                 if (transacaoDaVenda.Pago)
