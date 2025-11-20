@@ -68,7 +68,7 @@ namespace ApiEstagioBicicletaria.Services
                 }
 
 
-                VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id, venda.DataCriacao, venda.Desconto, venda.ValorTotalComDescontoAplicado, venda.Cliente,
+                VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id,venda.CodigoVenda, venda.DataCriacao, venda.Desconto, venda.ValorTotalComDescontoAplicado, venda.Cliente,
                     itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput);
                 TransacaoOutputDto transacaoOutputDto = new TransacaoOutputDto(transacaoDaVenda.Id, transacaoDaVenda.DataCriacao, transacaoDaVenda.TipoPagamento,
                     transacaoDaVenda.MeioPagamento,transacaoDaVenda.TransacaoEmCurso, transacaoDaVenda.Pago, QuantidadeDeParcelasNaoPagasDaVenda,QuantidadeDeParcelasPagasVenda,valorPago);
@@ -116,7 +116,7 @@ namespace ApiEstagioBicicletaria.Services
             }
 
 
-            VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id, venda.DataCriacao, venda.Desconto, venda.ValorTotalComDescontoAplicado, venda.Cliente,
+            VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id,venda.CodigoVenda, venda.DataCriacao, venda.Desconto, venda.ValorTotalComDescontoAplicado, venda.Cliente,
                 itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput);
             TransacaoOutputDto transacaoOutputDto = new TransacaoOutputDto(transacaoDaVenda.Id, transacaoDaVenda.DataCriacao, transacaoDaVenda.TipoPagamento,
                 transacaoDaVenda.MeioPagamento,transacaoDaVenda.TransacaoEmCurso, transacaoDaVenda.Pago, QuantidadeDeParcelasNaoPagasDaVenda, QuantidadeDeParcelasPagasVenda, valorPago);
@@ -167,6 +167,10 @@ namespace ApiEstagioBicicletaria.Services
                 if(produtoDoItem == null)
                 {
                     throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado!!!");
+                }
+                if (itemEnviado.Quantidade == 0)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(400,"Não é possível adicionar um produto com 0 unidades");
                 }
                 if(produtoDoItem.QuantidadeEmEstoque< itemEnviado.Quantidade)
                 {
@@ -239,7 +243,7 @@ namespace ApiEstagioBicicletaria.Services
 
                 listaDeServicosASeremRetornados.Add(servicoVendaFormatoDeOutput);
             }//regra no meio de pagamento, tipo pagamento a prazo não pode ser dinheiro??
-            VendaOutputDto vendaASerRetornadaNoFormatoOutput = new VendaOutputDto(vendaCriada.Id, vendaCriada.DataCriacao, vendaCriada.Desconto, vendaCriada.ValorTotalComDescontoAplicado,
+            VendaOutputDto vendaASerRetornadaNoFormatoOutput = new VendaOutputDto(vendaCriada.Id,vendaCriada.CodigoVenda, vendaCriada.DataCriacao, vendaCriada.Desconto, vendaCriada.ValorTotalComDescontoAplicado,
                 vendaCriada.Cliente,listaDeItensASeremRetornados,listaDeServicosASeremRetornados);
             int quantidadeDeParcelasNaoPagasDessaTransacao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoCriada.Id && p.Ativo && p.Pago==false).Count();
             int numeroDeParcelasPagas = 0;
@@ -383,6 +387,10 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado!!!");
                 }
+                if (itemEnviado.Quantidade == 0)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(400, "Não é possível adicionar um produto com 0 unidades");
+                }
                 if (produtoDoItem.QuantidadeEmEstoque < itemEnviado.Quantidade)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "Estoque do produto: " + produtoDoItem.NomeProduto + " insuficiente, pois tem apenas: " +
@@ -462,7 +470,7 @@ namespace ApiEstagioBicicletaria.Services
             Venda VendaAtualizada = VendaParaAtualizar;
             Transacao transacaoDaVendaAtualizada = transacaoDaVendaASerAtualizada;
 
-            VendaOutputDto vendaASerRetornadaNoFormatoOutput = new VendaOutputDto(VendaAtualizada.Id, VendaAtualizada.DataCriacao, VendaAtualizada.Desconto, VendaAtualizada.ValorTotalComDescontoAplicado,
+            VendaOutputDto vendaASerRetornadaNoFormatoOutput = new VendaOutputDto(VendaAtualizada.Id,VendaAtualizada.CodigoVenda, VendaAtualizada.DataCriacao, VendaAtualizada.Desconto, VendaAtualizada.ValorTotalComDescontoAplicado,
                 VendaAtualizada.Cliente, listaDeItensASeremRetornadosFormatoOutput, listaDeServicosASeremRetornadosFormatoOutput);
             int quantidadeDeParcelasNaoPagasDessaTransacao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo && p.Pago==false).Count();
             int numeroDeParcelasPagas = 0;
@@ -613,6 +621,11 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "O formato da data deve estar no padrão ISO");
             }
 
+            if(dataDeInicioDoPeriodoFormatoDateOnly > dataDeFimDoPeriodoDateOnly)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"A data de fim de periodo nao pode ser maior do que ha de inicio do periodo");
+            }
+
             dataDeInicioDoPeriodoConvertidaDateTime = dataDeInicioDoPeriodoFormatoDateOnly.ToDateTime(TimeOnly.MinValue);
             dataDeFimDoPeriodoConvertidaDateTime = dataDeFimDoPeriodoDateOnly.ToDateTime(TimeOnly.MaxValue);
 
@@ -654,6 +667,7 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(500, "Transação nunca deveria ser nulo para uma venda já realizada");
                 }
+                int codigoVenda = vendaIterada.CodigoVenda;
                 string tipoDePagamento = transacaoDaVenda.TipoPagamento.ToString();
                 string meioDePagamento = transacaoDaVenda.MeioPagamento.ToString();
                 string dataDaVenda = DateOnly.FromDateTime(vendaIterada.DataCriacao).ToString();
@@ -671,7 +685,7 @@ namespace ApiEstagioBicicletaria.Services
                     pago = "Não";
                 }
 
-                VendaNoFormatoASerExibidoRelatorioDto vendaNoFormatoDto = new VendaNoFormatoASerExibidoRelatorioDto(nomeCliente, tipoDePagamento, meioDePagamento,
+                VendaNoFormatoASerExibidoRelatorioDto vendaNoFormatoDto = new VendaNoFormatoASerExibidoRelatorioDto(codigoVenda,nomeCliente, tipoDePagamento, meioDePagamento,
                     dataDaVenda, valorTotalPago, valorTotalVenda,pago);
 
                 listaDeVendasNoFormatoASerExibidoNoRelatorio.Add(vendaNoFormatoDto);

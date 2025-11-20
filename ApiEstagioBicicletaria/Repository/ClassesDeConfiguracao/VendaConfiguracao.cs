@@ -16,6 +16,10 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .HasColumnType("binary(16)")
                 .HasColumnName("ID")
                 .IsRequired();
+            builder.Property(v => v.CodigoVenda)
+                .HasColumnName("CODIGO_VENDA")
+                .ValueGeneratedOnAdd();
+
             builder.HasOne(v => v.Cliente)
                 .WithMany()
                 .HasForeignKey(v=>v.IdCliente)

@@ -4,7 +4,8 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 {
     public class Venda
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
+        public Guid Id { get; private set; } = Guid.NewGuid(); 
+        public int CodigoVenda { get; private set; }
         public Cliente Cliente { get;  set; }
 
         public Guid IdCliente { get;  set; }
