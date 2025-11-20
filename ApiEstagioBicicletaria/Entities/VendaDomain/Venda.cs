@@ -12,10 +12,10 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
-        public decimal Desconto { get; set; } = 0.0m;
+        public decimal DescontoTotal { get; set; } = 0.0m;
         //pegar o valor total pela soma de todos os itens menos o desconto
 
-        public decimal ValorTotalComDescontoAplicado { get; set; } = 0.0m;
+        public decimal ValorTotalComDesconto { get; set; } = 0.0m;
 
         public bool Ativo { get; set; } = true;
 
@@ -24,12 +24,12 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         }
 
-        public Venda(Cliente cliente, Guid idCliente, decimal desconto, decimal valorTotal)
+        public Venda(Cliente cliente, Guid idCliente, decimal descontoTotal, decimal valorTotalComDesconto)
         {
             Cliente = cliente ;
             IdCliente = idCliente;
-            Desconto = desconto;
-            ValorTotalComDescontoAplicado = valorTotal;
+            DescontoTotal = descontoTotal;
+            ValorTotalComDesconto = valorTotalComDesconto;
         }
 
 

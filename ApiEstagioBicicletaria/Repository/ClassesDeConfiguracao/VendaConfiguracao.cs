@@ -31,10 +31,10 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
             builder.Property(v => v.DataCriacao)
                 .HasColumnName("DATA_CRIACAO")
                 .IsRequired();
-            builder.Property(v => v.Desconto)
-                .HasColumnName("DESCONTO");
-            builder.Property(v=>v.ValorTotalComDescontoAplicado)
-                .HasColumnName("VALOR_TOTAL_COM_DESCONTO_APLICADO")
+            builder.Property(v => v.DescontoTotal)
+                .HasColumnName("DESCONTO_TOTAL");
+            builder.Property(v=>v.ValorTotalComDesconto)
+                .HasColumnName("VALOR_TOTAL_COM_DESCONTO")
                 .IsRequired();
             builder.Property(v=>v.Ativo)
                 .HasColumnName("ATIVO")

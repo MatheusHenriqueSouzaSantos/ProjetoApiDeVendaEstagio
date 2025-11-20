@@ -40,8 +40,8 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
             builder.Property(i=>i.DescontoUnitario)
                 .HasColumnName("DESCONTO_UNITARIO")
                 .IsRequired();
-            builder.Property(i=>i.PrecoUnitarioDoProdutoNaVendaSemDescontoAplicado)
-                .HasColumnName("PRECO_UNITARIO_DO_PRODUTO_NA_VENDA_SEM_DESCONTO_APLICADO")
+            builder.Property(i=>i.PrecoUnitarioDoProdutoNaVendaSemDesconto)
+                .HasColumnName("PRECO_UNITARIO_DO_PRODUTO_NA_VENDA_SEM_DESCONTO")
                 .IsRequired();
             builder.Property(i=>i.Ativo)
                 .HasColumnName("ATIVO")

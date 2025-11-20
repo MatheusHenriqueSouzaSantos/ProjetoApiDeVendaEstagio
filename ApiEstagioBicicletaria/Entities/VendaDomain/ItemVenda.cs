@@ -22,7 +22,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public decimal DescontoUnitario { get;  set; }
 
-        public decimal PrecoUnitarioDoProdutoNaVendaSemDescontoAplicado { get;  set; }
+        public decimal PrecoUnitarioDoProdutoNaVendaSemDesconto { get;  set; }
 
         public bool Ativo { get; set; } = true;
 
@@ -31,13 +31,13 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         }
 
-        public ItemVenda(Venda venda, Produto produto, int quantidade, decimal descontoPorUnidade, decimal precoUnitarioDoProdutoNaVendaSemDescontoAplicado)
+        public ItemVenda(Venda venda, Produto produto, int quantidade, decimal descontoPorUnidade, decimal precoUnitarioDoProdutoNaVendaSemDesconto)
         {
             Venda = venda;
             Produto = produto;
             Quantidade = quantidade;
             DescontoUnitario = descontoPorUnidade;
-            PrecoUnitarioDoProdutoNaVendaSemDescontoAplicado = precoUnitarioDoProdutoNaVendaSemDescontoAplicado;
+            PrecoUnitarioDoProdutoNaVendaSemDesconto = precoUnitarioDoProdutoNaVendaSemDesconto;
         }
     }
 }
