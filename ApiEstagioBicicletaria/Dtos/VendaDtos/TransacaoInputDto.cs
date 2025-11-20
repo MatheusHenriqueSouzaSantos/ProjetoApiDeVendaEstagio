@@ -10,8 +10,8 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
         public TipoPagamento TipoPagamento { get; set; }
 
         [Required(ErrorMessage = "O campo meio de pagamento é obrigatório")]
-        [EnumDataType(typeof(MeioPagamaneto), ErrorMessage = "tipo inválido")]
-        public MeioPagamaneto MeioPagamaneto { get; set; }
+        [EnumDataType(typeof(MeioPagamento), ErrorMessage = "tipo inválido")]
+        public MeioPagamento MeioPagamento { get; set; }
 
         [Required(ErrorMessage ="O campo quantidade de parcelas é obrigatório")]
         [Range(0, 1000000, ErrorMessage = "A quantidade de parcelas não pode ser negativa")]
@@ -24,10 +24,10 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         }
 
-        public TransacaoInputDto(TipoPagamento tipoPagamento, MeioPagamaneto meioPagamaneto, int quantidadeDeParcelas)
+        public TransacaoInputDto(TipoPagamento tipoPagamento, MeioPagamento meioPagamento, int quantidadeDeParcelas)
         {
             TipoPagamento = tipoPagamento;
-            MeioPagamaneto = meioPagamaneto;
+            MeioPagamento = meioPagamento;
             QuantidadeDeParcelas = quantidadeDeParcelas;
         }
 

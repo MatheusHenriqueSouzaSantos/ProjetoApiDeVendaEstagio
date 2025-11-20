@@ -214,7 +214,7 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400,"Uma venda à vista deve ter apenas uma parcela");
             }
 
-            Transacao transacaoCriada = new Transacao(vendaCriada, dto.Transacao.TipoPagamento, dto.Transacao.MeioPagamaneto);
+            Transacao transacaoCriada = new Transacao(vendaCriada, dto.Transacao.TipoPagamento, dto.Transacao.MeioPagamento);
             //validar se valores são maior que 0, já fiz essa validação???
             decimal valorDeCadaParcela = vendaCriada.ValorTotalComDescontoAplicado / dto.Transacao.QuantidadeDeParcelas;
 
@@ -442,7 +442,7 @@ namespace ApiEstagioBicicletaria.Services
             VendaParaAtualizar.ValorTotalComDescontoAplicado = valorTotalDaVendaComDescontoAplicado;
 
             transacaoDaVendaASerAtualizada.TipoPagamento = dto.Transacao.TipoPagamento;
-            transacaoDaVendaASerAtualizada.MeioPagamento = dto.Transacao.MeioPagamaneto;
+            transacaoDaVendaASerAtualizada.MeioPagamento = dto.Transacao.MeioPagamento;
 
             _contexto.Vendas.Update(VendaParaAtualizar);
             _contexto.Transacoes.Update(transacaoDaVendaASerAtualizada);

@@ -12,7 +12,7 @@
 
         public TipoPagamento TipoPagamento { get; set; }
 
-        public MeioPagamaneto MeioPagamento { get; set; }
+        public MeioPagamento MeioPagamento { get; set; }
 
         public bool TransacaoEmCurso { get; set; } = false;
 
@@ -25,7 +25,7 @@
 
         }
 
-        public Transacao(Venda venda, TipoPagamento tipoPagamento, MeioPagamaneto meioPagamaneto)
+        public Transacao(Venda venda, TipoPagamento tipoPagamento, MeioPagamento meioPagamaneto)
         {
             Venda = venda;
             this.TipoPagamento = tipoPagamento;

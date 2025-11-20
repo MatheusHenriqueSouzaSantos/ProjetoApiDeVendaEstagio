@@ -1,11 +1,11 @@
 ﻿namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
 {
-    public enum MeioPagamaneto
+    public enum MeioPagamento
     {
         Dinheiro,
         CartaoDebito,
         CartaoCredito,
-        PagamentoBancario,
+        TransferenciaBancaria,
         Boleto,
         Pix
 
