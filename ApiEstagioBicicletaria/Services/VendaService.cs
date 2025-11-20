@@ -530,6 +530,7 @@ namespace ApiEstagioBicicletaria.Services
             _contexto.Transacoes.Update(transacaoDaVendaASerDeletada);
             vendaASerDeletada.Ativo = false;
             _contexto.Vendas.Update(vendaASerDeletada);
+            _contexto.SaveChanges();
         }
  
 
