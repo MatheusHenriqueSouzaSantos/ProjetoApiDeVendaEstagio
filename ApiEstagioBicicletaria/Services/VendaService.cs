@@ -59,7 +59,8 @@ namespace ApiEstagioBicicletaria.Services
                 foreach(ItemVenda item in itensDaVenda)
                 {
                     decimal precoDoProdutoNaVendaComDescontoAplicado = item.PrecoUnitarioDoProdutoNaVendaSemDesconto - item.DescontoUnitario;
-                    ItemVendaOutputDto itemVendaOutputDto = new ItemVendaOutputDto(item.Id,item.Produto,item.DataCriacao,item.Quantidade,item.DescontoUnitario,item.PrecoUnitarioDoProdutoNaVendaSemDesconto,precoDoProdutoNaVendaComDescontoAplicado);
+                    decimal totalItem = precoDoProdutoNaVendaComDescontoAplicado * item.Quantidade;
+                    ItemVendaOutputDto itemVendaOutputDto = new ItemVendaOutputDto(item.Id,item.Produto,item.DataCriacao,item.Quantidade,item.DescontoUnitario,item.PrecoUnitarioDoProdutoNaVendaSemDesconto,precoDoProdutoNaVendaComDescontoAplicado,totalItem);
                     itensVendaFormatoDtoOutput.Add(itemVendaOutputDto);
                 }
                 foreach (ServicoVenda servicoVenda in servicosDaVenda)
@@ -109,7 +110,8 @@ namespace ApiEstagioBicicletaria.Services
             foreach (ItemVenda item in itensDaVenda)
             {
                 decimal precoDoProdutoNaVendaComDescontoAplicado = item.PrecoUnitarioDoProdutoNaVendaSemDesconto - item.DescontoUnitario;
-                ItemVendaOutputDto itemVendaOutputDto = new ItemVendaOutputDto(item.Id, item.Produto, item.DataCriacao, item.Quantidade, item.DescontoUnitario, item.PrecoUnitarioDoProdutoNaVendaSemDesconto, precoDoProdutoNaVendaComDescontoAplicado);
+                decimal totalItem = precoDoProdutoNaVendaComDescontoAplicado * item.Quantidade;
+                ItemVendaOutputDto itemVendaOutputDto = new ItemVendaOutputDto(item.Id, item.Produto, item.DataCriacao, item.Quantidade, item.DescontoUnitario, item.PrecoUnitarioDoProdutoNaVendaSemDesconto, precoDoProdutoNaVendaComDescontoAplicado,totalItem);
                 itensVendaFormatoDtoOutput.Add(itemVendaOutputDto);
             }
             foreach (ServicoVenda servicoVenda in servicosDaVenda)
@@ -233,8 +235,9 @@ namespace ApiEstagioBicicletaria.Services
             foreach(ItemVenda itemNoFormatoModel in listaDeItensDaVendaCriada)
             {
                 decimal precoDoProdutoNaVendaComDescontoAplicado = itemNoFormatoModel.PrecoUnitarioDoProdutoNaVendaSemDesconto - itemNoFormatoModel.DescontoUnitario;
+                decimal totalItem = precoDoProdutoNaVendaComDescontoAplicado * itemNoFormatoModel.Quantidade;
                 ItemVendaOutputDto itemNoFormatoDeOutput = new ItemVendaOutputDto(itemNoFormatoModel.Id, itemNoFormatoModel.Produto, itemNoFormatoModel.DataCriacao,
-                    itemNoFormatoModel.Quantidade, itemNoFormatoModel.DescontoUnitario, itemNoFormatoModel.PrecoUnitarioDoProdutoNaVendaSemDesconto, precoDoProdutoNaVendaComDescontoAplicado);
+                    itemNoFormatoModel.Quantidade, itemNoFormatoModel.DescontoUnitario, itemNoFormatoModel.PrecoUnitarioDoProdutoNaVendaSemDesconto, precoDoProdutoNaVendaComDescontoAplicado,totalItem);
 
                 listaDeItensASeremRetornados.Add(itemNoFormatoDeOutput);
             }
@@ -457,8 +460,9 @@ namespace ApiEstagioBicicletaria.Services
             foreach (ItemVenda itemNoFormatoModel in listaDeItensAtualizadosDaVenda)
             {
                 decimal PrecoProdutoNaVendaComDescontoAplicado = itemNoFormatoModel.PrecoUnitarioDoProdutoNaVendaSemDesconto - itemNoFormatoModel.DescontoUnitario;
+                decimal totalItem = PrecoProdutoNaVendaComDescontoAplicado * itemNoFormatoModel.Quantidade;
                 ItemVendaOutputDto itemNoFormatoDeOutput = new ItemVendaOutputDto(itemNoFormatoModel.Id, itemNoFormatoModel.Produto, itemNoFormatoModel.DataCriacao,
-                    itemNoFormatoModel.Quantidade, itemNoFormatoModel.DescontoUnitario, itemNoFormatoModel.PrecoUnitarioDoProdutoNaVendaSemDesconto, PrecoProdutoNaVendaComDescontoAplicado);
+                    itemNoFormatoModel.Quantidade, itemNoFormatoModel.DescontoUnitario, itemNoFormatoModel.PrecoUnitarioDoProdutoNaVendaSemDesconto, PrecoProdutoNaVendaComDescontoAplicado,totalItem);
 
                 listaDeItensASeremRetornadosFormatoOutput.Add(itemNoFormatoDeOutput);
             }
