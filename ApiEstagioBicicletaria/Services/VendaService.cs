@@ -643,7 +643,7 @@ namespace ApiEstagioBicicletaria.Services
             int numeroDeRegistroASerBuscados = _numeroMaximoDePaginas * _numeroDeLinhasPorPagina;
 
             List<Venda> vendasNoPeriodo = _contexto.Vendas.
-                Where(v => v.DataCriacao >= dataDeInicioDoPeriodoConvertidaDateTime && v.DataCriacao <= dataDeFimDoPeriodoConvertidaDateTime)
+                Where(v => v.DataCriacao >= dataDeInicioDoPeriodoConvertidaDateTime && v.DataCriacao <= dataDeFimDoPeriodoConvertidaDateTime && v.Ativo)
                 .OrderBy(v => v.DataCriacao)
                 .Take(numeroDeRegistroASerBuscados)
                 .ToList();

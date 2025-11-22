@@ -26,6 +26,24 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                 page.Margin(2, Unit.Centimetre);
                 page.Content().Column(col =>
                 {
+                    col.Item().Table(table =>
+                    {
+                        table.ColumnsDefinition(c =>
+                        {
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                        });
+
+                        table.Cell().ColumnSpan(5);
+                        table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().AlignTop().PaddingBottom(-80).Width(120).Height(60).Image("Resources/LogoBikeCiaShopParaEstagio.jpg").FitArea();
+                    });
                     col.Item().Text("Relatório de Produtos Em Falta").FontSize(20).Bold();
                     col.Item().PaddingVertical(10);
                     col.Item().Table(table =>
@@ -47,7 +65,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 
                         foreach (Produto produto in _produtos)
                         {
-                            table.Cell().AlignRight().PaddingRight(32).Text(produto.CodigoDeBarra);
+                            table.Cell().AlignCenter().PaddingRight(25).Text(produto.CodigoDeBarra);
                             table.Cell().Text(produto.NomeProduto);
                             table.Cell().PaddingLeft(-15).PaddingRight(20).AlignRight().Text($"R$ {produto.PrecoUnitario}");
                             table.Cell().PaddingLeft(-15).AlignRight().Text(produto.QuantidadeEmEstoque.ToString());

@@ -27,6 +27,24 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                 page.Margin(2, Unit.Centimetre);
                 page.Content().Column(col =>
                 {
+                    col.Item().Table(table =>
+                    {
+                        table.ColumnsDefinition(c =>
+                        {
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                            c.RelativeColumn();
+                        });
+
+                        table.Cell().ColumnSpan(5);
+                        table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().AlignTop().PaddingBottom(-80).Width(120).Height(60).Image("Resources/LogoBikeCiaShopParaEstagio.jpg").FitArea();
+                    });
                     col.Item().Text("Relatório de Produtos Mais Vendidos").FontSize(20).Bold();
                     col.Item().PaddingVertical(10);
                     col.Item().Table(table =>
@@ -48,7 +66,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 
                         foreach(ProdutoMaisVendidoDto dto in _produtos)
                         {
-                            table.Cell().AlignRight().PaddingRight(32).Text(dto.Produto.CodigoDeBarra);
+                            table.Cell().AlignCenter().PaddingRight(25).Text(dto.Produto.CodigoDeBarra);
                             table.Cell().PaddingLeft(9).Text(dto.Produto.NomeProduto);
                             table.Cell().AlignRight().PaddingRight(5).Text($"R$  {dto.Produto.PrecoUnitario}");
                             table.Cell().AlignRight().Text(dto.QuantidadeVendida.ToString());

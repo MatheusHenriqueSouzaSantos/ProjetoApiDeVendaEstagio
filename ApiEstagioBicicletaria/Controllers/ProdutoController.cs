@@ -264,7 +264,7 @@ namespace ApiEstagioBicicletaria.Controllers
             try
             {
                 byte[] bytesPdf = _produtoService.GerarRelatorioDeProdutosEmFalta();
-                return File(bytesPdf, "application/pdf", "relatorioDeEmFalta.pdf");
+                return File(bytesPdf, "application/pdf", "relatorioDeProdutosEmFalta.pdf");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {

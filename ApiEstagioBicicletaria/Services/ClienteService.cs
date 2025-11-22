@@ -65,7 +65,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
             }
-            ClienteFisico? clienteExistenteRetornadoComEsseCpf= _contextoDb.ClientesFisicos.Where(c => c.Cpf == dto.Cpf && c.Ativo).FirstOrDefault();
+            ClienteFisico? clienteExistenteRetornadoComEsseCpf= _contextoDb.ClientesFisicos.Where(c => c.Cpf == cpfSemPontoETracos && c.Ativo).FirstOrDefault();
             if (clienteExistenteRetornadoComEsseCpf != null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um cliente cadastrado com esse cpf");
@@ -94,7 +94,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cnpj inválido");
             }
-            ClienteJuridico? empresaExistenteRetornadoComEsseCnpj = _contextoDb.ClientesJuridicos.Where(c => c.Cnpj == dto.Cnpj && c.Ativo).FirstOrDefault();
+            ClienteJuridico? empresaExistenteRetornadoComEsseCnpj = _contextoDb.ClientesJuridicos.Where(c => c.Cnpj == cnpjSemPontoETracos && c.Ativo).FirstOrDefault();
             if (empresaExistenteRetornadoComEsseCnpj != null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe uma empresa cadastrada com esse cnpj");
