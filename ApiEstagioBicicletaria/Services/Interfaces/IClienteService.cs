@@ -22,5 +22,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         void DeletarCLientePorId(Guid id);
 
         List<Cliente> BuscarClientesPorNome(string nome);
+
+        Cliente BuscarClientePorDocumentoIndentificador (ClienteDocumentoInputDto dto);
     }
 }

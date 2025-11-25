@@ -60,7 +60,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cpf não pode ser sem valor");
             }
-            string cpfSemPontoETracos= ClienteValidacao.RetirarPontosETracos(dto.Cpf);
+            string cpfSemPontoETracos= ClienteValidacao.RemoverNaoNumericos(dto.Cpf);
             if (!ClienteValidacao.ValidarCpf(cpfSemPontoETracos))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
@@ -85,7 +85,7 @@ namespace ApiEstagioBicicletaria.Services
             //{
             //    throw new ExcecaoDeRegraDeNegocio(400, "Inscrição estadual inválida");
             //}
-            string cnpjSemPontoETracos = ClienteValidacao.RetirarPontosETracos(dto.Cnpj);
+            string cnpjSemPontoETracos = ClienteValidacao.RemoverNaoNumericos(dto.Cnpj);
             if (string.IsNullOrWhiteSpace(cnpjSemPontoETracos))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cnpj não pode estar sem valor");
@@ -199,6 +199,57 @@ namespace ApiEstagioBicicletaria.Services
             todosClientes.AddRange(clientesJuridicos);
 
             return todosClientes;
+        }
+        public Cliente BuscarClientePorDocumentoIndentificador(ClienteDocumentoInputDto dto)
+        {
+            switch (dto.TipoDocumento) 
+            {
+                case (EnumTipoDocumentoASerBuscado.Cpf):
+                    {
+                        return BuscarClientePorCpf(dto.NumeroDocumento);
+                        break;
+                    }
+                case (EnumTipoDocumentoASerBuscado.Cnpj):
+                    {
+                        return BuscarClientePorCnpj(dto.NumeroDocumento);
+                        break;
+                    }
+                default:
+                    {
+                        throw new ExcecaoDeRegraDeNegocio(400,"Tipo de cliente inválido enviado");
+                        break;
+                    }
+            }
+        }
+        public ClienteFisico BuscarClientePorCpf(string cpfEnviado)
+        {
+            string cpfSomentNumeros=ClienteValidacao.RemoverNaoNumericos(cpfEnviado);
+            if (!ClienteValidacao.ValidarCpf(cpfSomentNumeros))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"Cpf Ínválido");
+            }
+            ClienteFisico? clienteVindoDoBanco = _contextoDb.ClientesFisicos.Include(c=>c.Endereco).FirstOrDefault(c => c.Cpf == cpfSomentNumeros && c.Ativo);
+            if(clienteVindoDoBanco == null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"Cliente não encontrado!!");
+            }
+            return clienteVindoDoBanco;
+        }
+
+        public ClienteJuridico BuscarClientePorCnpj(string cnpjEnviado)
+        {
+            string cnpjSomenteNumeros = ClienteValidacao.RemoverNaoNumericos(cnpjEnviado);
+
+            if (!ClienteValidacao.ValidarCnpj(cnpjSomenteNumeros))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Cnpj Inválido");
+            }
+            ClienteJuridico? clienteVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c=>c.Endereco).FirstOrDefault(c => c.Cnpj == cnpjSomenteNumeros && c.Ativo);
+            if(clienteVindoDoBanco == null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Cliente não encontrado!!");
+            }
+            return clienteVindoDoBanco;
         }
     }
 }

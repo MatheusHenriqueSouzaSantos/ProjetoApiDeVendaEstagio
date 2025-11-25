@@ -197,6 +197,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("buscar-clientes-por-nome/{nome}")]
+        //pedir para mandar se quer que venha fisicos ou júridicos
         public ActionResult<List<Cliente>> BuscarClientesPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
         {
             try
@@ -218,6 +219,24 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
+
+        [HttpPost("buscar-cliente-por-documento-indentificador")]
+        public ActionResult<Cliente> BuscarClientePorDocumentoIndentificador([FromBody] ClienteDocumentoInputDto dto)
+        {
+            try
+            {
+                return _clienteService.BuscarClientePorDocumentoIndentificador(dto);
+            }
+            catch(ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,"Erro Inesperado");
+            }
+        }
+
     }
 
 }

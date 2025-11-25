@@ -202,7 +202,7 @@ namespace ApiEstagioBicicletaria.Services
                 .OrderBy(p=>p.QuantidadeEmEstoque)
                 .Take(numeroDeRegistroASerBuscados)
                 .ToList();
-
+            //colocar quando a quantidade for menor que tal, fazer a busca??
             QuestPDF.Settings.License = LicenseType.Community;
 
             var documento = new RelatorioDeProdutosEmFalta(produtosEmFalta);

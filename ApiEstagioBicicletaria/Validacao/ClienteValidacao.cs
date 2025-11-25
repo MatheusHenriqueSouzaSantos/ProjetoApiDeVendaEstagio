@@ -4,7 +4,7 @@ namespace ApiEstagioBicicletaria.Validacao
 {
     public static class ClienteValidacao
     {
-        public static string RetirarPontosETracos(String informacao)
+        public static string RemoverNaoNumericos(String informacao)
         {
             return Regex.Replace(informacao, @"\D", "");
         }
