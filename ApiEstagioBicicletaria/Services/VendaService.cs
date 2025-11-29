@@ -52,7 +52,7 @@ namespace ApiEstagioBicicletaria.Services
 
                 int QuantidadeDeParcelasNaoPagasDaVenda=parcelasDaTranscao.Where(p=>p.Pago==false).Count();
                 int QuantidadeDeParcelasPagasVenda=parcelasDaTranscao.Where(p=>p.Pago).Count();
-                decimal valorPago = parcelasDaTranscao.Where(p => p.Pago).Sum(p => p.ValorParcela);
+                decimal valorPago = Math.Round(parcelasDaTranscao.Where(p => p.Pago).Sum(p => p.ValorParcela),2,MidpointRounding.AwayFromZero);
 
                 List<ItemVendaOutputDto> itensVendaFormatoDtoOutput=new List<ItemVendaOutputDto>();
 
@@ -103,7 +103,7 @@ namespace ApiEstagioBicicletaria.Services
 
             int QuantidadeDeParcelasNaoPagasDaVenda = parcelasDaTranscao.Where(p=>p.Pago==false).Count();
             int QuantidadeDeParcelasPagasVenda = parcelasDaTranscao.Where(p => p.Pago).Count();
-            decimal valorPago = parcelasDaTranscao.Where(p => p.Pago).Sum(p => p.ValorParcela);
+            decimal valorPago = Math.Round((parcelasDaTranscao.Where(p => p.Pago).Sum(p => p.ValorParcela)),2,MidpointRounding.AwayFromZero);
 
             List<ItemVendaOutputDto> itensVendaFormatoDtoOutput = new List<ItemVendaOutputDto>();
 
@@ -144,7 +144,7 @@ namespace ApiEstagioBicicletaria.Services
             List<ItemVendaInputDto> itensVenda = dto.Venda.ItensVenda;
             List<ServicoVendaInputDto> servicosVenda = dto.Venda.ServicosVenda;
             decimal valorTotalDaVendaSemDescontoTotalAplicado=CalcularTotalVendaSemDescontoTotalAplicado(itensVenda,servicosVenda);
-            decimal descontoVenda = Math.Round(dto.Venda.DescontoSobreTotalVenda ?? 0.0m,2,MidpointRounding.AwayFromZero);
+            decimal descontoVenda = dto.Venda.DescontoSobreTotalVenda ?? 0.0m;
             if (descontoVenda < 0)
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"O desconto não pode ser negativo");
@@ -222,11 +222,13 @@ namespace ApiEstagioBicicletaria.Services
 
             Transacao transacaoCriada = new Transacao(vendaCriada, dto.Transacao.TipoPagamento, dto.Transacao.MeioPagamento);
             //validar se valores são maior que 0, já fiz essa validação???
-            decimal valorDeCadaParcela = vendaCriada.ValorTotalComDesconto / dto.Transacao.QuantidadeDeParcelas;
+            //decimal valorDeCadaParcela = vendaCriada.ValorTotalComDesconto / dto.Transacao.QuantidadeDeParcelas;
 
-            for (int i=0;i<dto.Transacao.QuantidadeDeParcelas; i++)
+            List<Decimal> valoresDasParcelas = calcularValorDasParcelas(vendaCriada.ValorTotalComDesconto, dto.Transacao.QuantidadeDeParcelas);
+
+            for (int i=0;i< valoresDasParcelas.Count(); i++)
             {
-                Parcela parcelaCriada = new Parcela(transacaoCriada, (i + 1), valorDeCadaParcela);
+                Parcela parcelaCriada = new Parcela(transacaoCriada, (i + 1), valoresDasParcelas[i]);
                 _contexto.Parcelas.Add(parcelaCriada);
             }
             _contexto.SaveChanges();
@@ -276,9 +278,9 @@ namespace ApiEstagioBicicletaria.Services
                 if (produtoVindoDoBanco == null)
                 {
                     throw new ExcecaoDeRegraDeNegocio(404,$"Produto com id {itemIterado.IdProduto} não encontrado");
-                }decimal precoDoProdutoComDescontoAplicado =  Math.Round(produtoVindoDoBanco.PrecoUnitario - (itemIterado.DescontoUnitario ?? 0.0m),2, MidpointRounding.AwayFromZero);
-                
-                decimal totalItem = precoDoProdutoComDescontoAplicado * itemIterado.Quantidade;
+                }
+                decimal precoDoProdutoComDescontoAplicado =  Math.Round(produtoVindoDoBanco.PrecoUnitario - (itemIterado.DescontoUnitario ?? 0.0m),2, MidpointRounding.AwayFromZero); 
+                decimal totalItem =Math.Round ((precoDoProdutoComDescontoAplicado * itemIterado.Quantidade),2,MidpointRounding.AwayFromZero);
                 totalVenda += totalItem;
             }
             foreach (ServicoVendaInputDto servicoIterado in servicosVenda)
@@ -289,10 +291,25 @@ namespace ApiEstagioBicicletaria.Services
                     throw new ExcecaoDeRegraDeNegocio(404, $"Serviço com id {servicoIterado.IdServico} não encontrado");
                 }
                 decimal precoDoServicoComDescontoAplicado =Math.Round(servicoVindoDoBanco.PrecoServico - (servicoIterado.DescontoServico ?? 0.0m),2, MidpointRounding.AwayFromZero);
-                decimal totalServico = precoDoServicoComDescontoAplicado;
+                decimal totalServico = Math.Round(precoDoServicoComDescontoAplicado,2,MidpointRounding.AwayFromZero);
                 totalVenda += totalServico;
             }
-            return Math.Round(totalVenda,2, MidpointRounding.AwayFromZero);
+            return totalVenda;
+        }
+
+        public List<decimal> calcularValorDasParcelas(decimal totalDaVendaComDesconto, int quantidadeDeParcelas)
+        {
+            decimal valorBase = Math.Round(totalDaVendaComDesconto / quantidadeDeParcelas,2,MidpointRounding.AwayFromZero);
+
+            var valorDeCadaParcela = Enumerable.Repeat(valorBase, quantidadeDeParcelas).ToList();
+
+            decimal somaDasParcelas = valorDeCadaParcela.Sum();
+
+            decimal diferencaValorTotalParaValorTotalDasParcelas = totalDaVendaComDesconto - somaDasParcelas;
+
+            valorDeCadaParcela[quantidadeDeParcelas - 1] += diferencaValorTotalParaValorTotalDasParcelas;
+
+            return valorDeCadaParcela;
         }
 
         public void AbaterQuantidadeEmEstoque(Produto produto, int quantidadeASerAbatida)
@@ -336,7 +353,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             List<ItemVendaInputDto> itensEnviadosFormatoDto = dto.Venda.ItensVenda;
             List<ServicoVendaInputDto> servicosEnviadosFormatoDto = dto.Venda.ServicosVenda;
-            decimal valorTotalDaVendaSemDescontoTotalAplicado = CalcularTotalVendaSemDescontoTotalAplicado(itensEnviadosFormatoDto, servicosEnviadosFormatoDto);
+            decimal valorTotalDaVendaSemDescontoTotalAplicado =CalcularTotalVendaSemDescontoTotalAplicado(itensEnviadosFormatoDto, servicosEnviadosFormatoDto);
             decimal descontoVenda = dto.Venda.DescontoSobreTotalVenda ?? 0.0m;
             if (descontoVenda < 0)
             {
@@ -436,11 +453,13 @@ namespace ApiEstagioBicicletaria.Services
 
             //List<Parcela> parcelasAtualizadasDaVenda=new List<Parcela>();
 
-            decimal valorDeCadaParcela = valorTotalDaVendaComDescontoAplicado / dto.Transacao.QuantidadeDeParcelas;
+            //decimal valorDeCadaParcela =Math.Round((valorTotalDaVendaComDescontoAplicado / dto.Transacao.QuantidadeDeParcelas),2,MidpointRounding.AwayFromZero);
 
-            for (int i = 0; i < dto.Transacao.QuantidadeDeParcelas; i++)
+            List<Decimal> valoresDasParcelas = calcularValorDasParcelas(valorTotalDaVendaComDescontoAplicado, dto.Transacao.QuantidadeDeParcelas);
+
+            for (int i = 0; i < valoresDasParcelas.Count(); i++)
             {
-                Parcela parcelaCriada = new Parcela(transacaoDaVendaASerAtualizada, (i + 1), valorDeCadaParcela);
+                Parcela parcelaCriada = new Parcela(transacaoDaVendaASerAtualizada, (i + 1), valoresDasParcelas[i]);
                 _contexto.Parcelas.Add(parcelaCriada);
             }
             VendaParaAtualizar.Cliente = clienteAtualizadoDaVenda;
@@ -683,7 +702,7 @@ namespace ApiEstagioBicicletaria.Services
                 string tipoDePagamento = transacaoDaVenda.TipoPagamento.ToString();
                 string meioDePagamento = transacaoDaVenda.MeioPagamento.ToString();
                 string dataDaVenda = DateOnly.FromDateTime(vendaIterada.DataCriacao).ToString();
-                decimal valorTotalPago = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Pago && p.Ativo).Sum(p => p.ValorParcela);
+                decimal valorTotalPago =Math.Round ((_contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Pago && p.Ativo).Sum(p => p.ValorParcela)),2,MidpointRounding.AwayFromZero);
                 valorTotalPagoDasVendasNessePeriodo += valorTotalPago;
                 decimal valorTotalVenda = vendaIterada.ValorTotalComDesconto;
                 valorTotalDasVendasNessePeriodo += valorTotalVenda;
@@ -794,7 +813,7 @@ namespace ApiEstagioBicicletaria.Services
 
                 int quantidadeDeParcelasPagas = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Pago && p.Ativo).Count();
 
-                decimal valorPagoDaTransacao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Pago && p.Ativo).Sum(p => p.ValorParcela);
+                decimal valorPagoDaTransacao = Math.Round((_contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Pago && p.Ativo).Sum(p => p.ValorParcela)),2,MidpointRounding.AwayFromZero);
 
                 TransacaoOutputDto transacaoOutput = new TransacaoOutputDto(transacaoDaVenda.Id, transacaoDaVenda.DataCriacao, transacaoDaVenda.TipoPagamento, transacaoDaVenda.MeioPagamento,
                     transacaoDaVenda.TransacaoEmCurso, transacaoDaVenda.Pago, quantidadeDeParcelasNaoPagas, quantidadeDeParcelasPagas, valorPagoDaTransacao);
