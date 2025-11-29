@@ -104,6 +104,11 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
             }
+            bool produtoEstaEmAlgumaVenda = _contextoDb.ItensVendas.Where(i => i.IdProduto == produtoVindoDoBanco.Id && i.Ativo).Any();
+            if (produtoEstaEmAlgumaVenda)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"Esse produto esta em uma venda, exclua a venda antes de exclui-lo");
+            }
             produtoVindoDoBanco.Ativo = false;
             _contextoDb.Update(produtoVindoDoBanco);
             _contextoDb.SaveChanges();
@@ -198,7 +203,7 @@ namespace ApiEstagioBicicletaria.Services
         {
             int numeroDeRegistroASerBuscados = _numeroMaximoDePaginas * _numeroDeLinhasPorPagina;
             List<Produto> produtosEmFalta = _contextoDb.
-                Produtos.Where(p=>p.Ativo)
+                Produtos.Where(p=>p.Ativo  && p.QuantidadeEmEstoque<=20)
                 .OrderBy(p=>p.QuantidadeEmEstoque)
                 .Take(numeroDeRegistroASerBuscados)
                 .ToList();

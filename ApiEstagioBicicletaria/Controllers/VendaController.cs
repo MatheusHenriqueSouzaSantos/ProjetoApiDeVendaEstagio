@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+﻿using ApiEstagioBicicletaria.Dtos;
+using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Excecoes;
@@ -175,6 +176,21 @@ namespace ApiEstagioBicicletaria.Controllers
                 //return StatusCode(500, ex.Message);
             }
         }
-
+        [HttpGet("buscar-vendas-por-documento-indentificador-do-cliente")]
+        public ActionResult<List<VendaTransacaoOutputDto>> BuscarVendasPorCpfOuCnpj(DocumentoClienteInputDto dto)
+        {
+            try
+            {
+                return _vendaService.BuscarVendasPorCpfOuCnpj(dto);
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, "Erro no Servidor");
+            }
+        }
     }
 }

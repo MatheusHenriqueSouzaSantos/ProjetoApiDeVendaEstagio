@@ -22,7 +22,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
             //       .ValueGeneratedNever();
 
             builder.Property(c => c.Nome)
-                .HasMaxLength(70)
+                .HasMaxLength(120)
                 .HasColumnName("NOME")
                 .IsRequired();
             builder.Property(c=>c.Cpf)

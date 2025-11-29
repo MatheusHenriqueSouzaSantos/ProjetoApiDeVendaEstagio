@@ -23,6 +23,6 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         List<Cliente> BuscarClientesPorNome(string nome);
 
-        Cliente BuscarClientePorDocumentoIndentificador (ClienteDocumentoInputDto dto);
+        Cliente BuscarClientePorDocumentoIndentificador (DocumentoClienteInputDto dto);
     }
 }

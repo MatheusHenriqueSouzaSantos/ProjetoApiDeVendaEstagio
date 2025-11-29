@@ -2,14 +2,14 @@
 
 namespace ApiEstagioBicicletaria.Dtos
 {
-    public class ClienteDocumentoInputDto
+    public class DocumentoClienteInputDto
     {
         [Required]
         public EnumTipoDocumentoASerBuscado TipoDocumento { get; set; }
         [Required]
         public string NumeroDocumento { get; set; } = string.Empty;
 
-        public ClienteDocumentoInputDto(EnumTipoDocumentoASerBuscado tipoDocumento, string numeroDocumento)
+        public DocumentoClienteInputDto(EnumTipoDocumentoASerBuscado tipoDocumento, string numeroDocumento)
         {
             this.TipoDocumento = tipoDocumento;
             NumeroDocumento = numeroDocumento;

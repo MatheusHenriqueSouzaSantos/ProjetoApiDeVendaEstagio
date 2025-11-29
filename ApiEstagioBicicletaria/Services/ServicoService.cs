@@ -97,6 +97,11 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
             }
+            bool servicoEstaEmAlgumaVenda = _contextoDb.ServicosVendas.Where(sv => sv.IdServico == servicoVindoDoBanco.Id && sv.Ativo).Any();
+            if (servicoEstaEmAlgumaVenda)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Esse serviço esta em uma venda, exclua a venda antes de exclui-lo");
+            }
             servicoVindoDoBanco.Ativo = false;
             _contextoDb.Update(servicoVindoDoBanco);
             _contextoDb.SaveChanges();

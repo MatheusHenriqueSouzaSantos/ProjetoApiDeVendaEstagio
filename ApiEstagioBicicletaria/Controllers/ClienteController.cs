@@ -221,7 +221,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPost("buscar-cliente-por-documento-indentificador")]
-        public ActionResult<Cliente> BuscarClientePorDocumentoIndentificador([FromBody] ClienteDocumentoInputDto dto)
+        public ActionResult<Cliente> BuscarClientePorDocumentoIndentificador([FromBody] DocumentoClienteInputDto dto)
         {
             try
             {

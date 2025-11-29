@@ -70,6 +70,11 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um cliente cadastrado com esse cpf");
             }
+            Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.Where(c => c.Email == dto.Email && c.Ativo).FirstOrDefault();
+            if (clienteExistenteComEsseEmail != null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"Já existe um cliente cadastrado com esse E-mail");
+            }
             Endereco endereco = new Endereco(dto.Endereco.Logradouro, dto.Endereco.Numero, dto.Endereco.Cidade, dto.Endereco.SiglaUf);
             ClienteFisico clienteFisico = new ClienteFisico(endereco, dto.Telefone, dto.Email, dto.Nome, cpfSemPontoETracos);
             _contextoDb.Enderecos.Add(endereco);
@@ -99,6 +104,11 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe uma empresa cadastrada com esse cnpj");
             }
+            Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.Where(c => c.Email == dto.Email && c.Ativo).FirstOrDefault();
+            if (clienteExistenteComEsseEmail != null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um cliente cadastrado com esse E-mail");
+            }
             Endereco endereco = new Endereco(dto.Endereco.Logradouro, dto.Endereco.Numero, dto.Endereco.Cidade, dto.Endereco.SiglaUf);
             ClienteJuridico clienteJuridico = new ClienteJuridico(endereco, dto.Telefone, dto.Email, dto.RazaoSocial, 
                 dto.NomeFantasia,dto.InscricaoEstadual,cnpjSemPontoETracos);
@@ -114,6 +124,11 @@ namespace ApiEstagioBicicletaria.Services
             if (!(string.IsNullOrWhiteSpace(dto.Cpf)))
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"O Cpf deve vir vazio ou nulo, não é possivel atualizar um cpf");
+            }
+            Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.FirstOrDefault(c=>c.Email==dto.Email && c.Ativo && c.Id!=id);
+            if (clienteExistenteComEsseEmail != null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um cliente cadastrado com esse E-mail");
             }
             ClienteFisico? clienteFisicoVindoDoBanco= _contextoDb.ClientesFisicos.Include(c => c.Endereco).Where(c=>c.Id==id && c.Ativo).FirstOrDefault();
             if(clienteFisicoVindoDoBanco== null)
@@ -151,6 +166,11 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Empresa não encontrado");
             }
+            Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.FirstOrDefault(c => c.Email == dto.Email && c.Ativo && c.Id != id);
+            if (clienteExistenteComEsseEmail != null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um cliente cadastrado com esse E-mail");
+            }
             clienteJuridicoVindoDoBanco.Endereco.Logradouro = dto.Endereco.Logradouro;
             clienteJuridicoVindoDoBanco.Endereco.Numero = dto.Endereco.Numero;
             clienteJuridicoVindoDoBanco.Endereco.Cidade = dto.Endereco.Cidade;
@@ -170,9 +190,15 @@ namespace ApiEstagioBicicletaria.Services
         {
             //is ativo
             Cliente? clienteExistente = _contextoDb.Clientes.Where(c => c.Id == id && c.Ativo).FirstOrDefault();
+
             if(clienteExistente == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado");
+            }
+            bool clienteEstaEmAlgumaVenda = _contextoDb.Vendas.Where(v => v.IdCliente == clienteExistente.Id && v.Ativo).Any();
+            if (clienteEstaEmAlgumaVenda)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Esse cliente já realizou uma venda, exclua a venda antes de exclui-lo");
             }
             clienteExistente.Ativo = false;
             _contextoDb.Update(clienteExistente);
@@ -200,7 +226,7 @@ namespace ApiEstagioBicicletaria.Services
 
             return todosClientes;
         }
-        public Cliente BuscarClientePorDocumentoIndentificador(ClienteDocumentoInputDto dto)
+        public Cliente BuscarClientePorDocumentoIndentificador(DocumentoClienteInputDto dto)
         {
             switch (dto.TipoDocumento) 
             {

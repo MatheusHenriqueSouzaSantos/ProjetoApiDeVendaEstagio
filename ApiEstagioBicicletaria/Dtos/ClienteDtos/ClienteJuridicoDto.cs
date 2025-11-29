@@ -6,7 +6,7 @@ namespace ApiEstagioBicicletaria.Dtos.ClienteDtos
     public class ClienteJuridicoDto : ClienteDto
     {
         [Required(ErrorMessage ="O campo Razao Social é obrtigatório")]
-        [StringLength(70, ErrorMessage = "O campo Razão Social deve ter no máximo 70 caracteres")]
+        [StringLength(120, ErrorMessage = "O campo Razão Social deve ter no máximo 120 caracteres")]
         public string RazaoSocial { get;  set; }
 
         [StringLength(30, ErrorMessage = "O campo Nome Fantasia deve ter no máximo 30 caracteres")]
