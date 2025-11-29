@@ -19,7 +19,7 @@ namespace ApiEstagioBicicletaria.Services
         {
             Usuario? usuarioVindoDoBanco= _contextoDb.Usuarios.Where(u=>u.Email==dto.Email).FirstOrDefault();
 
-            if(usuarioVindoDoBanco== null)
+            if(usuarioVindoDoBanco==null)
             {
                 throw new ExcecaoDeRegraDeNegocio(404,"Usuário não existe");
             }

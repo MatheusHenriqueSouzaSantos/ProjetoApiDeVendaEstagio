@@ -10,7 +10,7 @@ using Org.BouncyCastle.Utilities;
 namespace ApiEstagioBicicletaria.Controllers
 {
     [ApiController]
-    [Route("api/{controller}")]
+    [Route("api/[controller]")]
     public class VendaController : ControllerBase
     {
         private IVendaService _vendaService;
