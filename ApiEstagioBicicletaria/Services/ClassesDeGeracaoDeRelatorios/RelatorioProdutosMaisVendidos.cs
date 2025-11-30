@@ -63,15 +63,24 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                             header.Cell().AlignRight().PaddingRight(5).Text("Preço Unitário").Bold();
                             header.Cell().AlignRight().Text("Quantidade Vendida").Bold();
                         });
-
-                        foreach(ProdutoMaisVendidoDto dto in _produtos)
+                        table.Cell().ColumnSpan(4).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
+                        foreach (ProdutoMaisVendidoDto dto in _produtos)
                         {
-                            table.Cell().AlignCenter().PaddingRight(25).Text(dto.Produto.CodigoDeBarra);
+                            table.Cell().AlignRight().PaddingRight(33).Text(dto.Produto.CodigoDeBarra);
                             table.Cell().PaddingLeft(9).Text(dto.Produto.NomeProduto);
-                            table.Cell().AlignRight().PaddingRight(5).Text($"R$  {dto.Produto.PrecoUnitario}");
+                            table.Cell().AlignRight().PaddingRight(6).Text($"R$  {dto.Produto.PrecoUnitario}");
                             table.Cell().AlignRight().Text(dto.QuantidadeVendida.ToString());
+                            table.Cell().ColumnSpan(4).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
                         }
                     });
+                });
+                page.Footer().AlignRight().Text(text =>
+                {
+                    text.Span($"Gerado em: {DateTime.Now.ToString("HH:mm dd/MM/yyyy")} - ").FontSize(10);
+                    text.Span("Página ").FontSize(10);
+                    text.CurrentPageNumber().FontSize(10);
+                    text.Span(" de ").FontSize(10);
+                    text.TotalPages().FontSize(10);
                 });
             });
                 

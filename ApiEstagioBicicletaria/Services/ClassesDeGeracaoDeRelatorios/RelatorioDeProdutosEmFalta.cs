@@ -57,20 +57,34 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         });
                         table.Header(header =>
                         {
-                            header.Cell().Text("Código De Barra").Bold();
-                            header.Cell().Text("Nome Do Produto").Bold();
-                            header.Cell().PaddingLeft(-15).PaddingRight(20).AlignRight().Text("Preço Unitário").Bold();
-                            header.Cell().PaddingLeft(-15).AlignRight().Text("Quantidade Em Estoque").Bold();
+                            header.Cell().AlignCenter().Text("Código De Barra").Bold();
+                            header.Cell().AlignCenter().Text("Nome Do Produto").Bold();
+                            header.Cell().AlignRight().Text("Preço Unitário").Bold();
+                            header.Cell().AlignRight().Text("Quantidade Em Estoque").Bold();
                         });
+                        table.Cell().ColumnSpan(4).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
+                        //header.Cell().PaddingLeft(-15).PaddingRight(20).AlignRight().Text("Preço Unitário").Bold();
+                        //header.Cell().PaddingLeft(-15).AlignRight().Text("Quantidade Em Estoque").Bold();
+
+                        //table.Cell().AlignCenter().PaddingRight(25).Text(produto.CodigoDeBarra);
 
                         foreach (Produto produto in _produtos)
                         {
-                            table.Cell().AlignCenter().PaddingRight(25).Text(produto.CodigoDeBarra);
-                            table.Cell().Text(produto.NomeProduto);
-                            table.Cell().PaddingLeft(-15).PaddingRight(20).AlignRight().Text($"R$ {produto.PrecoUnitario}");
-                            table.Cell().PaddingLeft(-15).AlignRight().Text(produto.QuantidadeEmEstoque.ToString());
+                            table.Cell().AlignRight().PaddingRight(17).Text(produto.CodigoDeBarra);
+                            table.Cell().AlignLeft().PaddingLeft(11).Text(produto.NomeProduto);
+                            table.Cell().AlignRight().PaddingRight(1).Text($"R$ {produto.PrecoUnitario}");
+                            table.Cell().AlignRight().Text(produto.QuantidadeEmEstoque.ToString());
+                            table.Cell().ColumnSpan(4).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
                         }
                     });
+                });
+                page.Footer().AlignRight().Text(text =>
+                {
+                    text.Span($"Gerado em: {DateTime.Now.ToString("HH:mm dd/MM/yyyy")} - ").FontSize(10);
+                    text.Span("Página ").FontSize(10);
+                    text.CurrentPageNumber().FontSize(10);
+                    text.Span(" de ").FontSize(10);
+                    text.TotalPages().FontSize(10);
                 });
             });
 

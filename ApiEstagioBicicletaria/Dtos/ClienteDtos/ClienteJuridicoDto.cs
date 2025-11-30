@@ -12,10 +12,8 @@ namespace ApiEstagioBicicletaria.Dtos.ClienteDtos
         [StringLength(30, ErrorMessage = "O campo Nome Fantasia deve ter no máximo 30 caracteres")]
         public string NomeFantasia { get;  set; }=string.Empty;
 
-        [StringLength(10, ErrorMessage = "O campo Inscrição Estadual deve ter no máximo 10 caracteres")]
+        //[StringLength(10, ErrorMessage = "O campo Inscrição Estadual deve ter no máximo 10 caracteres")]
         public string InscricaoEstadual { get;  set; }=string.Empty;
-
-        //[Required(ErrorMessage ="O campo Cnpj é obrigatório")]
         public string Cnpj { get;  set; }
 
         public ClienteJuridicoDto()

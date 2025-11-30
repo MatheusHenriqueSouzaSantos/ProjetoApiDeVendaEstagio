@@ -739,8 +739,8 @@ namespace ApiEstagioBicicletaria.Services
             Cliente? clienteDasVendasASeremBuscadas=null;
             if(dto.TipoDocumento== EnumTipoDocumentoASerBuscado.Cpf)
             {
-                string cpfSomenteNumericos = ClienteValidacao.RemoverNaoNumericos(dto.NumeroDocumento);
-                if (!ClienteValidacao.ValidarCpf(cpfSomenteNumericos))
+                string cpfSomenteNumericos = ClienteUtil.RemoverNaoNumericos(dto.NumeroDocumento);
+                if (!ClienteUtil.ValidarCpf(cpfSomenteNumericos))
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
                 }
@@ -752,8 +752,8 @@ namespace ApiEstagioBicicletaria.Services
             }
             if (dto.TipoDocumento == EnumTipoDocumentoASerBuscado.Cnpj)
             {
-                string cnpjSomenteNumericos = ClienteValidacao.RemoverNaoNumericos(dto.NumeroDocumento);
-                if (!ClienteValidacao.ValidarCnpj(cnpjSomenteNumericos))
+                string cnpjSomenteNumericos = ClienteUtil.RemoverNaoNumericos(dto.NumeroDocumento);
+                if (!ClienteUtil.ValidarCnpj(cnpjSomenteNumericos))
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "Cnpj inválido");
                 }

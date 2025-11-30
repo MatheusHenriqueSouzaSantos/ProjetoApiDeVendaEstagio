@@ -76,35 +76,52 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         {
                             header.Cell().Text("Código Da Venda").Bold().FontSize(10);
                             header.Cell().Text("Nome Do Cliente").Bold().FontSize(10);
-                            header.Cell().Text("Tipo De Pagamento").Bold().FontSize(10);
-                            header.Cell().Text("Meio De Pagamento").Bold().FontSize(10);
-                            header.Cell().Text("Data Da Venda").Bold().FontSize(10);
-                            header.Cell().AlignCenter().PaddingLeft(6).Text("Pago").Bold().FontSize(10);
+                            header.Cell().PaddingLeft(3).Text("Tipo De Pagamento").Bold().FontSize(10);
+                            header.Cell().PaddingLeft(3).Text("Meio De Pagamento").Bold().FontSize(10);
+                            header.Cell().PaddingLeft(12).PaddingRight(-8).AlignLeft().Text("Data Da Venda").Bold().FontSize(10);
+                            header.Cell().AlignCenter().PaddingLeft(2).PaddingRight(-16).Text("Pago").Bold().FontSize(10);
                             header.Cell().AlignRight().Text("Valor Total Pago").Bold().FontSize(10);
                             header.Cell().AlignRight().Text("Valor Total").Bold().FontSize(10);
                         });
+                        table.Cell().ColumnSpan(8).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
+
+                        int tamanhoDaLista = _vendas.Count();
+                        int i = 0;
 
                         foreach (VendaNoFormatoASerExibidoRelatorioDto vendaDto in _vendas)
                         {
-                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignCenter().PaddingRight(12).Text(vendaDto.CodigoVenda.ToString()).FontSize(10);
+                            i++;
+                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignLeft().PaddingRight(11).PaddingLeft(1).Text(vendaDto.CodigoVenda.ToString()).FontSize(10);
                             table.Cell().PaddingBottom(5).PaddingTop(5).Text(vendaDto.NomeCliente).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).Text(vendaDto.TipoDePagamento).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).Text(vendaDto.MeioDePagamento).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).Text(vendaDto.DataDaVenda).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(6).AlignCenter().Text(vendaDto.Pago).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignRight().Text(vendaDto.ValorTotalPago.ToString("F2")).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignRight().Text(vendaDto.ValorTotal.ToString("F2")).FontSize(10);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(3).Text(vendaDto.TipoDePagamento).FontSize(10);
+                            table.Cell().PaddingBottom(5).PaddingLeft(3).PaddingTop(5).PaddingRight(-1).Text(vendaDto.MeioDePagamento).FontSize(10);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(11).PaddingRight(-9).AlignCenter().Text(vendaDto.DataDaVenda).FontSize(10);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(2).PaddingRight(-13).AlignCenter().Text(vendaDto.Pago).FontSize(10);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignRight().Text("R$ " + vendaDto.ValorTotalPago.ToString("F2")).FontSize(10);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignRight().Text("R$ " + vendaDto.ValorTotal.ToString("F2")).FontSize(10);
+                            if (i != tamanhoDaLista)
+                            {
+                                table.Cell().ColumnSpan(8).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
+                            }
                         }
-                        table.Cell().ColumnSpan(8).PaddingTop(10).PaddingBottom(10).Border(2).BorderColor(Colors.Grey.Darken3);
+                        table.Cell().ColumnSpan(8).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
 
                         table.Cell().ColumnSpan(6);
                         table.Cell().AlignRight().Text("Total Pago Das Vendas:").FontSize(10);
                         table.Cell().AlignRight().Text("Total Das Vendas:").FontSize(10);
 
                         table.Cell().ColumnSpan(6);
-                        table.Cell().AlignRight().Text(_valorTotalPagoDasVendasDoPeriodo.ToString("F2")).FontSize(10);
-                        table.Cell().AlignRight().Text(_valorTotalDasVendasDoPeriodo.ToString("F2")).FontSize(10);
+                        table.Cell().AlignRight().Text("R$ " + _valorTotalPagoDasVendasDoPeriodo.ToString("F2")).FontSize(10);
+                        table.Cell().AlignRight().Text("R$ " + _valorTotalDasVendasDoPeriodo.ToString("F2")).FontSize(10);
                     });
+                });
+                page.Footer().AlignRight().Text(text =>
+                {
+                    text.Span($"Gerado em: {DateTime.Now.ToString("HH:mm dd/MM/yyyy")} - ").FontSize(10);
+                    text.Span("Página ").FontSize(10);
+                    text.CurrentPageNumber().FontSize(10);
+                    text.Span(" de ").FontSize(10);
+                    text.TotalPages().FontSize(10);
                 });
             });
         }

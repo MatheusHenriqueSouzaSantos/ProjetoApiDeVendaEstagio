@@ -2,11 +2,23 @@
 
 namespace ApiEstagioBicicletaria.Validacao
 {
-    public static class ClienteValidacao
+    public static class ClienteUtil
     {
-        public static string RemoverNaoNumericos(String informacao)
+
+        public static string RemoverPontosTracosEBarras(string valor)
         {
-            return Regex.Replace(informacao, @"\D", "");
+            return Regex.Replace(valor, @"[.\-\/]", "");
+        }
+
+        public static bool VerificarSeAStringContemSomenteNumeros(string valor)
+        {
+            return Regex.IsMatch(valor, @"^[0-9]+$");
+            
+        }
+
+        public static string RemoverNaoNumericos(String valor)
+        {
+            return Regex.Replace(valor, @"\D", "");
         }
         public static bool ValidarCpf(String cpfInformado)
         {
@@ -90,17 +102,17 @@ namespace ApiEstagioBicicletaria.Validacao
 
             return true;
         }
-        public static bool validarInscricaoEstadual(string inscricaoEstadual)
-        {
-            if (inscricaoEstadual == "")
-            {
-                return true;
-            }
-            string inscricaoEstadualSomenteNumeros = Regex.Replace(inscricaoEstadual, @"\D", "");
-            if (inscricaoEstadualSomenteNumeros.Length != 10){
-                return false;
-            }
-            return true;
-        }
+        //public static bool validarInscricaoEstadual(string inscricaoEstadual)
+        //{
+        //    if (inscricaoEstadual == "")
+        //    {
+        //        return true;
+        //    }
+        //    string inscricaoEstadualSomenteNumeros = Regex.Replace(inscricaoEstadual, @"\D", "");
+        //    if (inscricaoEstadualSomenteNumeros.Length != 10){
+        //        return false;
+        //    }
+        //    return true;
+        //}
     }
 }

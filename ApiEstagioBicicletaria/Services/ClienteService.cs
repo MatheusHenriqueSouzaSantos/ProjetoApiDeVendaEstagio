@@ -60,8 +60,12 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cpf não pode ser sem valor");
             }
-            string cpfSemPontoETracos= ClienteValidacao.RemoverNaoNumericos(dto.Cpf);
-            if (!ClienteValidacao.ValidarCpf(cpfSemPontoETracos))
+            string cpfSemPontoETracos= ClienteUtil.RemoverPontosTracosEBarras(dto.Cpf);
+            if (!ClienteUtil.VerificarSeAStringContemSomenteNumeros(cpfSemPontoETracos))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O cpf deve conter apenas números");
+            }
+            if (!ClienteUtil.ValidarCpf(cpfSemPontoETracos))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
             }
@@ -85,17 +89,18 @@ namespace ApiEstagioBicicletaria.Services
 
         public ClienteJuridico CadastrarClienteJuridico(ClienteJuridicoDto dto)
         {
-
-            //if (!ClienteValidacao.validarInscricaoEstadual(dto.InscricaoEstadual))
-            //{
-            //    throw new ExcecaoDeRegraDeNegocio(400, "Inscrição estadual inválida");
-            //}
-            string cnpjSemPontoETracos = ClienteValidacao.RemoverNaoNumericos(dto.Cnpj);
-            if (string.IsNullOrWhiteSpace(cnpjSemPontoETracos))
+            //sem validação pois pode ser que seja cadastrado uma inscrição estadual de outro estado
+            string inscricaoEstadualSemPontosTracosEBarras = ClienteUtil.RemoverPontosTracosEBarras(dto.InscricaoEstadual);
+            if (!ClienteUtil.VerificarSeAStringContemSomenteNumeros(inscricaoEstadualSemPontosTracosEBarras))
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "Cnpj não pode estar sem valor");
+                throw new ExcecaoDeRegraDeNegocio(400,"A Incrição Estadual deve Conter apenas números");
             }
-            if (!ClienteValidacao.ValidarCnpj(cnpjSemPontoETracos))
+            string cnpjSemPontoETracos = ClienteUtil.RemoverPontosTracosEBarras(dto.Cnpj);
+            if (!ClienteUtil.VerificarSeAStringContemSomenteNumeros(cnpjSemPontoETracos))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve conter apenas números");
+            }
+            if (!ClienteUtil.ValidarCnpj(cnpjSemPontoETracos))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cnpj inválido");
             }
@@ -111,7 +116,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             Endereco endereco = new Endereco(dto.Endereco.Logradouro, dto.Endereco.Numero, dto.Endereco.Cidade, dto.Endereco.SiglaUf);
             ClienteJuridico clienteJuridico = new ClienteJuridico(endereco, dto.Telefone, dto.Email, dto.RazaoSocial, 
-                dto.NomeFantasia,dto.InscricaoEstadual,cnpjSemPontoETracos);
+                dto.NomeFantasia, inscricaoEstadualSemPontosTracosEBarras, cnpjSemPontoETracos);
             _contextoDb.Enderecos.Add(endereco);
             _contextoDb.ClientesJuridicos.Add(clienteJuridico);
             _contextoDb.SaveChanges();
@@ -156,7 +161,11 @@ namespace ApiEstagioBicicletaria.Services
             //{
             //    throw new ExcecaoDeRegraDeNegocio(400, "Inscrição estadual inválida");
             //}
-
+            string inscricaoEstadualSemPontosTracosEBarras = ClienteUtil.RemoverPontosTracosEBarras(dto.InscricaoEstadual);
+            if (!ClienteUtil.VerificarSeAStringContemSomenteNumeros(inscricaoEstadualSemPontosTracosEBarras))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A Incrição Estadual deve Conter apenas números");
+            }
             if (!(string.IsNullOrWhiteSpace(dto.Cnpj)))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve vir vazio ou nulo, não é possivel atualizar um cpf");
@@ -179,7 +188,7 @@ namespace ApiEstagioBicicletaria.Services
             clienteJuridicoVindoDoBanco.Email = dto.Email;
             clienteJuridicoVindoDoBanco.RazaoSocial=dto.RazaoSocial;
             clienteJuridicoVindoDoBanco.NomeFantasia = dto.NomeFantasia;
-            clienteJuridicoVindoDoBanco.InscricaoEstadual = dto.InscricaoEstadual;
+            clienteJuridicoVindoDoBanco.InscricaoEstadual = inscricaoEstadualSemPontosTracosEBarras;
             
             _contextoDb.Update(clienteJuridicoVindoDoBanco);
             _contextoDb.SaveChanges();
@@ -249,8 +258,8 @@ namespace ApiEstagioBicicletaria.Services
         }
         public ClienteFisico BuscarClientePorCpf(string cpfEnviado)
         {
-            string cpfSomentNumeros=ClienteValidacao.RemoverNaoNumericos(cpfEnviado);
-            if (!ClienteValidacao.ValidarCpf(cpfSomentNumeros))
+            string cpfSomentNumeros=ClienteUtil.RemoverNaoNumericos(cpfEnviado);
+            if (!ClienteUtil.ValidarCpf(cpfSomentNumeros))
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"Cpf Ínválido");
             }
@@ -264,9 +273,9 @@ namespace ApiEstagioBicicletaria.Services
 
         public ClienteJuridico BuscarClientePorCnpj(string cnpjEnviado)
         {
-            string cnpjSomenteNumeros = ClienteValidacao.RemoverNaoNumericos(cnpjEnviado);
+            string cnpjSomenteNumeros = ClienteUtil.RemoverNaoNumericos(cnpjEnviado);
 
-            if (!ClienteValidacao.ValidarCnpj(cnpjSomenteNumeros))
+            if (!ClienteUtil.ValidarCnpj(cnpjSomenteNumeros))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cnpj Inválido");
             }
