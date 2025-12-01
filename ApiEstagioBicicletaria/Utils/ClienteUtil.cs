@@ -103,6 +103,24 @@ namespace ApiEstagioBicicletaria.Validacao
 
             return true;
         }
+
+        public static string ColocarMascaraCpf(string cpf)
+        {
+            if(cpf==null || cpf.Length != 11)
+            {
+                return cpf;
+            }
+            return Regex.Replace(cpf,@"(\d{3})(\d{3})(\d{3})(\d{2})","$1.$2.$3-$4");
+        }
+
+        public static string ColocarMascaraCnpj(string cnpj)
+        {
+            if (cnpj == null || cnpj.Length != 14)
+            {
+                return cnpj;
+            }
+            return Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
+        }
         //public static bool validarInscricaoEstadual(string inscricaoEstadual)
         //{
         //    if (inscricaoEstadual == "")
@@ -116,6 +134,6 @@ namespace ApiEstagioBicicletaria.Validacao
         //    return true;
         //}
 
-        
+
     }
 }

@@ -680,10 +680,11 @@ namespace ApiEstagioBicicletaria.Services
 
             decimal valorTotalDasVendasNessePeriodo=0;
 
-
+            
             foreach(Venda vendaIterada in vendasNoPeriodo)
             {
                 string nomeCliente="";
+                string cpfOuCnpj = "";
                 Cliente? cliente = _contexto.Clientes.Where(c => c.Id == vendaIterada.IdCliente && c.Ativo).FirstOrDefault();
 
                 if(cliente == null)
@@ -693,10 +694,16 @@ namespace ApiEstagioBicicletaria.Services
                 if (cliente.TipoCliente == TipoCliente.PessoaFisica)
                 {
                     nomeCliente = ((ClienteFisico)cliente).Nome;
+                    cpfOuCnpj = ((ClienteFisico)cliente).Cpf;
                 }
                 if (cliente.TipoCliente == TipoCliente.PessoaJuridica)
                 {
                     nomeCliente = ((ClienteJuridico)cliente).RazaoSocial;
+                    cpfOuCnpj = ((ClienteJuridico)cliente).Cnpj;
+                }
+                if(cliente.TipoCliente != TipoCliente.PessoaFisica && cliente.TipoCliente != TipoCliente.PessoaJuridica)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(500, "O tipo do cliente deve ser físico ou jurídico");
                 }
                 Transacao? transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == vendaIterada.Id && t.Ativo).FirstOrDefault();
                 if(transacaoDaVenda == null)
@@ -721,7 +728,7 @@ namespace ApiEstagioBicicletaria.Services
                     pago = "Não";
                 }
 
-                VendaNoFormatoASerExibidoRelatorioDto vendaNoFormatoDto = new VendaNoFormatoASerExibidoRelatorioDto(codigoVenda,nomeCliente, tipoDePagamento, meioDePagamento,
+                VendaNoFormatoASerExibidoRelatorioDto vendaNoFormatoDto = new VendaNoFormatoASerExibidoRelatorioDto(codigoVenda,nomeCliente,cpfOuCnpj, tipoDePagamento,
                     dataDaVenda, valorTotalPago, valorTotalVenda,pago);
 
                 listaDeVendasNoFormatoASerExibidoNoRelatorio.Add(vendaNoFormatoDto);

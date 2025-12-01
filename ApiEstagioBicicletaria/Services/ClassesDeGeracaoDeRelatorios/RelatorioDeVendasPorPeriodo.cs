@@ -74,14 +74,14 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         });
                         table.Header(header =>
                         {
-                            header.Cell().Text("Código Da Venda").Bold().FontSize(10);
-                            header.Cell().Text("Nome Do Cliente").Bold().FontSize(10);
-                            header.Cell().PaddingLeft(3).Text("Tipo De Pagamento").Bold().FontSize(10);
-                            header.Cell().PaddingLeft(3).Text("Meio De Pagamento").Bold().FontSize(10);
-                            header.Cell().PaddingLeft(12).PaddingRight(-8).AlignLeft().Text("Data Da Venda").Bold().FontSize(10);
-                            header.Cell().AlignCenter().PaddingLeft(2).PaddingRight(-16).Text("Pago").Bold().FontSize(10);
-                            header.Cell().AlignRight().Text("Valor Total Pago").Bold().FontSize(10);
-                            header.Cell().AlignRight().Text("Valor Total").Bold().FontSize(10);
+                            header.Cell().Text("Código Da Venda").Bold().FontSize(9);
+                            header.Cell().PaddingLeft(-8).Text("Nome Do Cliente").Bold().FontSize(9);
+                            header.Cell().PaddingRight(-3).Text("Cpf/Cnpj").Bold().FontSize(9);
+                            header.Cell().PaddingLeft(11).PaddingRight(-5).Text("Tipo De Pagamento").Bold().FontSize(9);
+                            header.Cell().PaddingLeft(17).PaddingRight(-10).AlignLeft().Text("Data Da Venda").Bold().FontSize(9);
+                            header.Cell().AlignCenter().PaddingLeft(2).PaddingRight(-25).Text("Pago").Bold().FontSize(9);
+                            header.Cell().PaddingLeft(-2).AlignRight().Text("Valor Total Pago").Bold().FontSize(9);
+                            header.Cell().AlignRight().Text("Valor Total").Bold().FontSize(9);
                         });
                         table.Cell().ColumnSpan(8).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
 
@@ -91,14 +91,14 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         foreach (VendaNoFormatoASerExibidoRelatorioDto vendaDto in _vendas)
                         {
                             i++;
-                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignLeft().PaddingRight(11).PaddingLeft(1).Text(vendaDto.CodigoVenda.ToString()).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).Text(vendaDto.NomeCliente).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(3).Text(vendaDto.TipoDePagamento).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingLeft(3).PaddingTop(5).PaddingRight(-1).Text(vendaDto.MeioDePagamento).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(11).PaddingRight(-9).AlignCenter().Text(vendaDto.DataDaVenda).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(2).PaddingRight(-13).AlignCenter().Text(vendaDto.Pago).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignRight().Text("R$ " + vendaDto.ValorTotalPago.ToString("F2")).FontSize(10);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignRight().Text("R$ " + vendaDto.ValorTotal.ToString("F2")).FontSize(10);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignLeft().PaddingRight(11).PaddingLeft(1).Text(vendaDto.CodigoVenda.ToString()).FontSize(9);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(-8).Text(vendaDto.NomeCliente).FontSize(9);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingRight(-3).Text(vendaDto.CpfOuCnpj).FontSize(9);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(11).PaddingRight(-5).Text(vendaDto.TipoDePagamento).FontSize(9);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(15).PaddingRight(-13).AlignCenter().Text(vendaDto.DataDaVenda).FontSize(9);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(2).PaddingRight(-21).AlignCenter().Text(vendaDto.Pago).FontSize(9);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignRight().Text("R$ " + vendaDto.ValorTotalPago.ToString("F2")).FontSize(9);
+                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignRight().Text("R$ " + vendaDto.ValorTotal.ToString("F2")).FontSize(9);
                             if (i != tamanhoDaLista)
                             {
                                 table.Cell().ColumnSpan(8).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
