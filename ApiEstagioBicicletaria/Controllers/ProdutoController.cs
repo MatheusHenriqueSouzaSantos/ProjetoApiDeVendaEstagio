@@ -239,13 +239,13 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpPost("relatorio-produtos-mais-vendidos-por-periodo")]
+        [HttpPost("relatorio-produtos-vendidos-por-periodo")]
         public ActionResult<byte[]> GerarRelatorioDeProdutosMaisVendidos(DatasParaGeracaoDeRelatorioDto dto)
         {
             try
             {
-                byte[] bytesPdf= _produtoService.GerarRelatorioDeProdutosMaisVendidosPorPeriodo(dto);
-                return File(bytesPdf, "application/pdf", "relatorioDeProdutosMaisVendidos.pdf");
+                byte[] bytesPdf= _produtoService.GerarRelatorioDeProdutosVendidosPorPeriodo(dto);
+                return File(bytesPdf, "application/pdf", "relatorioDeProdutosVendidosPorPeriodo.pdf");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
