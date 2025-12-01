@@ -7,5 +7,7 @@ namespace ApiEstagioBicicletaria.Dtos.RelatorioDtos
         public Produto Produto { get; set; }
 
         public int QuantidadeVendida { get; set; }
+
+        public decimal Total {  get; set; }
     }
 }

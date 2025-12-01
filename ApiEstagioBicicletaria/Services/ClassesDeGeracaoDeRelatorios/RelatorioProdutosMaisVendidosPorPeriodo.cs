@@ -5,14 +5,18 @@ using QuestPDF.Infrastructure;
 
 namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 {
-    public class RelatorioProdutosMaisVendidos : IDocument
+    public class RelatorioProdutosMaisVendidosPorPeriodo : IDocument
     {
 
         private readonly List<ProdutoMaisVendidoDto> _produtos;
+        private readonly DateOnly _dataDeInicioDoPeriodo;
+        private readonly DateOnly _dataDeFimDoPeriodo;
 
-        public RelatorioProdutosMaisVendidos(List<ProdutoMaisVendidoDto> produtos)
+        public RelatorioProdutosMaisVendidosPorPeriodo(List<ProdutoMaisVendidoDto> produtos,DateOnly dataDeInicioDoPeriodo, DateOnly dataDeFimDoPeriodo)
         {
             this._produtos = produtos;
+            _dataDeInicioDoPeriodo = dataDeInicioDoPeriodo;
+            _dataDeFimDoPeriodo = dataDeFimDoPeriodo;
         }
 
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
@@ -45,7 +49,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         table.Cell().ColumnSpan(5);
                         table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().AlignTop().PaddingBottom(-80).Width(120).Height(60).Image("Resources/LogoBikeCiaShopParaEstagio.jpg").FitArea();
                     });
-                    col.Item().Text("Relatório de Produtos Mais Vendidos").FontSize(20).Bold();
+                    col.Item().Text($"Relatório de Vendas De Produtos Por Período: {_dataDeInicioDoPeriodo} à {_dataDeFimDoPeriodo}").FontSize(20).Bold();
                     col.Item().PaddingVertical(10);
                     col.Item().Table(table =>
                     {
@@ -60,16 +64,16 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         {
                             header.Cell().Text("Código De Barra").Bold();
                             header.Cell().PaddingLeft(9).Text("Nome Do Produto").Bold();
-                            header.Cell().AlignRight().PaddingRight(5).Text("Preço Unitário").Bold();
                             header.Cell().AlignRight().Text("Quantidade Vendida").Bold();
+                            header.Cell().AlignRight().Text("Faturamento").Bold();
                         });
                         table.Cell().ColumnSpan(4).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
                         foreach (ProdutoMaisVendidoDto dto in _produtos)
                         {
-                            table.Cell().AlignRight().PaddingRight(33).Text(dto.Produto.CodigoDeBarra);
+                            table.Cell().AlignRight().PaddingRight(9).Text(dto.Produto.CodigoDeBarra);
                             table.Cell().PaddingLeft(9).Text(dto.Produto.NomeProduto);
-                            table.Cell().AlignRight().PaddingRight(6).Text($"R$  {dto.Produto.PrecoUnitario}");
                             table.Cell().AlignRight().Text(dto.QuantidadeVendida.ToString());
+                            table.Cell().AlignRight().Text("R$ " + dto.Total.ToString("F2"));
                             table.Cell().ColumnSpan(4).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
                         }
                     });

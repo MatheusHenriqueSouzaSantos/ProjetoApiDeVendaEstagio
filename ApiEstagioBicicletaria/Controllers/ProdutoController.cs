@@ -1,4 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
+using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
@@ -238,12 +239,12 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpGet("relatorio-produtos-mais-vendidos")]
-        public ActionResult<byte[]> GerarRelatorioDeProdutosMaisVendidos()
+        [HttpPost("relatorio-produtos-mais-vendidos-por-periodo")]
+        public ActionResult<byte[]> GerarRelatorioDeProdutosMaisVendidos(DatasParaGeracaoDeRelatorioDto dto)
         {
             try
             {
-                byte[] bytesPdf= _produtoService.GerarRelatorioDeProdutosMaisVendidos();
+                byte[] bytesPdf= _produtoService.GerarRelatorioDeProdutosMaisVendidosPorPeriodo(dto);
                 return File(bytesPdf, "application/pdf", "relatorioDeProdutosMaisVendidos.pdf");
             }
             catch (ExcecaoDeRegraDeNegocio ex)

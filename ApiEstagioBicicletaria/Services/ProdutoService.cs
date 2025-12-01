@@ -7,6 +7,7 @@ using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace ApiEstagioBicicletaria.Services
@@ -173,17 +174,52 @@ namespace ApiEstagioBicicletaria.Services
             return _contextoDb.Produtos.Where(p => p.NomeProduto.Contains(nome) && p.Ativo).Take(10).ToList();
         }
 
-        public byte[] GerarRelatorioDeProdutosMaisVendidos()
+        public byte[] GerarRelatorioDeProdutosMaisVendidosPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
         {
+            DateTime dataDeInicioDoPeriodoConvertidaDateTime;
+
+            DateTime dataDeFimDoPeriodoConvertidaDateTime;
+
+            bool dataInicioDoPeriodoNoFormatoCorreto = DateOnly.TryParseExact(dto.DataDeInicioDoPeriodo,
+                "yyyy-MM-dd",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateOnly dataDeInicioDoPeriodoFormatoDateOnly);
+
+            if (!dataInicioDoPeriodoNoFormatoCorreto)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O formato da data deve estar no padrão ISO");
+            }
+
+            bool dataFimDoPeriodoNoFormatoCorreto = DateOnly.TryParseExact(dto.DataDeFimDoPeriodo,
+               "yyyy-MM-dd",
+               CultureInfo.InvariantCulture,
+               DateTimeStyles.None,
+               out DateOnly dataDeFimDoPeriodoDateOnly);
+
+            if (!dataFimDoPeriodoNoFormatoCorreto)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O formato da data deve estar no padrão ISO");
+            }
+
+            if (dataDeInicioDoPeriodoFormatoDateOnly > dataDeFimDoPeriodoDateOnly)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A data de fim de periodo nao pode ser maior do que ha de inicio do periodo");
+            }
+
+            dataDeInicioDoPeriodoConvertidaDateTime = dataDeInicioDoPeriodoFormatoDateOnly.ToDateTime(TimeOnly.MinValue);
+            dataDeFimDoPeriodoConvertidaDateTime = dataDeFimDoPeriodoDateOnly.ToDateTime(TimeOnly.MaxValue);
+
             int numeroDeRegistroASerBuscados = _numeroMaximoDePaginas * _numeroDeLinhasPorPagina;
             List<ProdutoMaisVendidoDto> produtosMaisVendidos = _contextoDb.
                 ItensVendas.
-                Where(iv => iv.Ativo && iv.Produto.Ativo)
+                Where(iv => iv.Ativo && iv.Produto.Ativo && iv.DataCriacao>=dataDeInicioDoPeriodoConvertidaDateTime && iv.DataCriacao<=dataDeFimDoPeriodoConvertidaDateTime)
                 .GroupBy(iv => iv.Produto.Id)
                 .Select(g => new ProdutoMaisVendidoDto
                 {
                     Produto= g.First().Produto,
-                    QuantidadeVendida= g.Sum(x=>x.Quantidade)
+                    QuantidadeVendida= g.Sum(x=>x.Quantidade),
+                    Total=g.Sum(x=>(x.PrecoUnitarioDoProdutoNaVendaSemDesconto-x.DescontoUnitario)*x.Quantidade)
 
                 })
                 .OrderByDescending(x=>x.QuantidadeVendida)
@@ -192,7 +228,7 @@ namespace ApiEstagioBicicletaria.Services
 
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var documento = new RelatorioProdutosMaisVendidos(produtosMaisVendidos);
+            var documento = new RelatorioProdutosMaisVendidosPorPeriodo(produtosMaisVendidos, dataDeInicioDoPeriodoFormatoDateOnly,dataDeFimDoPeriodoDateOnly);
 
             byte[] pdf = documento.GeneratePdf();
 

@@ -11,7 +11,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 
         private readonly DateOnly _dataDeInicioDoPeriodo;
 
-        private readonly DateOnly _dateDeFimDoPeriodo;
+        private readonly DateOnly _dataDeFimDoPeriodo;
 
         private readonly decimal _valorTotalPagoDasVendasDoPeriodo;
 
@@ -21,7 +21,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
         {
             this._vendas = vendas;
             _dataDeInicioDoPeriodo = dataDeInicioDoPeriodo;
-            _dateDeFimDoPeriodo = dateDeFimDoPeriodo;
+            _dataDeFimDoPeriodo = dateDeFimDoPeriodo;
             _valorTotalPagoDasVendasDoPeriodo = valorTotalPagoDasVendasDoPeriodo;
             _valorTotalDasVendasDoPeriodo = valorTotalDasVendasDoPeriodo;
         }
@@ -56,7 +56,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         table.Cell().ColumnSpan(5);
                         table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().AlignTop().PaddingBottom(-80).Width(120).Height(60).Image("Resources/LogoBikeCiaShopParaEstagio.jpg").FitArea();
                     });
-                    col.Item().Text("Relatório de Vendas Por Período: " + _dataDeInicioDoPeriodo.ToString("dd/MM/yyyy") + " à " + _dateDeFimDoPeriodo.ToString("dd/MM/yyyy"))
+                    col.Item().Text("Relatório de Vendas Por Período: " + _dataDeInicioDoPeriodo.ToString("dd/MM/yyyy") + " à " + _dataDeFimDoPeriodo.ToString("dd/MM/yyyy"))
                     .FontSize(20).Bold();
                     col.Item().PaddingVertical(10);
                     col.Item().Table(table =>
