@@ -1,11 +1,12 @@
 ﻿using ApiEstagioBicicletaria.Entities.ClienteDomain;
+using ApiEstagioBicicletaria.Utils;
 
 namespace ApiEstagioBicicletaria.Entities.VendaDomain
 {
     public class Venda
     {
         public Guid Id { get; private set; } = Guid.NewGuid(); 
-        public int CodigoVenda { get; private set; }
+        public string CodigoVenda { get; private set; }
         public Cliente Cliente { get;  set; }
 
         public Guid IdCliente { get;  set; }
@@ -26,9 +27,10 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         }
 
-        public Venda(Cliente cliente, Guid idCliente, decimal descontoTotal,decimal valorTotalSemDesconto, decimal valorTotalComDesconto)
+        public Venda(Cliente cliente, string codigoVenda, Guid idCliente, decimal descontoTotal,decimal valorTotalSemDesconto, decimal valorTotalComDesconto)
         {
-            Cliente = cliente ;
+            CodigoVenda= codigoVenda;
+            Cliente = cliente;
             IdCliente = idCliente;
             DescontoTotal = descontoTotal;
             ValorTotalSemDesconto = valorTotalSemDesconto;

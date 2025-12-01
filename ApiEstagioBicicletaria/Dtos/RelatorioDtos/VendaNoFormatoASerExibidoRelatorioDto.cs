@@ -2,7 +2,7 @@
 {
     public class VendaNoFormatoASerExibidoRelatorioDto
     {
-        public int CodigoVenda { get; set; }
+        public string CodigoVenda { get; set; }
         public string NomeCliente { get; set; }
 
         public string TipoDePagamento {  get; set; }
@@ -17,7 +17,7 @@
 
         public string Pago { get; set; }
 
-        public VendaNoFormatoASerExibidoRelatorioDto(int codigoVenda,string nomeCliente, string tipoDePagamento, string meioDePagamento, string dataDaVenda, decimal valorTotalPago, decimal valorTotal, string pago)
+        public VendaNoFormatoASerExibidoRelatorioDto(string codigoVenda,string nomeCliente, string tipoDePagamento, string meioDePagamento, string dataDaVenda, decimal valorTotalPago, decimal valorTotal, string pago)
         {
             CodigoVenda= codigoVenda;
             NomeCliente = nomeCliente;

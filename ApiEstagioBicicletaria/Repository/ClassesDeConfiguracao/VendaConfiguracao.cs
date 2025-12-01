@@ -18,7 +18,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .IsRequired();
             builder.Property(v => v.CodigoVenda)
                 .HasColumnName("CODIGO_VENDA")
-                .ValueGeneratedOnAdd();
+                .IsRequired();
 
             builder.HasOne(v => v.Cliente)
                 .WithMany()

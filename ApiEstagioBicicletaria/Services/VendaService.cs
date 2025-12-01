@@ -10,6 +10,7 @@ using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using ApiEstagioBicicletaria.Utils;
 using ApiEstagioBicicletaria.Validacao;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,10 +25,12 @@ namespace ApiEstagioBicicletaria.Services
         private readonly int _numeroMaximoDePaginas = 5;
         private readonly int _numeroDeLinhasPorPagina = 42;
         private ContextoDb _contexto;
+        private readonly GeradorCodigoVenda _geradorCodigoVenda;
 
         public VendaService(ContextoDb contexto)
         {
             _contexto = contexto;
+            _geradorCodigoVenda = new GeradorCodigoVenda(_contexto);
         }
 
         public List<VendaTransacaoOutputDto> BuscarTodasVendas()
@@ -162,7 +165,9 @@ namespace ApiEstagioBicicletaria.Services
 
             decimal valorTotalDaVendaComDescontoAplicado=Math.Round( (valorTotalDaVendaSemDescontoTotalAplicado-descontoVenda),2,MidpointRounding.AwayFromZero);
 
-            Venda vendaCriada = new Venda(clienteDaVenda, clienteDaVenda.Id, descontoVenda,valorTotalDaVendaSemDescontoTotalAplicado, valorTotalDaVendaComDescontoAplicado);
+            string codigoVenda = _geradorCodigoVenda.GerarCodigoVenda();
+
+            Venda vendaCriada = new Venda(clienteDaVenda,codigoVenda, clienteDaVenda.Id, descontoVenda,valorTotalDaVendaSemDescontoTotalAplicado, valorTotalDaVendaComDescontoAplicado);
 
             List<ItemVenda> listaDeItensDaVendaCriada = new List<ItemVenda>();
 
@@ -698,7 +703,7 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(500, "Transação nunca deveria ser nulo para uma venda já realizada");
                 }
-                int codigoVenda = vendaIterada.CodigoVenda;
+                string codigoVenda = vendaIterada.CodigoVenda;
                 string tipoDePagamento = transacaoDaVenda.TipoPagamento.ToString();
                 string meioDePagamento = transacaoDaVenda.MeioPagamento.ToString();
                 string dataDaVenda = DateOnly.FromDateTime(vendaIterada.DataCriacao).ToString();

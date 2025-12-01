@@ -1,10 +1,11 @@
-﻿using System.Text.RegularExpressions;
+﻿using ApiEstagioBicicletaria.Repositories;
+using System.Text.RegularExpressions;
 
 namespace ApiEstagioBicicletaria.Validacao
 {
     public static class ClienteUtil
     {
-
+        
         public static string RemoverPontosTracosEBarras(string valor)
         {
             return Regex.Replace(valor, @"[.\-\/]", "");
@@ -114,5 +115,7 @@ namespace ApiEstagioBicicletaria.Validacao
         //    }
         //    return true;
         //}
+
+        
     }
 }

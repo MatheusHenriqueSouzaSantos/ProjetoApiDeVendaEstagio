@@ -7,7 +7,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
     {
         public Guid IdVenda { get; set; }
 
-        public int CodigoVenda { get; set; }
+        public string CodigoVenda { get; set; }
 
         public DateTime DataCriacao { get; set; }
 
@@ -27,7 +27,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         }
 
-        public VendaOutputDto(Guid idVenda, int codigoVenda, DateTime dataCriacao, decimal descontoTotalVenda,decimal valorTotalSemDesconto, decimal valorTotalComDesconto, Cliente cliente, List<ItemVendaOutputDto> itensVenda, List<ServicoVendaOutputDto> servicosVenda)
+        public VendaOutputDto(Guid idVenda, string codigoVenda, DateTime dataCriacao, decimal descontoTotalVenda,decimal valorTotalSemDesconto, decimal valorTotalComDesconto, Cliente cliente, List<ItemVendaOutputDto> itensVenda, List<ServicoVendaOutputDto> servicosVenda)
         {
             IdVenda = idVenda;
             CodigoVenda = codigoVenda;
