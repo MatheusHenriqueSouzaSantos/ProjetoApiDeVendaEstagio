@@ -69,6 +69,14 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
             }
+            if (dto.Endereco.SiglaUf.Any(char.IsDigit))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A sigla UF não deve conter números");
+            }
+            if (dto.Endereco.Cidade.Any(char.IsDigit))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O nome da cidade não deve conter numeros");
+            }
             ClienteFisico? clienteExistenteRetornadoComEsseCpf= _contextoDb.ClientesFisicos.Where(c => c.Cpf == cpfSemPontoETracos && c.Ativo).FirstOrDefault();
             if (clienteExistenteRetornadoComEsseCpf != null)
             {
@@ -104,6 +112,14 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cnpj inválido");
             }
+            if (dto.Endereco.SiglaUf.Any(char.IsDigit))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A sigla UF não deve conter números");
+            }
+            if (dto.Endereco.Cidade.Any(char.IsDigit))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O nome da cidade não deve conter numeros");
+            }
             ClienteJuridico? empresaExistenteRetornadoComEsseCnpj = _contextoDb.ClientesJuridicos.Where(c => c.Cnpj == cnpjSemPontoETracos && c.Ativo).FirstOrDefault();
             if (empresaExistenteRetornadoComEsseCnpj != null)
             {
@@ -129,6 +145,14 @@ namespace ApiEstagioBicicletaria.Services
             if (!(string.IsNullOrWhiteSpace(dto.Cpf)))
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"O Cpf deve vir vazio ou nulo, não é possivel atualizar um cpf");
+            }
+            if (dto.Endereco.SiglaUf.Any(char.IsDigit))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A sigla UF não deve conter números");
+            }
+            if (dto.Endereco.Cidade.Any(char.IsDigit))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O nome da cidade não deve conter numeros");
             }
             Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.FirstOrDefault(c=>c.Email==dto.Email && c.Ativo && c.Id!=id);
             if (clienteExistenteComEsseEmail != null)
@@ -169,6 +193,14 @@ namespace ApiEstagioBicicletaria.Services
             if (!(string.IsNullOrWhiteSpace(dto.Cnpj)))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve vir vazio ou nulo, não é possivel atualizar um cpf");
+            }
+            if (dto.Endereco.SiglaUf.Any(char.IsDigit))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A sigla UF não deve conter números");
+            }
+            if (dto.Endereco.Cidade.Any(char.IsDigit))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O nome da cidade não deve conter numeros");
             }
             ClienteJuridico? clienteJuridicoVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c=>c.Endereco).Where(c => c.Id == id && c.Ativo).FirstOrDefault();
             if (clienteJuridicoVindoDoBanco == null)

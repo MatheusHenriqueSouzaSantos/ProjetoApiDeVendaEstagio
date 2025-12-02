@@ -84,8 +84,8 @@ namespace ApiEstagioBicicletaria.Services
                 VendaTransacaoOutputDto vendaTransacaoOutputDto = new VendaTransacaoOutputDto(vendaOutputDto, transacaoOutputDto);
                 ListaComTodasVendasTransacoes.Add(vendaTransacaoOutputDto);
             }
-
-            return ListaComTodasVendasTransacoes;
+            return ListaComTodasVendasTransacoes.OrderBy(vt => !vt.Transacao.TransacaoEmCurso ? 1 : vt.Transacao.TransacaoEmCurso && !vt.Transacao.Pago ? 2 : 3).ThenBy(vt=>vt.Venda.DataCriacao).ToList();
+             
 
         }
         
@@ -836,7 +836,7 @@ namespace ApiEstagioBicicletaria.Services
 
                 vendasDoClienteNoFormatoDto.Add(vendaTransacaoOutput);
             }
-            return vendasDoClienteNoFormatoDto;
+            return vendasDoClienteNoFormatoDto.OrderBy(vt => !vt.Transacao.TransacaoEmCurso ? 1 : vt.Transacao.TransacaoEmCurso && !vt.Transacao.Pago ? 2 : 3).ThenBy(vt => vt.Venda.DataCriacao).ToList(); ;
         }
         public VendaTransacaoOutputDto BuscarVendaPorCodigoVenda(string codigoVenda)
         {
