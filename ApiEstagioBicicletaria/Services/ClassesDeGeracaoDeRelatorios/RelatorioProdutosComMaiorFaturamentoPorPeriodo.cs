@@ -5,14 +5,14 @@ using QuestPDF.Infrastructure;
 
 namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 {
-    public class RelatorioProdutosVendidosPorPeriodo : IDocument
+    public class RelatorioProdutosComMaiorFaturamentoPorPeriodo : IDocument
     {
 
         private readonly List<ProdutoMaisVendidoDto> _produtos;
         private readonly DateOnly _dataDeInicioDoPeriodo;
         private readonly DateOnly _dataDeFimDoPeriodo;
 
-        public RelatorioProdutosVendidosPorPeriodo(List<ProdutoMaisVendidoDto> produtos,DateOnly dataDeInicioDoPeriodo, DateOnly dataDeFimDoPeriodo)
+        public RelatorioProdutosComMaiorFaturamentoPorPeriodo(List<ProdutoMaisVendidoDto> produtos,DateOnly dataDeInicioDoPeriodo, DateOnly dataDeFimDoPeriodo)
         {
             this._produtos = produtos;
             _dataDeInicioDoPeriodo = dataDeInicioDoPeriodo;
@@ -49,7 +49,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         table.Cell().ColumnSpan(5);
                         table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().AlignTop().PaddingBottom(-80).Width(120).Height(60).Image("Resources/LogoBikeCiaShopParaEstagio.jpg").FitArea();
                     });
-                    col.Item().Text($"Relatório de Produtos Vendidos Por Período: {_dataDeInicioDoPeriodo} à {_dataDeFimDoPeriodo}").FontSize(20).Bold();
+                    col.Item().Text($"Relatório de Produtos Com Maior Faturamento Por Período: {_dataDeInicioDoPeriodo} à {_dataDeFimDoPeriodo}").FontSize(20).Bold();
                     col.Item().PaddingVertical(10);
                     col.Item().Table(table =>
                     {
@@ -68,13 +68,20 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                             header.Cell().AlignRight().Text("Faturamento").Bold();
                         });
                         table.Cell().ColumnSpan(4).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
-                        foreach (ProdutoMaisVendidoDto dto in _produtos)
+                        if (_produtos.Count == 0)
                         {
-                            table.Cell().AlignRight().PaddingRight(16).Text(dto.Produto.CodigoDeBarra);
-                            table.Cell().PaddingLeft(9).Text(dto.Produto.NomeProduto);
-                            table.Cell().AlignRight().Text(dto.QuantidadeVendida.ToString());
-                            table.Cell().AlignRight().Text("R$ " + dto.Total.ToString("F2"));
-                            table.Cell().ColumnSpan(4).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
+                            table.Cell().ColumnSpan(4).AlignCenter().Text("Nenhum Registro Encontrado");
+                        }
+                        else
+                        {
+                            foreach (ProdutoMaisVendidoDto dto in _produtos)
+                            {
+                                table.Cell().AlignRight().PaddingRight(16).Text(dto.Produto.CodigoDeBarra);
+                                table.Cell().PaddingLeft(9).Text(dto.Produto.NomeProduto);
+                                table.Cell().AlignRight().Text(dto.QuantidadeVendida.ToString());
+                                table.Cell().AlignRight().Text("R$ " + dto.Faturamento.ToString("F2"));
+                                table.Cell().ColumnSpan(4).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
+                            }
                         }
                     });
                 });

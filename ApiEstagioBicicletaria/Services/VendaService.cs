@@ -22,8 +22,8 @@ namespace ApiEstagioBicicletaria.Services
 {
     public class VendaService : IVendaService
     {
-        private readonly int _numeroMaximoDePaginas = 5;
-        private readonly int _numeroDeLinhasPorPagina = 42;
+        //private readonly int _numeroMaximoDePaginas = 5;
+        //private readonly int _numeroDeLinhasPorPagina = 42;
         private ContextoDb _contexto;
         private readonly GeradorCodigoVenda _geradorCodigoVenda;
 
@@ -661,17 +661,19 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"A data de fim de periodo nao pode ser maior do que ha de inicio do periodo");
             }
+            if (dataDeFimDoPeriodoDateOnly > dataDeInicioDoPeriodoFormatoDateOnly.AddDays(366))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O Período não deve ser maior que 366 dias");
+            }
 
             dataDeInicioDoPeriodoConvertidaDateTime = dataDeInicioDoPeriodoFormatoDateOnly.ToDateTime(TimeOnly.MinValue);
             dataDeFimDoPeriodoConvertidaDateTime = dataDeFimDoPeriodoDateOnly.ToDateTime(TimeOnly.MaxValue);
 
-
-            int numeroDeRegistroASerBuscados = _numeroMaximoDePaginas * _numeroDeLinhasPorPagina;
+            //int numeroDeRegistroASerBuscados = _numeroMaximoDePaginas * _numeroDeLinhasPorPagina;
 
             List<Venda> vendasNoPeriodo = _contexto.Vendas.
                 Where(v => v.DataCriacao >= dataDeInicioDoPeriodoConvertidaDateTime && v.DataCriacao <= dataDeFimDoPeriodoConvertidaDateTime && v.Ativo)
                 .OrderBy(v => v.DataCriacao)
-                .Take(numeroDeRegistroASerBuscados)
                 .ToList();
 
             List<VendaNoFormatoASerExibidoRelatorioDto> listaDeVendasNoFormatoASerExibidoNoRelatorio=new List<VendaNoFormatoASerExibidoRelatorioDto>();
@@ -836,6 +838,50 @@ namespace ApiEstagioBicicletaria.Services
             }
             return vendasDoClienteNoFormatoDto;
         }
-        
+        public VendaTransacaoOutputDto BuscarVendaPorCodigoVenda(string codigoVenda)
+        {
+            Venda? vendaVindaDoBanco = _contexto.Vendas.Include(v=>v.Cliente).ThenInclude(c=>c.Endereco).Where(v => v.CodigoVenda == codigoVenda).FirstOrDefault();
+            if (vendaVindaDoBanco == null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"Venda não encontrada");
+            }
+            Transacao? transacaoDaVenda = _contexto.Transacoes.FirstOrDefault(t=>t.IdVenda==vendaVindaDoBanco.Id);
+            if (transacaoDaVenda == null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(500, "Uma transação nunca deveria ser nula para uma venda já realizada");
+            }
+            List<ItemVenda> itensDaVenda = _contexto.ItensVendas.Include(i=>i.Produto).Where(iv => iv.IdVenda == vendaVindaDoBanco.Id && iv.Ativo).ToList();
+            List<ServicoVenda> servicosDaVenda = _contexto.ServicosVendas.Include(sv=>sv.Servico).Where(sv => sv.IdVenda == vendaVindaDoBanco.Id && sv.Ativo).ToList();
+
+            List<ItemVendaOutputDto> itensVendaFormatoDtoOutput = new List<ItemVendaOutputDto>();
+
+            List<ServicoVendaOutputDto> servicosVendaFormatoDtoOutput = new List<ServicoVendaOutputDto>();
+
+            foreach (ItemVenda itemIterado in itensDaVenda)
+            {
+                decimal precoDoProdutoNaVendaComDescontoAplicado = itemIterado.PrecoUnitarioDoProdutoNaVendaSemDesconto - itemIterado.DescontoUnitario;
+                decimal totalItem = precoDoProdutoNaVendaComDescontoAplicado * itemIterado.Quantidade;
+                ItemVendaOutputDto itemVendaOutputDto = new ItemVendaOutputDto(itemIterado.Id, itemIterado.Produto, itemIterado.DataCriacao, itemIterado.Quantidade, itemIterado.DescontoUnitario, itemIterado.PrecoUnitarioDoProdutoNaVendaSemDesconto, precoDoProdutoNaVendaComDescontoAplicado, totalItem);
+                itensVendaFormatoDtoOutput.Add(itemVendaOutputDto);
+            }
+            foreach (ServicoVenda servicoVenda in servicosDaVenda)
+            {
+                decimal precoServicoNaVendaComDesconto = servicoVenda.PrecoServicoNaVendaSemDesconto - servicoVenda.DescontoServico;
+                ServicoVendaOutputDto servicoVendaOutputDto = new ServicoVendaOutputDto(servicoVenda.Id, servicoVenda.Servico, servicoVenda.DataCriacao, servicoVenda.DescontoServico, servicoVenda.PrecoServicoNaVendaSemDesconto, precoServicoNaVendaComDesconto);
+                servicosVendaFormatoDtoOutput.Add(servicoVendaOutputDto);
+            }
+            int QuantidadeDeParcelasNaoPagasDaVenda = _contexto.Parcelas.Where(p =>p.IdTransacao==transacaoDaVenda.Id && p.Pago == false && p.Ativo).Count();
+            int QuantidadeDeParcelasPagasVenda = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Pago && p.Ativo).Count();
+            decimal valorPago = Math.Round((_contexto.Parcelas.Where(p => p.IdTransacao==transacaoDaVenda.Id && p.Pago).Sum(p => p.ValorParcela)), 2, MidpointRounding.AwayFromZero);
+
+            VendaOutputDto vendaFormatoDto = new VendaOutputDto(vendaVindaDoBanco.Id, vendaVindaDoBanco.CodigoVenda, vendaVindaDoBanco.DataCriacao, vendaVindaDoBanco.DescontoTotal, vendaVindaDoBanco.ValorTotalSemDesconto,
+                vendaVindaDoBanco.ValorTotalComDesconto, vendaVindaDoBanco.Cliente, itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput);
+            TransacaoOutputDto transacaoFormatoOutput = new TransacaoOutputDto(transacaoDaVenda.Id, transacaoDaVenda.DataCriacao, transacaoDaVenda.TipoPagamento, transacaoDaVenda.MeioPagamento,
+                transacaoDaVenda.TransacaoEmCurso, transacaoDaVenda.Pago, QuantidadeDeParcelasNaoPagasDaVenda, QuantidadeDeParcelasPagasVenda, valorPago);
+
+            VendaTransacaoOutputDto vendaTransacaoFormatoOutput = new VendaTransacaoOutputDto(vendaFormatoDto, transacaoFormatoOutput);
+
+            return vendaTransacaoFormatoOutput;
+        }
     }
 }

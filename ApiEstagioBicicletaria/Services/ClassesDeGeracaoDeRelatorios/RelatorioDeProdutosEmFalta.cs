@@ -8,10 +8,12 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
     public class RelatorioDeProdutosEmFalta : IDocument
     {
         private readonly List<Produto> _produtos;
+        private readonly int _quantidadeUsadapParaBuscarProdutosComEstoqueMenorOuIgualEsseValor;
 
-        public RelatorioDeProdutosEmFalta(List<Produto> produtos)
+        public RelatorioDeProdutosEmFalta(List<Produto> produtos, int quantidadeUsadapParaBuscarProdutosComEstoqueMenorOuIgualEsseValor)
         {
             this._produtos = produtos;
+            _quantidadeUsadapParaBuscarProdutosComEstoqueMenorOuIgualEsseValor = quantidadeUsadapParaBuscarProdutosComEstoqueMenorOuIgualEsseValor;
         }
 
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
@@ -44,7 +46,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         table.Cell().ColumnSpan(5);
                         table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().AlignTop().PaddingBottom(-80).Width(120).Height(60).Image("Resources/LogoBikeCiaShopParaEstagio.jpg").FitArea();
                     });
-                    col.Item().Text("Relatório de Produtos Em Falta").FontSize(20).Bold();
+                    col.Item().Text($"Relatório de Produtos (Em Falta) Com o Estoque Abaixo ou igual a: {_quantidadeUsadapParaBuscarProdutosComEstoqueMenorOuIgualEsseValor}" ).FontSize(20).Bold();
                     col.Item().PaddingVertical(10);
                     col.Item().Table(table =>
                     {
@@ -61,20 +63,26 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                             header.Cell().AlignCenter().Text("Nome Do Produto").Bold();
                             header.Cell().AlignRight().Text("Preço Unitário").Bold();
                             header.Cell().AlignRight().Text("Quantidade Em Estoque").Bold();
-                        });
+                        }); 
                         table.Cell().ColumnSpan(4).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
                         //header.Cell().PaddingLeft(-15).PaddingRight(20).AlignRight().Text("Preço Unitário").Bold();
                         //header.Cell().PaddingLeft(-15).AlignRight().Text("Quantidade Em Estoque").Bold();
 
                         //table.Cell().AlignCenter().PaddingRight(25).Text(produto.CodigoDeBarra);
-
-                        foreach (Produto produto in _produtos)
+                        if (_produtos.Count == 0)
                         {
-                            table.Cell().AlignRight().PaddingRight(17).Text(produto.CodigoDeBarra);
-                            table.Cell().AlignLeft().PaddingLeft(11).Text(produto.NomeProduto);
-                            table.Cell().AlignRight().PaddingRight(1).Text($"R$ {produto.PrecoUnitario}");
-                            table.Cell().AlignRight().Text(produto.QuantidadeEmEstoque.ToString());
-                            table.Cell().ColumnSpan(4).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
+                            table.Cell().ColumnSpan(4).AlignCenter().Text("Nenhum Registro Encontrado");
+                        }
+                        else
+                        {
+                            foreach (Produto produto in _produtos)
+                            {
+                                table.Cell().AlignRight().PaddingRight(17).Text(produto.CodigoDeBarra);
+                                table.Cell().AlignLeft().PaddingLeft(11).Text(produto.NomeProduto);
+                                table.Cell().AlignRight().PaddingRight(1).Text($"R$ {produto.PrecoUnitario}");
+                                table.Cell().AlignRight().Text(produto.QuantidadeEmEstoque.ToString());
+                                table.Cell().ColumnSpan(4).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
+                            }
                         }
                     });
                 });

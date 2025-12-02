@@ -239,13 +239,13 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpPost("relatorio-produtos-vendidos-por-periodo")]
-        public ActionResult<byte[]> GerarRelatorioDeProdutosMaisVendidos(DatasParaGeracaoDeRelatorioDto dto)
+        [HttpPost("relatorio-produtos-com-maior-faturamento-por-periodo")]
+        public ActionResult<byte[]> GerarRelatorioDeProdutosComMaiorFaturamento(DatasParaGeracaoDeRelatorioDto dto)
         {
             try
             {
-                byte[] bytesPdf= _produtoService.GerarRelatorioDeProdutosVendidosPorPeriodo(dto);
-                return File(bytesPdf, "application/pdf", "relatorioDeProdutosVendidosPorPeriodo.pdf");
+                byte[] bytesPdf= _produtoService.GerarRelatorioDeProdutosComMaiorFaturamentoPorPeriodo(dto);
+                return File(bytesPdf, "application/pdf", "relatorioDeProdutosComMaiorFaturamentoPorPeriodo.pdf");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -259,12 +259,12 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpGet("relatorio-produtos-em-falta")]
-        public ActionResult<byte[]> GerarRelatorioDeProdutosEmFalta()
+        [HttpGet("relatorio-de-produtos-em-falta/{quantidadeParaBuscarDosProdutosEmFalta}")]
+        public ActionResult<byte[]> GerarRelatorioDeProdutosEmFalta(int quantidadeParaBuscarDosProdutosEmFalta)
         {
             try
             {
-                byte[] bytesPdf = _produtoService.GerarRelatorioDeProdutosEmFalta();
+                byte[] bytesPdf = _produtoService.GerarRelatorioDeProdutosComEstoqueAbaixoOuIgualUmaQuantidade(quantidadeParaBuscarDosProdutosEmFalta);
                 return File(bytesPdf, "application/pdf", "relatorioDeProdutosEmFalta.pdf");
             }
             catch (ExcecaoDeRegraDeNegocio ex)

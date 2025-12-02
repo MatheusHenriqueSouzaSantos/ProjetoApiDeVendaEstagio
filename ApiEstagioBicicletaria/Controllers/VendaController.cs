@@ -192,5 +192,22 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro no Servidor");
             }
         }
+
+        [HttpGet("buscar-venda-por-codigo-venda/{codigoVenda}")]
+        public ActionResult<VendaTransacaoOutputDto> BuscarVendaPorCodigoVenda(string codigoVenda)
+        {
+            try
+            {
+                return _vendaService.BuscarVendaPorCodigoVenda(codigoVenda);
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro no Servidor");
+            }
+        }
     }
 }

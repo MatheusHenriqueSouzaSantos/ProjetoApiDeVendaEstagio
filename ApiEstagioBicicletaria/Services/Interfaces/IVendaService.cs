@@ -22,6 +22,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         byte[] GerarRelatorioDeVendasPorPeriodo(DatasParaGeracaoDeRelatorioDto dto);
 
         List<VendaTransacaoOutputDto> BuscarVendasPorCpfOuCnpj(DocumentoClienteInputDto dto);
+
+        VendaTransacaoOutputDto BuscarVendaPorCodigoVenda(string codigoVenda);
     }
 
 }

@@ -86,33 +86,40 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         table.Cell().ColumnSpan(8).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
 
                         int tamanhoDaLista = _vendas.Count();
-                        int i = 0;
-
-                        foreach (VendaNoFormatoASerExibidoRelatorioDto vendaDto in _vendas)
+                        if (tamanhoDaLista == 0)
                         {
-                            i++;
-                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignLeft().PaddingRight(11).PaddingLeft(1).Text(vendaDto.CodigoVenda.ToString()).FontSize(9);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(-8).Text(vendaDto.NomeCliente).FontSize(9);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingRight(-3).Text(vendaDto.CpfOuCnpj).FontSize(9);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(11).PaddingRight(-5).Text(vendaDto.TipoDePagamento).FontSize(9);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(15).PaddingRight(-13).AlignCenter().Text(vendaDto.DataDaVenda).FontSize(9);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(2).PaddingRight(-21).AlignCenter().Text(vendaDto.Pago).FontSize(9);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignRight().Text("R$ " + vendaDto.ValorTotalPago.ToString("F2")).FontSize(9);
-                            table.Cell().PaddingBottom(5).PaddingTop(5).AlignRight().Text("R$ " + vendaDto.ValorTotal.ToString("F2")).FontSize(9);
-                            if (i != tamanhoDaLista)
-                            {
-                                table.Cell().ColumnSpan(8).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
-                            }
+                            table.Cell().ColumnSpan(8).AlignCenter().Text("Nenhum Registro Encontrado");
                         }
-                        table.Cell().ColumnSpan(8).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
+                        else
+                        {
+                            int i = 0;
 
-                        table.Cell().ColumnSpan(6);
-                        table.Cell().AlignRight().Text("Total Pago Das Vendas:").FontSize(10);
-                        table.Cell().AlignRight().Text("Total Das Vendas:").FontSize(10);
+                            foreach (VendaNoFormatoASerExibidoRelatorioDto vendaDto in _vendas)
+                            {
+                                i++;
+                                table.Cell().PaddingBottom(5).PaddingTop(5).AlignLeft().PaddingRight(11).PaddingLeft(1).Text(vendaDto.CodigoVenda.ToString()).FontSize(9);
+                                table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(-8).Text(vendaDto.NomeCliente).FontSize(9);
+                                table.Cell().PaddingBottom(5).PaddingTop(5).PaddingRight(-3).Text(vendaDto.CpfOuCnpj).FontSize(9);
+                                table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(11).PaddingRight(-5).Text(vendaDto.TipoDePagamento).FontSize(9);
+                                table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(15).PaddingRight(-13).AlignCenter().Text(vendaDto.DataDaVenda).FontSize(9);
+                                table.Cell().PaddingBottom(5).PaddingTop(5).PaddingLeft(2).PaddingRight(-21).AlignCenter().Text(vendaDto.Pago).FontSize(9);
+                                table.Cell().PaddingBottom(5).PaddingTop(5).AlignRight().Text("R$ " + vendaDto.ValorTotalPago.ToString("F2")).FontSize(9);
+                                table.Cell().PaddingBottom(5).PaddingTop(5).AlignRight().Text("R$ " + vendaDto.ValorTotal.ToString("F2")).FontSize(9);
+                                if (i != tamanhoDaLista)
+                                {
+                                    table.Cell().ColumnSpan(8).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
+                                }
+                            }
+                            table.Cell().ColumnSpan(8).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
 
-                        table.Cell().ColumnSpan(6);
-                        table.Cell().AlignRight().Text("R$ " + _valorTotalPagoDasVendasDoPeriodo.ToString("F2")).FontSize(10);
-                        table.Cell().AlignRight().Text("R$ " + _valorTotalDasVendasDoPeriodo.ToString("F2")).FontSize(10);
+                            table.Cell().ColumnSpan(6);
+                            table.Cell().AlignRight().Text("Total Pago Das Vendas:").FontSize(10);
+                            table.Cell().AlignRight().Text("Total Das Vendas:").FontSize(10);
+
+                            table.Cell().ColumnSpan(6);
+                            table.Cell().AlignRight().Text("R$ " + _valorTotalPagoDasVendasDoPeriodo.ToString("F2")).FontSize(10);
+                            table.Cell().AlignRight().Text("R$ " + _valorTotalDasVendasDoPeriodo.ToString("F2")).FontSize(10);
+                        }
                     });
                 });
                 page.Footer().AlignRight().Text(text =>

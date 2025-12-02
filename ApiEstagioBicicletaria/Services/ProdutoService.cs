@@ -15,8 +15,8 @@ namespace ApiEstagioBicicletaria.Services
     public class ProdutoService : IProdutoService
     {
 
-        private readonly int _numeroMaximoDePaginas = 5;
-        private readonly int _numeroDeLinhasPorPagina = 42;
+        //private readonly int _numeroMaximoDePaginas = 5;
+        //private readonly int _numeroDeLinhasPorPagina = 42;
         private ContextoDb _contextoDb;
 
         public ProdutoService(ContextoDb contextoDb)
@@ -174,7 +174,7 @@ namespace ApiEstagioBicicletaria.Services
             return _contextoDb.Produtos.Where(p => p.NomeProduto.Contains(nome) && p.Ativo).Take(10).ToList();
         }
 
-        public byte[] GerarRelatorioDeProdutosVendidosPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        public byte[] GerarRelatorioDeProdutosComMaiorFaturamentoPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
         {
             DateTime dataDeInicioDoPeriodoConvertidaDateTime;
 
@@ -206,11 +206,15 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "A data de fim de periodo nao pode ser maior do que ha de inicio do periodo");
             }
+            if(dataDeFimDoPeriodoDateOnly>dataDeInicioDoPeriodoFormatoDateOnly.AddDays(366))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"O Período não deve ser maior que 366 dias");
+            }
 
             dataDeInicioDoPeriodoConvertidaDateTime = dataDeInicioDoPeriodoFormatoDateOnly.ToDateTime(TimeOnly.MinValue);
             dataDeFimDoPeriodoConvertidaDateTime = dataDeFimDoPeriodoDateOnly.ToDateTime(TimeOnly.MaxValue);
 
-            int numeroDeRegistroASerBuscados = _numeroMaximoDePaginas * _numeroDeLinhasPorPagina;
+            //int numeroDeRegistroASerBuscados = _numeroMaximoDePaginas * _numeroDeLinhasPorPagina;
             List<ProdutoMaisVendidoDto> produtosMaisVendidos = _contextoDb.
                 ItensVendas.
                 Where(iv => iv.Ativo && iv.Produto.Ativo && iv.DataCriacao>=dataDeInicioDoPeriodoConvertidaDateTime && iv.DataCriacao<=dataDeFimDoPeriodoConvertidaDateTime)
@@ -219,34 +223,42 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     Produto= g.First().Produto,
                     QuantidadeVendida= g.Sum(x=>x.Quantidade),
-                    Total=g.Sum(x=>(x.PrecoUnitarioDoProdutoNaVendaSemDesconto-x.DescontoUnitario)*x.Quantidade)
+                    Faturamento=g.Sum(x=>(x.PrecoUnitarioDoProdutoNaVendaSemDesconto-x.DescontoUnitario)*x.Quantidade)
 
                 })
-                .OrderByDescending(x=>x.QuantidadeVendida)
-                .Take(numeroDeRegistroASerBuscados)
+                .OrderByDescending(x=>x.Faturamento)
+                .ThenByDescending(x=>x.QuantidadeVendida)
                 .ToList();
 
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var documento = new RelatorioProdutosVendidosPorPeriodo(produtosMaisVendidos, dataDeInicioDoPeriodoFormatoDateOnly,dataDeFimDoPeriodoDateOnly);
+            var documento = new RelatorioProdutosComMaiorFaturamentoPorPeriodo(produtosMaisVendidos, dataDeInicioDoPeriodoFormatoDateOnly,dataDeFimDoPeriodoDateOnly);
 
             byte[] pdf = documento.GeneratePdf();
 
             return pdf;
         }
 
-        public byte[] GerarRelatorioDeProdutosEmFalta()
+        public byte[] GerarRelatorioDeProdutosComEstoqueAbaixoOuIgualUmaQuantidade(int quantidadeParaBuscarDosProdutosEmFalta)
         {
-            int numeroDeRegistroASerBuscados = _numeroMaximoDePaginas * _numeroDeLinhasPorPagina;
+            //int numeroDeRegistroASerBuscados = _numeroMaximoDePaginas * _numeroDeLinhasPorPagina;
+            if (quantidadeParaBuscarDosProdutosEmFalta < 0)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Não é possível buscar produtos com a quantidade em estoque menor do que 0");
+            }
+            if (quantidadeParaBuscarDosProdutosEmFalta > 150)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A Quantidade para se enquadrar em produtos em falta não deve ser maior que 150");
+            }
+
             List<Produto> produtosEmFalta = _contextoDb.
-                Produtos.Where(p=>p.Ativo  && p.QuantidadeEmEstoque<=20)
+                Produtos.Where(p=>p.Ativo  && p.QuantidadeEmEstoque<= quantidadeParaBuscarDosProdutosEmFalta)
                 .OrderBy(p=>p.QuantidadeEmEstoque)
-                .Take(numeroDeRegistroASerBuscados)
                 .ToList();
             //colocar quando a quantidade for menor que tal, fazer a busca??
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var documento = new RelatorioDeProdutosEmFalta(produtosEmFalta);
+            var documento = new RelatorioDeProdutosEmFalta(produtosEmFalta,quantidadeParaBuscarDosProdutosEmFalta);
 
             byte[] pdf = documento.GeneratePdf();
 

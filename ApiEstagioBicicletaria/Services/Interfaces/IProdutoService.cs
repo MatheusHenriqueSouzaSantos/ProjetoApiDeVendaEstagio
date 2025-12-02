@@ -26,7 +26,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         Produto AbaterQuantidadeEmEstoqueDeProdutoPorId(Guid idProdutoEnviado, int quantidadeAAbaterEmEstoque);
 
-        byte[] GerarRelatorioDeProdutosVendidosPorPeriodo(DatasParaGeracaoDeRelatorioDto dto);
-        byte[] GerarRelatorioDeProdutosEmFalta();
+        byte[] GerarRelatorioDeProdutosComMaiorFaturamentoPorPeriodo(DatasParaGeracaoDeRelatorioDto dto);
+        byte[] GerarRelatorioDeProdutosComEstoqueAbaixoOuIgualUmaQuantidade(int quantidadePaBuscarProdutosEmFalta);
     }
 }

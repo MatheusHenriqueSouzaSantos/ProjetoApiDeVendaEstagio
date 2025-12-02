@@ -8,6 +8,6 @@ namespace ApiEstagioBicicletaria.Dtos.RelatorioDtos
 
         public int QuantidadeVendida { get; set; }
 
-        public decimal Total {  get; set; }
+        public decimal Faturamento {  get; set; }
     }
 }
