@@ -1,4 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Excecoes;
@@ -17,11 +18,21 @@ namespace ApiEstagioBicicletaria.Services
             this._contextoDb = contextoDb;
         }
 
-        public List<Servico> BuscarServicos()
+        public List<ServicoDtoOutPut> BuscarServicos()
         {
-            return _contextoDb.Servicos.Where(s => s.Ativo).ToList();
+            List<Servico> servicosVindoDoBanco= _contextoDb.Servicos.Where(s => s.Ativo).ToList();
+            List<ServicoDtoOutPut> servicosFormatoOutPut = new List<ServicoDtoOutPut>();
+
+            foreach(Servico servicoIterado in servicosVindoDoBanco)
+            {
+                bool podeExcluir = !_contextoDb.ServicosVendas.Any(sv => sv.IdServico == servicoIterado.Id && sv.Ativo);
+                ServicoDtoOutPut servicoFormatoDto = new ServicoDtoOutPut(servicoIterado.Id, servicoIterado.CodigoDoServico, servicoIterado.DataCriacao, servicoIterado.NomeServico,
+                    servicoIterado.Descricao, servicoIterado.PrecoServico, servicoIterado.Ativo, podeExcluir);
+                servicosFormatoOutPut.Add(servicoFormatoDto);
+            }
+            return servicosFormatoOutPut;
         }
-        public Servico BuscarServicoPorId(Guid id)
+        public ServicoDtoOutPut BuscarServicoPorId(Guid id)
         {
             Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.Id == id && s.Ativo).FirstOrDefault();
 
@@ -29,19 +40,26 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
             }
-            return servicoVindoDoBanco;
+            bool podeExcluir = !_contextoDb.ServicosVendas.Any(sv => sv.IdServico == servicoVindoDoBanco.Id && sv.Ativo);
+            ServicoDtoOutPut servicoFormatoDto=new ServicoDtoOutPut(servicoVindoDoBanco.Id,servicoVindoDoBanco.CodigoDoServico,servicoVindoDoBanco.DataCriacao,servicoVindoDoBanco.NomeServico,
+                servicoVindoDoBanco.Descricao,servicoVindoDoBanco.PrecoServico,servicoVindoDoBanco.Ativo,podeExcluir);
+
+            return servicoFormatoDto;
         }
 
-        public Servico BuscarServicoPorCodigoDoServico(string codigoDoServico)
+        public ServicoDtoOutPut BuscarServicoPorCodigoDoServico(string codigoDoServico)
         {
-
             Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.CodigoDoServico == codigoDoServico && s.Ativo).FirstOrDefault();
 
             if (servicoVindoDoBanco == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
             }
-            return servicoVindoDoBanco;
+            bool podeExcluir = !_contextoDb.ServicosVendas.Any(sv => sv.IdServico == servicoVindoDoBanco.Id && sv.Ativo);
+            ServicoDtoOutPut servicoFormatoDto = new ServicoDtoOutPut(servicoVindoDoBanco.Id, servicoVindoDoBanco.CodigoDoServico, servicoVindoDoBanco.DataCriacao, servicoVindoDoBanco.NomeServico,
+                servicoVindoDoBanco.Descricao, servicoVindoDoBanco.PrecoServico, servicoVindoDoBanco.Ativo, podeExcluir);
+
+            return servicoFormatoDto;
         }
 
         public Servico CadastrarServico(ServicoDto dto)
@@ -107,9 +125,19 @@ namespace ApiEstagioBicicletaria.Services
             _contextoDb.SaveChanges();
         }
 
-        public List<Servico> BuscarServicosPorNome(string nome)
+        public List<ServicoDtoOutPut> BuscarServicosPorNome(string nome)
         {
-            return _contextoDb.Servicos.Where(s => s.NomeServico.Contains(nome)).Take(10).ToList();
+            List<Servico> servicosVindoDoBanco= _contextoDb.Servicos.Where(s => s.NomeServico.Contains(nome)).Take(10).ToList();
+            List<ServicoDtoOutPut> servicosFormatoOutPut = new List<ServicoDtoOutPut>();
+
+            foreach (Servico servicoIterado in servicosVindoDoBanco)
+            {
+                bool podeExcluir = !_contextoDb.ServicosVendas.Any(sv => sv.IdServico == servicoIterado.Id && sv.Ativo);
+                ServicoDtoOutPut servicoFormatoDto = new ServicoDtoOutPut(servicoIterado.Id, servicoIterado.CodigoDoServico, servicoIterado.DataCriacao, servicoIterado.NomeServico,
+                    servicoIterado.Descricao, servicoIterado.PrecoServico, servicoIterado.Ativo, podeExcluir);
+                servicosFormatoOutPut.Add(servicoFormatoDto);
+            }
+            return servicosFormatoOutPut;
         }
 
     }

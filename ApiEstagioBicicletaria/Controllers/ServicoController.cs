@@ -1,4 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Excecoes;
@@ -18,7 +19,7 @@ namespace ApiEstagioBicicletaria.Controllers
             this._servicoService = servicoService;
         }
         [HttpGet]
-        public ActionResult<List<Servico>> BuscarServicos()
+        public ActionResult<List<ServicoDtoOutPut>> BuscarServicos()
         {
             //if (!ModelState.IsValid)
             try
@@ -38,7 +39,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Servico> BuscarServicoPorId([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
+        public ActionResult<ServicoDtoOutPut> BuscarServicoPorId([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
         {
             try
             {
@@ -61,7 +62,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
         //mudar para codigo do serviço em tudo ou deixa como esta?
         [HttpGet("busca-por-codigo-do-servico/{codigoDoServico}")]
-        public ActionResult<Servico> BuscarServicoPorCodigoDoServico([FromRoute, Required(ErrorMessage = "O Código do Serviço é obrigatório")] string codigoDoServico)
+        public ActionResult<ServicoDtoOutPut> BuscarServicoPorCodigoDoServico([FromRoute, Required(ErrorMessage = "O Código do Serviço é obrigatório")] string codigoDoServico)
         {
             try
             {
@@ -153,7 +154,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("buscar-servicos-por-nome/{nome}")]
-        public ActionResult<List<Servico>> BuscarServicosPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
+        public ActionResult<List<ServicoDtoOutPut>> BuscarServicosPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
         {
             try
             {

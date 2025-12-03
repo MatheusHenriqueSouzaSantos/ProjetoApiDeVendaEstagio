@@ -1,14 +1,15 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces
 {
     public interface IServicoService
     {
-        List<Servico> BuscarServicos();
-        Servico BuscarServicoPorId(Guid id);
+        List<ServicoDtoOutPut> BuscarServicos();
+        ServicoDtoOutPut BuscarServicoPorId(Guid id);
 
-        Servico BuscarServicoPorCodigoDoServico(string codigoDoServico);
+        ServicoDtoOutPut BuscarServicoPorCodigoDoServico(string codigoDoServico);
 
         Servico CadastrarServico(ServicoDto dto);
 
@@ -16,7 +17,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         void DeletarServicoPorId(Guid id);
 
-        List<Servico> BuscarServicosPorNome(string nome);
+        List<ServicoDtoOutPut> BuscarServicosPorNome(string nome);
 
     }
 }
