@@ -1,5 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
@@ -24,11 +25,22 @@ namespace ApiEstagioBicicletaria.Services
             this._contextoDb = contextoDb;
         }
 
-        public List<Produto> BuscarProdutos()
+        public List<ProdutoDtoOutPut> BuscarProdutos()
         {
-            return _contextoDb.Produtos.Where(p=>p.Ativo).ToList();
+            List<Produto> produtosVindoDoBanco= _contextoDb.Produtos.Where(p=>p.Ativo).ToList();
+
+            List<ProdutoDtoOutPut> produtosFomartoDto = new List<ProdutoDtoOutPut>();
+
+            foreach(Produto produtoIterado in produtosVindoDoBanco)
+            {
+                bool podeExcluir = !_contextoDb.ItensVendas.Any(iv => iv.IdProduto == produtoIterado.Id && iv.Ativo);
+                ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoIterado.Id, produtoIterado.CodigoDeBarra,
+                    produtoIterado.DataCriacao, produtoIterado.NomeProduto, produtoIterado.Descricao, produtoIterado.QuantidadeEmEstoque, produtoIterado.PrecoUnitario, produtoIterado.Ativo, podeExcluir);
+                produtosFomartoDto.Add(produtoFormatoDto);
+            }
+            return produtosFomartoDto;
         }
-        public Produto BuscarProdutoPorId(Guid id)
+        public ProdutoDtoOutPut BuscarProdutoPorId(Guid id)
         {
             Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
 
@@ -36,10 +48,12 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
             }
-            return produtoVindoDoBanco;
+            bool podeExcluir = !_contextoDb.ItensVendas.Any(iv => iv.IdProduto == produtoVindoDoBanco.Id && iv.Ativo);
+            ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoVindoDoBanco.Id, produtoVindoDoBanco.CodigoDeBarra, produtoVindoDoBanco.DataCriacao, produtoVindoDoBanco.NomeProduto, produtoVindoDoBanco.Descricao, produtoVindoDoBanco.QuantidadeEmEstoque, produtoVindoDoBanco.PrecoUnitario, produtoVindoDoBanco.Ativo, podeExcluir);
+            return produtoFormatoDto;
         }
 
-        public Produto BuscarProdutoPorCodigoDeBarra(string codigoDeBarra)
+        public ProdutoDtoOutPut BuscarProdutoPorCodigoDeBarra(string codigoDeBarra)
         {
 
             Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.CodigoDeBarra == codigoDeBarra && p.Ativo).FirstOrDefault();
@@ -48,7 +62,9 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Produto não encontrado");
             }
-            return produtoVindoDoBanco;
+            bool podeExcluir = !_contextoDb.ItensVendas.Any(iv => iv.IdProduto == produtoVindoDoBanco.Id && iv.Ativo);
+            ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoVindoDoBanco.Id, produtoVindoDoBanco.CodigoDeBarra, produtoVindoDoBanco.DataCriacao, produtoVindoDoBanco.NomeProduto, produtoVindoDoBanco.Descricao, produtoVindoDoBanco.QuantidadeEmEstoque, produtoVindoDoBanco.PrecoUnitario, produtoVindoDoBanco.Ativo, podeExcluir);
+            return produtoFormatoDto;
         }
 
         public Produto CadastrarProduto(ProdutoDto dto)
@@ -169,9 +185,20 @@ namespace ApiEstagioBicicletaria.Services
         //    _contextoDb.Update(produtoVindoDoBanco);
         //    _contextoDb.SaveChanges();
         //} 
-        public List<Produto> BuscarProdutosPorNome(string nome)
+        public List<ProdutoDtoOutPut> BuscarProdutosPorNome(string nome)
         {
-            return _contextoDb.Produtos.Where(p => p.NomeProduto.Contains(nome) && p.Ativo).Take(10).ToList();
+            List<Produto> produtosVindoDoBanco = _contextoDb.Produtos.Where(p => p.NomeProduto.Contains(nome) && p.Ativo).Take(10).ToList();
+
+            List<ProdutoDtoOutPut> produtosFomartoDto = new List<ProdutoDtoOutPut>();
+
+            foreach (Produto produtoIterado in produtosVindoDoBanco)
+            {
+                bool podeExcluir = !_contextoDb.ItensVendas.Any(iv => iv.IdProduto == produtoIterado.Id && iv.Ativo);
+                ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoIterado.Id, produtoIterado.CodigoDeBarra,
+                    produtoIterado.DataCriacao, produtoIterado.NomeProduto, produtoIterado.Descricao, produtoIterado.QuantidadeEmEstoque, produtoIterado.PrecoUnitario, produtoIterado.Ativo, podeExcluir);
+                produtosFomartoDto.Add(produtoFormatoDto);
+            }
+            return produtosFomartoDto;
         }
 
         public byte[] GerarRelatorioDeProdutosComMaiorFaturamentoPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)

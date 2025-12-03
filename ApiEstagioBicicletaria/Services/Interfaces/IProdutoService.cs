@@ -1,5 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,10 +8,10 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 {
     public interface IProdutoService
     {
-        List<Produto> BuscarProdutos();
-        Produto BuscarProdutoPorId(Guid id);
+        List<ProdutoDtoOutPut> BuscarProdutos();
+        ProdutoDtoOutPut BuscarProdutoPorId(Guid id);
 
-        Produto BuscarProdutoPorCodigoDeBarra(string codigoDeBarra);
+        ProdutoDtoOutPut BuscarProdutoPorCodigoDeBarra(string codigoDeBarra);
 
         Produto CadastrarProduto(ProdutoDto dto);
 
@@ -20,7 +21,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         //void DefinirQuantidadeEmEstoqueDeProduto(Guid id, int quantidade);
 
-        List<Produto> BuscarProdutosPorNome(string nome);
+        List<ProdutoDtoOutPut> BuscarProdutosPorNome(string nome);
 
         Produto AdicionarQuantidadeEmEstoqueDeProdutoPorId(Guid idProdutoEnviado, int quantidadeAAdicionarEmEstoque);
 

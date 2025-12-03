@@ -1,5 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
@@ -17,7 +18,7 @@ namespace ApiEstagioBicicletaria.Controllers
             this._produtoService = produtoService;
         }
         [HttpGet]
-        public ActionResult<List<Produto>> BuscarProdutos()
+        public ActionResult<List<ProdutoDtoOutPut>> BuscarProdutos()
         {
             
             try
@@ -37,7 +38,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Produto> BuscarProdutoPorId([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
+        public ActionResult<ProdutoDtoOutPut> BuscarProdutoPorId([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
         {
             try
             {
@@ -59,7 +60,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpGet("busca-por-codigo-de-barra/{codigoDeBarra}")]
-        public ActionResult<Produto> BuscarProdutoPorCodigoDeBarra([FromRoute, Required(ErrorMessage = "O Código de Barras é obrigatório")] string codigoDeBarra)
+        public ActionResult<ProdutoDtoOutPut> BuscarProdutoPorCodigoDeBarra([FromRoute, Required(ErrorMessage = "O Código de Barras é obrigatório")] string codigoDeBarra)
         {
             try
             {
@@ -217,7 +218,7 @@ namespace ApiEstagioBicicletaria.Controllers
         //    }
         //}
         [HttpGet("buscar-produtos-por-nome/{nome}")]
-        public ActionResult<List<Produto>> BuscarProdutosPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
+        public ActionResult<List<ProdutoDtoOutPut>> BuscarProdutosPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
         {
             try
             {
