@@ -21,7 +21,7 @@ namespace ApiEstagioBicicletaria.Services
             this._contextoDb = contextoDb;
         }
 
-        public List<Cliente> BuscarClientes()
+        public List<ClienteDtoOutPut> BuscarClientes()
         {
             List<ClienteFisico> clientesFisicos = _contextoDb.Clientes
                 .OfType<ClienteFisico>()
@@ -35,23 +35,55 @@ namespace ApiEstagioBicicletaria.Services
                 .Where(c => c.Ativo)
                 .ToList();
 
-            List<Cliente> todosClientes = new List<Cliente>();
-            todosClientes.AddRange(clientesFisicos);
-            todosClientes.AddRange(clientesJuridicos);
+            List<ClienteDtoOutPut> todosClientesFormatoDto = new List<ClienteDtoOutPut>();
+            List<ClienteFisicoDtoOutPut> clientesFisicoFormatoDtoOutput = new List<ClienteFisicoDtoOutPut>();
 
-            return todosClientes;
+            foreach(ClienteFisico clienteFisicoIterado in clientesFisicos)
+            {
+                bool podeExcluirEsseCliente = !_contextoDb.Vendas.Any(v => v.IdCliente == clienteFisicoIterado.Id);
+                ClienteFisicoDtoOutPut clienteFormatoDtoOutput = new ClienteFisicoDtoOutPut(clienteFisicoIterado.Id, clienteFisicoIterado.Endereco, clienteFisicoIterado.DataCriacao,
+                    clienteFisicoIterado.Telefone, clienteFisicoIterado.Email, clienteFisicoIterado.TipoCliente, podeExcluirEsseCliente, clienteFisicoIterado.Ativo,clienteFisicoIterado.Nome,clienteFisicoIterado.Cpf);
+                clientesFisicoFormatoDtoOutput.Add(clienteFormatoDtoOutput);
+            }
+            todosClientesFormatoDto.AddRange(clientesFisicoFormatoDtoOutput);
+            List<ClienteJuridicoDtoOutPut> clientesJuridicosFormatoDtoOutput = new List<ClienteJuridicoDtoOutPut>();
+            foreach (ClienteJuridico clienteJuridicoIterado in clientesJuridicos)
+            {
+                bool podeExcluirEsseCliente = !_contextoDb.Vendas.Any(v => v.IdCliente == clienteJuridicoIterado.Id);
+                ClienteJuridicoDtoOutPut clienteFormatoDtoOutput = new ClienteJuridicoDtoOutPut(clienteJuridicoIterado.Id, clienteJuridicoIterado.Endereco, clienteJuridicoIterado.DataCriacao,
+                    clienteJuridicoIterado.Telefone, clienteJuridicoIterado.Email, clienteJuridicoIterado.TipoCliente, podeExcluirEsseCliente, clienteJuridicoIterado.Ativo,clienteJuridicoIterado.RazaoSocial,
+                    clienteJuridicoIterado.NomeFantasia,clienteJuridicoIterado.InscricaoEstadual,clienteJuridicoIterado.Cnpj);
+                clientesJuridicosFormatoDtoOutput.Add(clienteFormatoDtoOutput);
+            }
+            todosClientesFormatoDto.AddRange(clientesFisicoFormatoDtoOutput);
+            return todosClientesFormatoDto;
 
         }
 
-        public Cliente BuscarClientePorId(Guid id)
+        public ClienteDtoOutPut BuscarClientePorId(Guid id)
         {
             Cliente? cliente = _contextoDb.Clientes.Include(c => c.Endereco).FirstOrDefault(c => c.Id == id && c.Ativo);
+            ClienteDtoOutPut clienteFormatoDto=null;
 
             if (cliente== null)
             {
                 throw new ExcecaoDeRegraDeNegocio(404,"Cliente não encontrado");
             }
-            return cliente;
+            if (cliente.TipoCliente == TipoCliente.PessoaFisica)
+            {
+                ClienteFisico clienteFormatoFisico= (ClienteFisico)cliente;
+                bool podeExcluirEsseCliente = !_contextoDb.Vendas.Any(v => v.IdCliente == clienteFormatoFisico.Id);
+                clienteFormatoDto = new ClienteFisicoDtoOutPut(clienteFormatoFisico.Id, clienteFormatoFisico.Endereco, clienteFormatoFisico.DataCriacao, clienteFormatoFisico.Telefone, clienteFormatoFisico.Email,
+                    clienteFormatoFisico.TipoCliente, podeExcluirEsseCliente,clienteFormatoFisico.Ativo, clienteFormatoFisico.Nome, clienteFormatoFisico.Cpf);
+            }
+            if (cliente.TipoCliente == TipoCliente.PessoaJuridica)
+            {
+                ClienteJuridico clienteFormatoJuridico = (ClienteJuridico)cliente;
+                bool podeExcluirEsseCliente = !_contextoDb.Vendas.Any(v => v.IdCliente == clienteFormatoJuridico.Id);
+                clienteFormatoDto = new ClienteJuridicoDtoOutPut(clienteFormatoJuridico.Id, clienteFormatoJuridico.Endereco, clienteFormatoJuridico.DataCriacao, clienteFormatoJuridico.Telefone, clienteFormatoJuridico.Email,
+                    clienteFormatoJuridico.TipoCliente, podeExcluirEsseCliente, clienteFormatoJuridico.Ativo, clienteFormatoJuridico.RazaoSocial,clienteFormatoJuridico.NomeFantasia,clienteFormatoJuridico.InscricaoEstadual,clienteFormatoJuridico.Cnpj);
+            }
+            return clienteFormatoDto;
         }
 
         public ClienteFisico CadastrarClienteFisico(ClienteFisicoDto dto)
@@ -247,7 +279,7 @@ namespace ApiEstagioBicicletaria.Services
             
         }
 
-        public List<Cliente> BuscarClientesPorNome(string nome)
+        public List<ClienteDtoOutPut> BuscarClientesPorNome(string nome)
         {
             List<ClienteFisico> clientesFisicos = _contextoDb.Clientes
                 .OfType<ClienteFisico>()
@@ -261,13 +293,31 @@ namespace ApiEstagioBicicletaria.Services
                 .Where(c => c.Ativo && c.RazaoSocial.Contains(nome))
                 .ToList();
 
-            List<Cliente> todosClientes = new List<Cliente>();
-            todosClientes.AddRange(clientesFisicos);
-            todosClientes.AddRange(clientesJuridicos);
+            List<ClienteDtoOutPut> todosClientesFormatoDto = new List<ClienteDtoOutPut>();
+            List<ClienteFisicoDtoOutPut> clientesFisicoFormatoDtoOutput = new List<ClienteFisicoDtoOutPut>();
 
-            return todosClientes;
+            foreach (ClienteFisico clienteFisicoIterado in clientesFisicos)
+            {
+                bool podeExcluirEsseCliente = !_contextoDb.Vendas.Any(v => v.IdCliente == clienteFisicoIterado.Id);
+                ClienteFisicoDtoOutPut clienteFormatoDtoOutput = new ClienteFisicoDtoOutPut(clienteFisicoIterado.Id, clienteFisicoIterado.Endereco, clienteFisicoIterado.DataCriacao,
+                    clienteFisicoIterado.Telefone, clienteFisicoIterado.Email, clienteFisicoIterado.TipoCliente, podeExcluirEsseCliente, clienteFisicoIterado.Ativo, clienteFisicoIterado.Nome, clienteFisicoIterado.Cpf);
+                clientesFisicoFormatoDtoOutput.Add(clienteFormatoDtoOutput);
+            }
+            todosClientesFormatoDto.AddRange(clientesFisicoFormatoDtoOutput);
+            List<ClienteJuridicoDtoOutPut> clientesJuridicosFormatoDtoOutput = new List<ClienteJuridicoDtoOutPut>();
+            foreach (ClienteJuridico clienteJuridicoIterado in clientesJuridicos)
+            {
+                bool podeExcluirEsseCliente = !_contextoDb.Vendas.Any(v => v.IdCliente == clienteJuridicoIterado.Id);
+                ClienteJuridicoDtoOutPut clienteFormatoDtoOutput = new ClienteJuridicoDtoOutPut(clienteJuridicoIterado.Id, clienteJuridicoIterado.Endereco, clienteJuridicoIterado.DataCriacao,
+                    clienteJuridicoIterado.Telefone, clienteJuridicoIterado.Email, clienteJuridicoIterado.TipoCliente, podeExcluirEsseCliente, clienteJuridicoIterado.Ativo, clienteJuridicoIterado.RazaoSocial,
+                    clienteJuridicoIterado.NomeFantasia, clienteJuridicoIterado.InscricaoEstadual, clienteJuridicoIterado.Cnpj);
+                clientesJuridicosFormatoDtoOutput.Add(clienteFormatoDtoOutput);
+            }
+            todosClientesFormatoDto.AddRange(clientesFisicoFormatoDtoOutput);
+
+            return todosClientesFormatoDto;
         }
-        public Cliente BuscarClientePorDocumentoIndentificador(DocumentoClienteInputDto dto)
+        public ClienteDtoOutPut BuscarClientePorDocumentoIndentificador(DocumentoClienteInputDto dto)
         {
             switch (dto.TipoDocumento) 
             {
@@ -288,7 +338,7 @@ namespace ApiEstagioBicicletaria.Services
                     }
             }
         }
-        public ClienteFisico BuscarClientePorCpf(string cpfEnviado)
+        public ClienteFisicoDtoOutPut BuscarClientePorCpf(string cpfEnviado)
         {
             string cpfSomentNumeros=ClienteUtil.RemoverNaoNumericos(cpfEnviado);
             if (!ClienteUtil.ValidarCpf(cpfSomentNumeros))
@@ -300,10 +350,15 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"Cliente não encontrado!!");
             }
-            return clienteVindoDoBanco;
+            bool podeExcluirEsseCliente = !_contextoDb.Vendas.Any(v => v.IdCliente == clienteVindoDoBanco.Id);
+            ClienteFisicoDtoOutPut clienteFormatoDto = new ClienteFisicoDtoOutPut(clienteVindoDoBanco.Id, clienteVindoDoBanco.Endereco, clienteVindoDoBanco.DataCriacao, clienteVindoDoBanco.Telefone, clienteVindoDoBanco.Email,
+                clienteVindoDoBanco.TipoCliente, podeExcluirEsseCliente, clienteVindoDoBanco.Ativo, clienteVindoDoBanco.Nome, clienteVindoDoBanco.Cpf);
+
+            return clienteFormatoDto;
+
         }
 
-        public ClienteJuridico BuscarClientePorCnpj(string cnpjEnviado)
+        public ClienteJuridicoDtoOutPut BuscarClientePorCnpj(string cnpjEnviado)
         {
             string cnpjSomenteNumeros = ClienteUtil.RemoverNaoNumericos(cnpjEnviado);
 
@@ -316,7 +371,11 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cliente não encontrado!!");
             }
-            return clienteVindoDoBanco;
+            bool podeExcluirEsseCliente = !_contextoDb.Vendas.Any(v => v.IdCliente == clienteVindoDoBanco.Id);
+            ClienteJuridicoDtoOutPut clienteFormatoDto = new ClienteJuridicoDtoOutPut(clienteVindoDoBanco.Id, clienteVindoDoBanco.Endereco, clienteVindoDoBanco.DataCriacao, clienteVindoDoBanco.Telefone, clienteVindoDoBanco.Email,
+                clienteVindoDoBanco.TipoCliente, podeExcluirEsseCliente, clienteVindoDoBanco.Ativo, clienteVindoDoBanco.RazaoSocial, clienteVindoDoBanco.NomeFantasia, clienteVindoDoBanco.InscricaoEstadual, clienteVindoDoBanco.Cnpj);
+
+            return clienteFormatoDto;
         }
     }
 }

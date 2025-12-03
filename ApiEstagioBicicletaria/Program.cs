@@ -1,3 +1,4 @@
+using ApiEstagioBicicletaria.Dtos.ClienteDtos;
 using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Services;
@@ -33,35 +34,49 @@ namespace ApiEstagioBicicletaria
                 });
             });
             builder.Services.AddControllers()
-                .AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.WriteIndented = true;
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-                    options.JsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver
-                    {
-                        Modifiers =
-                        {
-                                ti =>
-                                {
-                                    if (ti.Type == typeof(Cliente)) 
-                                    {
-                                        ti.PolymorphismOptions = new JsonPolymorphismOptions
-                                        {
-                                            TypeDiscriminatorPropertyName = "$type",
-                                            IgnoreUnrecognizedTypeDiscriminators = true,
-                                            DerivedTypes =
-                                            {
-                                                new JsonDerivedType(typeof(ClienteFisico), "fisico"),
-                                                new JsonDerivedType(typeof(ClienteJuridico), "juridico")
-                                            }
-                                        };
-                                    }
-                                }
-                        }
-                    };
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.WriteIndented = true;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 
-                });
+        options.JsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver
+        {
+            Modifiers =
+            {
+                ti =>
+                {
+                    if (ti.Type == typeof(Cliente))
+                    {
+                        ti.PolymorphismOptions = new JsonPolymorphismOptions
+                        {
+                            TypeDiscriminatorPropertyName = "$type",
+                            IgnoreUnrecognizedTypeDiscriminators = true,
+                            DerivedTypes =
+                            {
+                                new JsonDerivedType(typeof(ClienteFisico), "fisico"),
+                                new JsonDerivedType(typeof(ClienteJuridico), "juridico")
+                            }
+                        };
+                    }
+
+                    if (ti.Type == typeof(ClienteDtoOutPut))
+                    {
+                        ti.PolymorphismOptions = new JsonPolymorphismOptions
+                        {
+                            TypeDiscriminatorPropertyName = "$type",
+                            IgnoreUnrecognizedTypeDiscriminators = true,
+                            DerivedTypes =
+                            {
+                                new JsonDerivedType(typeof(ClienteFisicoDtoOutPut), "fisico"),
+                                new JsonDerivedType(typeof(ClienteJuridicoDtoOutPut), "juridico")
+                            }
+                        };
+                    }
+                }
+            }
+        };
+    });
 
             var app = builder.Build();
 

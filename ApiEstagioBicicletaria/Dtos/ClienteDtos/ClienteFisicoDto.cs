@@ -16,7 +16,7 @@ namespace ApiEstagioBicicletaria.Dtos
 
         public ClienteFisicoDto() { }
 
-        public ClienteFisicoDto(EnderecoDto endereco, string telefone, string email, 
+        public ClienteFisicoDto(EnderecoDto endereco, string telefone, string email,
              string nome, string cpf)
         : base(endereco, telefone, email)
         {

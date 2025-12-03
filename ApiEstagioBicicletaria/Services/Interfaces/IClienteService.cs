@@ -7,9 +7,9 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 {
     public interface IClienteService
     {
-        List<Cliente> BuscarClientes();
+        List<ClienteDtoOutPut> BuscarClientes();
         //ActionResult<Cliente> BuscarClientePorId(Guid id);
-        Cliente BuscarClientePorId(Guid id);
+        ClienteDtoOutPut BuscarClientePorId(Guid id);
 
         ClienteFisico CadastrarClienteFisico(ClienteFisicoDto dto);
 
@@ -21,8 +21,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         void DeletarCLientePorId(Guid id);
 
-        List<Cliente> BuscarClientesPorNome(string nome);
+        List<ClienteDtoOutPut> BuscarClientesPorNome(string nome);
 
-        Cliente BuscarClientePorDocumentoIndentificador (DocumentoClienteInputDto dto);
+        ClienteDtoOutPut BuscarClientePorDocumentoIndentificador (DocumentoClienteInputDto dto);
     }
 }

@@ -22,7 +22,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Cliente>> BuscarClientes()
+        public ActionResult<List<ClienteDtoOutPut>> BuscarClientes()
         {
             try
             {
@@ -41,7 +41,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Cliente> BuscarClientePorId([FromRoute,Required(ErrorMessage ="O id é obrigatório")] Guid id )
+        public ActionResult<ClienteDtoOutPut> BuscarClientePorId([FromRoute,Required(ErrorMessage ="O id é obrigatório")] Guid id )
         {
             try
             {
@@ -198,7 +198,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpGet("buscar-clientes-por-nome/{nome}")]
         //pedir para mandar se quer que venha fisicos ou júridicos
-        public ActionResult<List<Cliente>> BuscarClientesPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
+        public ActionResult<List<ClienteDtoOutPut>> BuscarClientesPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
         {
             try
             {
@@ -221,7 +221,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPost("buscar-cliente-por-documento-indentificador")]
-        public ActionResult<Cliente> BuscarClientePorDocumentoIndentificador([FromBody] DocumentoClienteInputDto dto)
+        public ActionResult<ClienteDtoOutPut> BuscarClientePorDocumentoIndentificador([FromBody] DocumentoClienteInputDto dto)
         {
             try
             {
