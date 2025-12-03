@@ -55,7 +55,7 @@ namespace ApiEstagioBicicletaria.Services
                     clienteJuridicoIterado.NomeFantasia,clienteJuridicoIterado.InscricaoEstadual,clienteJuridicoIterado.Cnpj);
                 clientesJuridicosFormatoDtoOutput.Add(clienteFormatoDtoOutput);
             }
-            todosClientesFormatoDto.AddRange(clientesFisicoFormatoDtoOutput);
+            todosClientesFormatoDto.AddRange(clientesJuridicosFormatoDtoOutput);
             return todosClientesFormatoDto;
 
         }
@@ -313,7 +313,7 @@ namespace ApiEstagioBicicletaria.Services
                     clienteJuridicoIterado.NomeFantasia, clienteJuridicoIterado.InscricaoEstadual, clienteJuridicoIterado.Cnpj);
                 clientesJuridicosFormatoDtoOutput.Add(clienteFormatoDtoOutput);
             }
-            todosClientesFormatoDto.AddRange(clientesFisicoFormatoDtoOutput);
+            todosClientesFormatoDto.AddRange(clientesJuridicosFormatoDtoOutput);
 
             return todosClientesFormatoDto;
         }
