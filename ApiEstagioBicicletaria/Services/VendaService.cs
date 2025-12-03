@@ -162,6 +162,10 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"A venda deve conter pelo menos um item ou serviço");
             }
+            if (dto.Transacao.QuantidadeDeParcelas > 60)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A Quantidade De Parcelas não deve ser maior que 60");
+            }
 
             decimal valorTotalDaVendaComDescontoAplicado=Math.Round( (valorTotalDaVendaSemDescontoTotalAplicado-descontoVenda),2,MidpointRounding.AwayFromZero);
 
@@ -376,6 +380,10 @@ namespace ApiEstagioBicicletaria.Services
             if (itensEnviadosFormatoDto.Count < 1 && servicosEnviadosFormatoDto.Count < 1)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "A venda deve conter pelo menos um item ou serviço");
+            }
+            if (dto.Transacao.QuantidadeDeParcelas > 60)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A Quantidade De Parcelas não deve ser maior que 60");
             }
 
             List<ItemVenda> itensAntigoASeremExcluidos = _contexto.ItensVendas.Include(i => i.Produto).Where(i => i.IdVenda == VendaParaAtualizar.Id && i.Ativo).ToList();
