@@ -131,10 +131,10 @@ namespace ApiEstagioBicicletaria.Services
         {
             //sem validação pois pode ser que seja cadastrado uma inscrição estadual de outro estado
             string inscricaoEstadualSemPontosTracosEBarras = ClienteUtil.RemoverPontosTracosEBarras(dto.InscricaoEstadual);
-            if (!ClienteUtil.VerificarSeAStringContemSomenteNumeros(inscricaoEstadualSemPontosTracosEBarras))
-            {
-                throw new ExcecaoDeRegraDeNegocio(400,"A Incrição Estadual deve Conter apenas números");
-            }
+            //if (!string.IsNullOrEmpty(inscricaoEstadualSemPontosTracosEBarras) || !ClienteUtil.VerificarSeAStringContemSomenteNumeros(inscricaoEstadualSemPontosTracosEBarras))
+            //{
+            //    throw new ExcecaoDeRegraDeNegocio(400, "A Incrição Estadual deve Conter apenas números");
+            //}
             string cnpjSemPontoETracos = ClienteUtil.RemoverPontosTracosEBarras(dto.Cnpj);
             if (!ClienteUtil.VerificarSeAStringContemSomenteNumeros(cnpjSemPontoETracos))
             {
@@ -218,10 +218,10 @@ namespace ApiEstagioBicicletaria.Services
             //    throw new ExcecaoDeRegraDeNegocio(400, "Inscrição estadual inválida");
             //}
             string inscricaoEstadualSemPontosTracosEBarras = ClienteUtil.RemoverPontosTracosEBarras(dto.InscricaoEstadual);
-            if (!ClienteUtil.VerificarSeAStringContemSomenteNumeros(inscricaoEstadualSemPontosTracosEBarras))
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "A Incrição Estadual deve Conter apenas números");
-            }
+            //if (!string.IsNullOrEmpty(inscricaoEstadualSemPontosTracosEBarras) || !ClienteUtil.VerificarSeAStringContemSomenteNumeros(inscricaoEstadualSemPontosTracosEBarras))
+            //{
+            //    throw new ExcecaoDeRegraDeNegocio(400, "A Incrição Estadual deve Conter apenas números");
+            //}
             if (!(string.IsNullOrWhiteSpace(dto.Cnpj)))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve vir vazio ou nulo, não é possivel atualizar um cpf");
