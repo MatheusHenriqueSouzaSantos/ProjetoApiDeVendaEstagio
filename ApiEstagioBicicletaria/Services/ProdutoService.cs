@@ -253,8 +253,8 @@ namespace ApiEstagioBicicletaria.Services
                     Faturamento=g.Sum(x=>(x.PrecoUnitarioDoProdutoNaVendaSemDesconto-x.DescontoUnitario)*x.Quantidade)
 
                 })
-                .OrderByDescending(x=>x.Faturamento)
-                .ThenByDescending(x=>x.QuantidadeVendida)
+                .OrderByDescending(x=>x.QuantidadeVendida)
+                .ThenByDescending(x=>x.Faturamento)
                 .ToList();
 
             QuestPDF.Settings.License = LicenseType.Community;

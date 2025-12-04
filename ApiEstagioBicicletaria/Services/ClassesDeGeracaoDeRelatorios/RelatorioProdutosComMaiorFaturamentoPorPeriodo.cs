@@ -49,7 +49,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         table.Cell().ColumnSpan(5);
                         table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().AlignTop().PaddingBottom(-80).Width(120).Height(60).Image("Resources/LogoBikeCiaShopParaEstagio.jpg").FitArea();
                     });
-                    col.Item().Text($"Relatório de Produtos Com Maior Faturamento Por Período: {_dataDeInicioDoPeriodo} à {_dataDeFimDoPeriodo}").FontSize(20).Bold();
+                    col.Item().Text($"Relatório de Produtos Mais Vendidos Por Período: {_dataDeInicioDoPeriodo} à {_dataDeFimDoPeriodo}").FontSize(20).Bold();
                     col.Item().PaddingVertical(10);
                     col.Item().Table(table =>
                     {
