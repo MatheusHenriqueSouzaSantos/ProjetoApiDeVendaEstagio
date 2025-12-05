@@ -40,7 +40,7 @@ namespace ApiEstagioBicicletaria.Services
 
             foreach(ClienteFisico clienteFisicoIterado in clientesFisicos)
             {
-                bool podeExcluirEsseCliente = !_contextoDb.Vendas.Any(v => v.IdCliente == clienteFisicoIterado.Id);
+                bool podeExcluirEsseCliente = !_contextoDb.Vendas.Any(v => v.IdCliente == clienteFisicoIterado.Id && v.Ativo);
                 ClienteFisicoDtoOutPut clienteFormatoDtoOutput = new ClienteFisicoDtoOutPut(clienteFisicoIterado.Id, clienteFisicoIterado.Endereco, clienteFisicoIterado.DataCriacao,
                     clienteFisicoIterado.Telefone, clienteFisicoIterado.Email, clienteFisicoIterado.TipoCliente, podeExcluirEsseCliente, clienteFisicoIterado.Ativo,clienteFisicoIterado.Nome,clienteFisicoIterado.Cpf);
                 clientesFisicoFormatoDtoOutput.Add(clienteFormatoDtoOutput);
