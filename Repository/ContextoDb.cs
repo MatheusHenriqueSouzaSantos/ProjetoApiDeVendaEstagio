@@ -71,6 +71,7 @@ namespace ApiEstagioBicicletaria.Repositories
             modelBuilder.ApplyConfiguration(new ItemVendaConfiguracao());
             modelBuilder.ApplyConfiguration(new ServicoVendaConfiguracao());
             modelBuilder.ApplyConfiguration(new VendedorConfiguracao());
+            modelBuilder.ApplyConfiguration(new FornecedorConfiguracao());
         }
 
     }
