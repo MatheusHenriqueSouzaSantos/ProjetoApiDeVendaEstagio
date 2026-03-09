@@ -37,7 +37,11 @@ namespace ApiEstagioBicicletaria.Repositories
 
         public DbSet<ServicoVenda> ServicosVendas { get; set; }
 
-        public DbSet<Vendedor> Vendedores {get; set;}
+        public DbSet<Vendedor> Vendedores { get; set; }
+
+        public DbSet<Fornecedor> Fornecedores { get; set; }
+
+        public DbSet<Estoque> Estoques { get; set; }
 
         public ContextoDb(DbContextOptions<ContextoDb> options) : base(options)
         {
@@ -72,6 +76,7 @@ namespace ApiEstagioBicicletaria.Repositories
             modelBuilder.ApplyConfiguration(new ServicoVendaConfiguracao());
             modelBuilder.ApplyConfiguration(new VendedorConfiguracao());
             modelBuilder.ApplyConfiguration(new FornecedorConfiguracao());
+            modelBuilder.ApplyConfiguration(new EstoqueConfiguracao());
         }
 
     }

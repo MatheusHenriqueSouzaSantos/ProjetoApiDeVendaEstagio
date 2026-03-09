@@ -1,6 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos;
+﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
-using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
@@ -82,7 +81,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpPost]
-        public ActionResult<Produto> CadastrarProduto([FromBody] ProdutoDto dto)
+        public ActionResult<Produto> CadastrarProduto([FromBody] ProdutoInputDto dto)
         {
             try
             {
@@ -105,7 +104,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpPut("{id}")]
-        public ActionResult<Produto> AtualizarProduto([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ProdutoDto dto)
+        public ActionResult<Produto> AtualizarProduto([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ProdutoInputDto dto)
         {
             try
             {

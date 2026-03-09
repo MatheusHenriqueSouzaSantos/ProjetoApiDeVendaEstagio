@@ -13,7 +13,6 @@
 
         public string Descricao { get; set; }
 
-        public int QuantidadeEmEstoque { get; set; } = 0;
 
         public decimal PrecoUnitario { get; set; }
 
@@ -23,12 +22,11 @@
         {
 
         }
-        public Produto(string codigoDeBarra, string nomeProduto, string descricao, int quantidadeEmEstoque, decimal precoUnitario)
+        public Produto(string codigoDeBarra, string nomeProduto, string descricao, decimal precoUnitario)
         {
             CodigoDeBarra = codigoDeBarra;
             NomeProduto = nomeProduto;
             Descricao = descricao;
-            QuantidadeEmEstoque = quantidadeEmEstoque;
             PrecoUnitario = precoUnitario;
         }
     }

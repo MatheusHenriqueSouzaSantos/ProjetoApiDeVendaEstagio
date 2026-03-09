@@ -1,6 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos;
+﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
-using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,9 +12,9 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         ProdutoDtoOutPut BuscarProdutoPorCodigoDeBarra(string codigoDeBarra);
 
-        Produto CadastrarProduto(ProdutoDto dto);
+        Produto CadastrarProduto(ProdutoInputDto dto);
 
-        Produto AtualizarProduto(Guid id, ProdutoDto dto);
+        Produto AtualizarProduto(Guid id, ProdutoInputDto dto);
 
         void DeletarProdutoPorId(Guid id);
 

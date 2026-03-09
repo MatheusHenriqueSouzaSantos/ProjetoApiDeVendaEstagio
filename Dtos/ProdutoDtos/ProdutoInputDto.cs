@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ApiEstagioBicicletaria.Dtos
+namespace ApiEstagioBicicletaria.Dtos.ProdutoDtos
 {
-    public class ProdutoDto
+    public class ProdutoInputDto
     {
         [MaxLength(128,ErrorMessage = "O campo Codigo de barra deve ter no máximo 128 caracteres")]
         public string CodigoDeBarra { get; set;}=string.Empty;
@@ -14,24 +14,19 @@ namespace ApiEstagioBicicletaria.Dtos
         [MaxLength(150, ErrorMessage = "O campo descrição deve ter no máximo 150 caracteres")]
         public string Descricao { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "O campo QuantidadeEmEstoque é obrigatório")]
-        [Range(0,3000,ErrorMessage = "O valor de QuantidadeEmEstoque deve estar no intervalo de 0 até 3000")]
-        public int QuantidadeEmEstoque { get; set; } = 0;
-
         [Required(ErrorMessage = "O campo Preço é obrigatório")]
         [Range(0.0, 1000000.0, ErrorMessage = "O valor de Preço deve estar no intervalo de 0.0 até 1000000.0")]
         public decimal PrecoUnitario { get; set; } = 0.0m;
 
-        protected ProdutoDto()
+        protected ProdutoInputDto()
         {
 
         }
 
-        public ProdutoDto(string nomeProduto, string descricao, int quantidadeEmEstoque, decimal precoUnitario)
+        public ProdutoInputDto(string nomeProduto, string descricao, decimal precoUnitario)
         {
             NomeProduto = nomeProduto;
             Descricao = descricao;
-            QuantidadeEmEstoque = quantidadeEmEstoque;
             PrecoUnitario = precoUnitario;
         }
     }
