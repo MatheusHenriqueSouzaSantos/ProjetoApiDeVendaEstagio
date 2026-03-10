@@ -1,6 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Dtos.VendaDtos;
+using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
@@ -26,11 +27,13 @@ namespace ApiEstagioBicicletaria.Services
         //private readonly int _numeroDeLinhasPorPagina = 42;
         private ContextoDb _contexto;
         private readonly GeradorCodigoVenda _geradorCodigoVenda;
+        private readonly IEstoqueService _estoqueService;
 
-        public VendaService(ContextoDb contexto)
+        public VendaService(ContextoDb contexto, GeradorCodigoVenda geradorCodigoVenda, IEstoqueService estoqueService)
         {
             _contexto = contexto;
-            _geradorCodigoVenda = new GeradorCodigoVenda(_contexto);
+            _geradorCodigoVenda = geradorCodigoVenda;
+            _estoqueService = estoqueService;
         }
 
         public List<VendaTransacaoOutputDto> BuscarTodasVendas()
@@ -185,21 +188,23 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado!!!");
                 }
+                Estoque estoqueDoProdutoDoItem = _contexto.Estoques.FirstOrDefault(e => e.Produto.Id == produtoDoItem.Id && e.Ativo)
+                    ?? throw new ExcecaoDeRegraDeNegocio(500, "Estoque não encontrado"); 
                 if (itemEnviado.Quantidade == 0)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400,"Não é possível adicionar um produto com 0 unidades");
                 }
-                if(produtoDoItem.QuantidadeEmEstoque< itemEnviado.Quantidade)
+                if(estoqueDoProdutoDoItem.QuantidadeEmEstoque< itemEnviado.Quantidade)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "Estoque do produto: " + produtoDoItem.NomeProduto + " insuficiente, pois tem apenas: " +
-                        produtoDoItem.QuantidadeEmEstoque + " unidades em estoque");
+                        estoqueDoProdutoDoItem.QuantidadeEmEstoque + " unidades em estoque");
                 }
                 decimal descontoPorUnidade = itemEnviado.DescontoUnitario ?? 0.0m;
                 if (itemEnviado.DescontoUnitario > produtoDoItem.PrecoUnitario)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto unitário não dever ser maior do que o valor do produto");
                 }
-                AbaterQuantidadeEmEstoque(produtoDoItem,itemEnviado.Quantidade);
+                AbaterQuantidadeEmEstoque(estoqueDoProdutoDoItem,itemEnviado.Quantidade);
                 ItemVenda itemCriado = new ItemVenda(vendaCriada, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.PrecoUnitario);
                 listaDeItensDaVendaCriada.Add(itemCriado);
                 _contexto.ItensVendas.Add(itemCriado);
@@ -321,18 +326,15 @@ namespace ApiEstagioBicicletaria.Services
             return valorDeCadaParcela;
         }
 
-        public void AbaterQuantidadeEmEstoque(Produto produto, int quantidadeASerAbatida)
+        public void AbaterQuantidadeEmEstoque(Estoque estoque, int quantidade)
         {
-            int novaQuantidadeEmEstoque = produto.QuantidadeEmEstoque - quantidadeASerAbatida;
-            produto.QuantidadeEmEstoque=novaQuantidadeEmEstoque;
-            _contexto.Produtos.Update(produto);
+            //mudar para chamar o servive de estoque
+            _estoqueService.AbaterQuantidadeEmEstoque(estoque.Id, quantidade);
         }
 
-        public void AdicionarQuantidaEmEstoque(Produto produto, int quantidadeASerAdicionada)
+        public void AdicionarQuantidaEmEstoque(Estoque estoque, int quantidade)
         {
-            int novaQuantidadeEmEstoque = produto.QuantidadeEmEstoque +quantidadeASerAdicionada;
-            produto.QuantidadeEmEstoque= novaQuantidadeEmEstoque;
-            _contexto.Produtos.Update(produto);
+            _estoqueService.AdicionarQuantidadeEmEstoque(estoque.Id, quantidade);
         }
         //revisar lógica do service pois fiz com sono 
         public VendaTransacaoOutputDto AtualizarVenda(Guid idVendaEnviado, VendaTransacaoInputDto dto)
