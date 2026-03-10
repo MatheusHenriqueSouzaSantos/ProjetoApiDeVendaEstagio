@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Entities.ProdutoDomain;
+﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -7,10 +8,10 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 {
     public class RelatorioDeProdutosEmFalta : IDocument
     {
-        private readonly List<Produto> _produtos;
+        private readonly List<ProdutoEmFaltaDto> _produtos;
         private readonly int _quantidadeUsadapParaBuscarProdutosComEstoqueMenorOuIgualEsseValor;
 
-        public RelatorioDeProdutosEmFalta(List<Produto> produtos, int quantidadeUsadapParaBuscarProdutosComEstoqueMenorOuIgualEsseValor)
+        public RelatorioDeProdutosEmFalta(List<ProdutoEmFaltaDto> produtos, int quantidadeUsadapParaBuscarProdutosComEstoqueMenorOuIgualEsseValor)
         {
             this._produtos = produtos;
             _quantidadeUsadapParaBuscarProdutosComEstoqueMenorOuIgualEsseValor = quantidadeUsadapParaBuscarProdutosComEstoqueMenorOuIgualEsseValor;
@@ -75,7 +76,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         }
                         else
                         {
-                            foreach (Produto produto in _produtos)
+                            foreach (ProdutoEmFaltaDto produto in _produtos)
                             {
                                 table.Cell().AlignRight().PaddingRight(17).Text(produto.CodigoDeBarra);
                                 table.Cell().AlignLeft().PaddingLeft(11).Text(produto.NomeProduto);

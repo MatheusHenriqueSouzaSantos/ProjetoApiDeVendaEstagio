@@ -151,60 +151,6 @@ namespace ApiEstagioBicicletaria.Services
             _contextoDb.SaveChanges();
         }
 
-        public Produto AdicionarQuantidadeEmEstoqueDeProdutoPorId(Guid idProdutoEnviado, int quantidadeAAdicionarEmEstoque)
-        {
-            Produto? produtoVindoDoBanco = _contextoDb.Produtos.FirstOrDefault(p=>p.Id==idProdutoEnviado && p.Ativo);
-            if(produtoVindoDoBanco == null)
-            {
-                throw new ExcecaoDeRegraDeNegocio(400,"Produto não encontrado");
-            }
-            if (quantidadeAAdicionarEmEstoque < 0)
-            {
-                throw new ExcecaoDeRegraDeNegocio(400,"Não é possível adicionar uma quantidade negativa");
-            }
-            produtoVindoDoBanco.QuantidadeEmEstoque = produtoVindoDoBanco.QuantidadeEmEstoque + quantidadeAAdicionarEmEstoque;
-            _contextoDb.Produtos.Update(produtoVindoDoBanco);
-            _contextoDb.SaveChanges();
-            return produtoVindoDoBanco;
-        }
-        //revisar
-        public Produto AbaterQuantidadeEmEstoqueDeProdutoPorId(Guid idProdutoEnviado, int quantidadeAAbaterEmEstoque)
-        {
-            Produto? produtoVindoDoBanco = _contextoDb.Produtos.FirstOrDefault(p => p.Id == idProdutoEnviado && p.Ativo);
-            if (produtoVindoDoBanco == null)
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "Produto não encontrado");
-            }
-            if (quantidadeAAbaterEmEstoque < 0)
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "Não é possível abater uma quantidade negativa");
-            }
-            if(quantidadeAAbaterEmEstoque> produtoVindoDoBanco.QuantidadeEmEstoque)
-            {
-                throw new ExcecaoDeRegraDeNegocio(400,"Não existe quantidade de produto sufisciente para remover, pois o estoque não pode ser negativo!!");
-            }
-            produtoVindoDoBanco.QuantidadeEmEstoque = produtoVindoDoBanco.QuantidadeEmEstoque - quantidadeAAbaterEmEstoque;
-            _contextoDb.Produtos.Update(produtoVindoDoBanco);
-            _contextoDb.SaveChanges();
-            return produtoVindoDoBanco;
-        }
-
-        //public void DefinirQuantidadeEmEstoqueDeProduto(Guid id, int quantidade)
-        //{
-        //    Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
-
-        //    if (produtoVindoDoBanco == null)
-        //    {
-        //        throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
-        //    }
-        //    if (quantidade < 0 || quantidade > 3000)
-        //    {
-        //        throw new ExcecaoDeRegraDeNegocio(400, "O valor de QuantidadeEmEstoque deve estar no intervalo de 0 até 3000");
-        //    }
-        //    produtoVindoDoBanco.QuantidadeEmEstoque = quantidade;
-        //    _contextoDb.Update(produtoVindoDoBanco);
-        //    _contextoDb.SaveChanges();
-        //} 
         public List<ProdutoDtoOutPut> BuscarProdutosPorNome(string nome)
         {
             List<Produto> produtosVindoDoBanco = _contextoDb.Produtos.Where(p => p.NomeProduto.Contains(nome) && p.Ativo).Take(10).ToList();
@@ -301,28 +247,28 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "A Quantidade para se enquadrar em produtos em falta não deve ser maior que 150");
             }
-            List<Produto> produtosEmFalta=new List<Produto>();
-            foreach (Produto produto in _contextoDb.Produtos.Where(p => p.Ativo))
-            {
-                Estoque estoque =_contextoDb.Estoques.FirstOrDefault(e=>e.Produto.Id == produto.Id)
-                      ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
-                if(estoque.QuantidadeEmEstoque<= quantidadeParaBuscarDosProdutosEmFalta)
-                {
-                    produtosEmFalta.Add(produto);
-                }
-            }
-     
-             = .Where(p=>p.Ativo  && p.QuantidadeEmEstoque<= )
-                .OrderBy(p=>p.QuantidadeEmEstoque)
+
+            List<ProdutoEmFaltaDto> produtosEmFaltaDto = _contextoDb.Produtos
+                .Join(_contextoDb.Estoques,
+                produto => produto.Id,
+                estoque => estoque.Produto.Id,
+                (produto, estoque) =>
+                new ProdutoEmFaltaDto(
+                    produto.Id,
+                    produto.CodigoDeBarra,
+                    produto.NomeProduto,
+                    produto.PrecoUnitario,
+                    estoque.QuantidadeEmEstoque)
+                ).OrderBy(p => p.QuantidadeEmEstoque)
                 .ToList();
-            //colocar quando a quantidade for menor que tal, fazer a busca??
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var documento = new RelatorioDeProdutosEmFalta(produtosEmFalta,quantidadeParaBuscarDosProdutosEmFalta);
+            var documento = new RelatorioDeProdutosEmFalta(produtosEmFaltaDto, quantidadeParaBuscarDosProdutosEmFalta);
 
             byte[] pdf = documento.GeneratePdf();
 
             return pdf;
         }
+
     }    
 }

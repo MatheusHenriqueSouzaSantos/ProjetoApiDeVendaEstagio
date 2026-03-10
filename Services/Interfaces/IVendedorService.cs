@@ -13,7 +13,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         List<Vendedor> BuscarVendedoresPorNome(string nome);
 
-        Vendedor CriarVendedor(VendedorCreateDto dto);
+        Vendedor CadastrarVendedor(VendedorCreateDto dto);
 
         Vendedor AtualizarVendedor(Guid id,VendedorUpdatedDto dto);
 

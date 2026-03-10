@@ -1,47 +1,50 @@
-﻿using ApiEstagioBicicletaria.Dtos.VendedorDtos;
+﻿using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
+using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Entities;
+using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace ApiEstagioBicicletaria.Controllers
 {
     [ApiController]
-    [Route("api/[Controller]")]
-    public class VendedorController :  ControllerBase
+    [Route("api/[controller]")]
+    public class FornecedorController : ControllerBase
     {
-        private IVendedorService _service;
+        private IFornecedorService _service;
 
-        public VendedorController(IVendedorService service)
+        public FornecedorController(IFornecedorService service)
         {
             _service = service;
         }
 
         [HttpGet]
-        public ActionResult<List<Vendedor>> BuscarTodosVendedores()
-        {
+        public ActionResult<List<Fornecedor>> BuscarTodos() {
             try
             {
-                return Ok(_service.BuscarTodosOsVendedores());
+                return _service.BuscarTodos();
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
                 return StatusCode(ex.StatusCode, ex.Message);
             }
-            catch (Exception ex) {
-                return StatusCode(500,"Erro Inesperado");
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
             }
-
         }
 
         [HttpGet("{id}")]
-        public ActionResult<List<Vendedor>> BuscarVendedorPorId(Guid id)
+        public ActionResult<Fornecedor> BuscarPorId([FromRoute]Guid id)
         {
             try
             {
-                return Ok(_service.BuscarVendedorPorId(id));
+                return _service.BuscarPorId(id);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -53,12 +56,13 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpGet("buscar-por-cpf{cpf}")]
-        public ActionResult<List<Vendedor>> BuscarVendedorPorCpf(string cpf)
+        [HttpGet("buscar-por-cnpj/{cnpj}")]
+        public ActionResult<Fornecedor> BuscarPorCnpj([FromRoute] string cnpj)
         {
             try
             {
-                return Ok(_service.BuscarVendedorPorCpf(cpf));
+                //validação de cnpj precisa ser feita no service
+                return _service.BuscarPorCnpj(cnpj);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -68,29 +72,10 @@ namespace ApiEstagioBicicletaria.Controllers
             {
                 return StatusCode(500, "Erro Inesperado");
             }
-
-        }
-
-        [HttpGet("buscar-por-nome{nome}")]
-        public ActionResult<List<Vendedor>> BuscarVendedorPorNome(string nome)
-        {
-            try
-            {
-                return Ok(_service.BuscarVendedoresPorNome(nome));
-            }
-            catch (ExcecaoDeRegraDeNegocio ex)
-            {
-                return StatusCode(ex.StatusCode, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Erro Inesperado");
-            }
-
         }
 
         [HttpPost]
-        public ActionResult<Vendedor> CadastrarVendedor([FromBody] VendedorCreateDto dto)
+        public ActionResult<Fornecedor> Cadastrar(FornecedorCreateDto dto)
         {
             try
             {
@@ -100,8 +85,8 @@ namespace ApiEstagioBicicletaria.Controllers
 
                     return BadRequest(mensagensDeErro);
                 }
-                Vendedor vendedor = _service.CadastrarVendedor(dto);
-                return Created($"api/vendedor/{vendedor.Id}", vendedor);
+                Fornecedor fornecedor = _service.Cadastrar(dto);
+                return Created($"api/vendedor/{fornecedor.Id}", fornecedor);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -112,9 +97,10 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
+
 
         [HttpPut("{id}")]
-        public ActionResult<Vendedor> AtualizarVendedor(Guid id,[FromBody] VendedorUpdatedDto dto)
+        public ActionResult<Fornecedor> Atualizar([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] FornecedorUpdateDto dto)
         {
             try
             {
@@ -124,8 +110,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
                     return BadRequest(mensagensDeErro);
                 }
-
-                return Ok(_service.AtualizarVendedor(id, dto));
+                return _service.Atualizar(id, dto);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -136,9 +121,8 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
-
         [HttpDelete("{id}")]
-        public ActionResult<Vendedor> Desativar(Guid id)
+        public ActionResult Desativar([FromRoute] Guid id)
         {
             try
             {
@@ -148,10 +132,8 @@ namespace ApiEstagioBicicletaria.Controllers
 
                     return BadRequest(mensagensDeErro);
                 }
-
-                _service.DesativarVendedor(id);
-
-                return NoContent();
+                _service.Desativar(id);
+                return Ok("Operação realizada com sucesso ");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {

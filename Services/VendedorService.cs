@@ -46,7 +46,7 @@ namespace ApiEstagioBicicletaria.Services
         }
 
 
-        public Vendedor CriarVendedor(VendedorCreateDto dto)
+        public Vendedor CadastrarVendedor(VendedorCreateDto dto)
         {
             string cpfSoNumeros = DocumentoUtil.RemoverNaoNumericos(dto.Cpf);
             if (!DocumentoUtil.ValidarCpf(cpfSoNumeros))
