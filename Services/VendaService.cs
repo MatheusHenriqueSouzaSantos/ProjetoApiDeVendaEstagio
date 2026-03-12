@@ -393,7 +393,8 @@ namespace ApiEstagioBicicletaria.Services
             foreach (ItemVenda itemIterado in itensAntigoASeremExcluidos)
             {
                 Produto produtoDoItemIterado = itemIterado.Produto;
-                AdicionarQuantidaEmEstoque(produtoDoItemIterado, itemIterado.Quantidade);
+                Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.Produto.Id == produtoDoItemIterado.Id);
+                AdicionarQuantidaEmEstoque(estoqueDoProduto, itemIterado.Quantidade);
                 _contexto.ItensVendas.Remove(itemIterado);
             }
 
@@ -428,21 +429,22 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado!!!");
                 }
+                Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.Produto.Id == produtoDoItem.Id);
                 if (itemEnviado.Quantidade == 0)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "Não é possível adicionar um produto com 0 unidades");
                 }
-                if (produtoDoItem.QuantidadeEmEstoque < itemEnviado.Quantidade)
+                if (estoqueDoProduto.QuantidadeEmEstoque < itemEnviado.Quantidade)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "Estoque do produto: " + produtoDoItem.NomeProduto + " insuficiente, pois tem apenas: " +
-                        produtoDoItem.QuantidadeEmEstoque + " unidades em estoque");
+                        estoqueDoProduto.QuantidadeEmEstoque + " unidades em estoque");
                 }
                 decimal descontoPorUnidade = itemEnviado.DescontoUnitario ?? 0.0m;
                 if (itemEnviado.DescontoUnitario > produtoDoItem.PrecoUnitario)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto unitário não dever ser maior do que o valor do produto");
                 }
-                AbaterQuantidadeEmEstoque(produtoDoItem, itemEnviado.Quantidade);
+                AbaterQuantidadeEmEstoque(estoqueDoProduto, itemEnviado.Quantidade);
                 ItemVenda itemCriado = new ItemVenda(VendaParaAtualizar, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.PrecoUnitario);
                 listaDeItensAtualizadosDaVenda.Add(itemCriado);
                 _contexto.ItensVendas.Add(itemCriado);
@@ -554,7 +556,9 @@ namespace ApiEstagioBicicletaria.Services
 
             foreach(ItemVenda itemIterado in itensDaVendaASeremDeletados)
             {
-                AdicionarQuantidaEmEstoque(itemIterado.Produto, itemIterado.Quantidade);
+                Produto produtoDoItem = itemIterado.Produto;
+                Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.Produto.Id == produtoDoItem.Id);
+                AdicionarQuantidaEmEstoque(estoqueDoProduto, itemIterado.Quantidade);
                 itemIterado.Ativo = false;
                 _contexto.Update(itemIterado);
             }
