@@ -248,7 +248,7 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "A Quantidade para se enquadrar em produtos em falta não deve ser maior que 150");
             }
 
-            List<ProdutoEmFaltaDto> produtosEmFaltaDto = _contextoDb.Produtos
+            List<ProdutoEmFaltaDto> produtosEmFaltaDto = _contextoDb.Produtos.Where(p=>p.Ativo)
                 .Join(_contextoDb.Estoques,
                 produto => produto.Id,
                 estoque => estoque.Produto.Id,
