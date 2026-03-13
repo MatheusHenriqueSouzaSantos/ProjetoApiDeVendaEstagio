@@ -3,6 +3,7 @@ using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using ApiEstagioBicicletaria.Utils;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -17,12 +18,15 @@ namespace ApiEstagioBicicletaria
 
             builder.Services.AddDbContext<ContextoDb>(options =>
             options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddScoped<GeradorCodigoVenda>();
             builder.Services.AddScoped<IClienteService, ClienteService>();
             builder.Services.AddScoped<IProdutoService, ProdutoService>();
             builder.Services.AddScoped<IServicoService, ServicoService>();
             builder.Services.AddScoped<IUsuarioService, UsuarioService>();
             builder.Services.AddScoped<IVendaService, VendaService>();
             builder.Services.AddScoped<IVendedorService, VendedorService>();
+            builder.Services.AddScoped<IFornecedorService, FornecedorService>();
+            builder.Services.AddScoped<IEstoqueService, EstoqueService>();
             builder.Services.AddCors(options =>
             {
                 //mudar quando rodar o sistema

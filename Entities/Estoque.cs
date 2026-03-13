@@ -18,5 +18,9 @@ namespace ApiEstagioBicicletaria.Entities
         {
             Produto = produto;
         }
+        protected Estoque()
+        {
+
+        }
     }
 }

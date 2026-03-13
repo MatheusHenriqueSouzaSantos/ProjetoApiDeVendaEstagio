@@ -19,7 +19,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 
             builder.HasOne(e => e.Produto)
                 .WithOne()
-                .HasForeignKey("ID_PRODUTO")
+                .HasForeignKey<Estoque>("ID_PRODUTO")
                 .IsRequired();
 
             builder.Property(e => e.DataCriacao)

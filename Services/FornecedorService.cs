@@ -55,16 +55,43 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um fornecedor cadastrado com esse cnpj");
             }
+            if(_contexto.Fornecedores.Any(f=>f.Email == dto.Email && f.Ativo))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um fornecedor cadastrado com esse email");
+            }
+            Fornecedor fornecedor = new(dto.Telefone, dto.Email, dto.RazaoSocial, dto.NomeFantasia, dto.Cnpj, dto.InscricaoEstadual);
+            _contexto.Add(fornecedor);
+            _contexto.SaveChanges();
+            return fornecedor;
         }
 
         public Fornecedor Atualizar(Guid id, FornecedorUpdateDto dto)
         {
-            throw new NotImplementedException();
+            Fornecedor fornecedorVindoDoBanco = _contexto.Fornecedores.FirstOrDefault(f => f.Id == id && f.Ativo)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor não encontrado");
+            if (_contexto.Fornecedores.Any(f => f.Email == dto.Email && f.Ativo && f.Id!=id))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um fornecedor cadastrado com esse email");
+            }
+            fornecedorVindoDoBanco.Telefone=dto.Telefone;
+            fornecedorVindoDoBanco.Email=dto.Email;
+            fornecedorVindoDoBanco.RazaoSocial=dto.RazaoSocial;
+            fornecedorVindoDoBanco.NomeFantasia=dto.NomeFantasia;
+            fornecedorVindoDoBanco.InscricaoEstadual=dto.InscricaoEstadual;
+            _contexto.Fornecedores.Update(fornecedorVindoDoBanco);
+            return fornecedorVindoDoBanco; 
+
         }
 
         public void Desativar(Guid id)
         {
-            throw new NotImplementedException();
+            //não deixar ser desativado se fornecedor já tiver feito uma entrada de estoque
+            Fornecedor fornecedorVindoDoBanco = _contexto.Fornecedores.FirstOrDefault(f => f.Id == id && f.Ativo)
+               ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor não encontrado");
+            fornecedorVindoDoBanco.Ativo = false;
+            _contexto.Fornecedores.Update(fornecedorVindoDoBanco);
+            _contexto.SaveChanges();
+
         }
     }
 }
