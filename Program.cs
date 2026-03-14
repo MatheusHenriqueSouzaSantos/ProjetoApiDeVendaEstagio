@@ -18,6 +18,8 @@ namespace ApiEstagioBicicletaria
 
             builder.Services.AddDbContext<ContextoDb>(options =>
             options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddSwaggerGen();
+            builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddScoped<GeradorCodigoVenda>();
             builder.Services.AddScoped<IClienteService, ClienteService>();
             builder.Services.AddScoped<IProdutoService, ProdutoService>();
@@ -89,7 +91,8 @@ namespace ApiEstagioBicicletaria
 
             app.UseCors("PermitirTudo");
             app.UseHttpsRedirection();
-
+            app.UseSwagger();
+            app.UseSwaggerUI();
             //app.UseAuthorization();
 
             app.MapControllers();
