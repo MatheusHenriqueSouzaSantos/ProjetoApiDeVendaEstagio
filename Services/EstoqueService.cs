@@ -25,7 +25,7 @@ namespace ApiEstagioBicicletaria.Services
 
         public EstoqueSimplificadoOutputDto AdicionarQuantidadeEmEstoque(Guid id, int quantidade)
         {
-            Estoque? estoqueVindoDoBanco = _contexto.Estoques.FirstOrDefault(p => p.Id == id && p.Ativo);
+            Estoque? estoqueVindoDoBanco = _contexto.Estoques.FirstOrDefault(p => p.Id == id && p.Ativo );
             if (estoqueVindoDoBanco == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Estoque não encontrado");
