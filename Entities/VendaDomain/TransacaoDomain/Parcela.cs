@@ -1,14 +1,10 @@
 ﻿namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
 {
-    public class Parcela
+    public class Parcela : EntityBase
     {
-        public Guid Id { get; private set; }  = Guid.NewGuid();
-
         public Transacao Transacao { get; private set; }
 
         public Guid IdTransacao { get; private set; }
-
-        public DateTime DataCriacao { get; private set; }=DateTime.Now;
 
         public int NumeroDaParecelaDaVenda { get; set; }
 
@@ -16,7 +12,6 @@
 
         public bool Pago { get; set; } = false;
 
-        public bool Ativo { get; set; } = true;
 
         protected Parcela()
         {

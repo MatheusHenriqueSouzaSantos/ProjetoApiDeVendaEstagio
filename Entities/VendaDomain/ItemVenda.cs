@@ -2,11 +2,10 @@
 
 namespace ApiEstagioBicicletaria.Entities.VendaDomain
 {
-    public class ItemVenda
+    public class ItemVenda : EntityBase
     {
         //todos os atributos deixo que nunca podme ser alterados? se errou crie outro item venda?
         //deixar privado pois ao enviar a venda já esta concluida
-        public Guid Id { get; private set; } = Guid.NewGuid();
 
         public Venda Venda { get; private set; }
 
@@ -16,7 +15,6 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public Guid IdProduto { get; private set; }
 
-        public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
         public int Quantidade { get; set; }
 
@@ -24,7 +22,6 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public decimal PrecoUnitarioDoProdutoNaVendaSemDesconto { get;  set; }
 
-        public bool Ativo { get; set; } = true;
 
         protected ItemVenda()
         {

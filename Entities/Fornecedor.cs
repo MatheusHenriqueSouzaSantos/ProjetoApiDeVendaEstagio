@@ -1,10 +1,7 @@
 ﻿namespace ApiEstagioBicicletaria.Entities
 {
-    public class Fornecedor
+    public class Fornecedor : EntityBase
     {
-        public Guid Id { get; set; }=Guid.NewGuid();
-
-        public DateTime DataCriacao { get; set; }=DateTime.Now;
 
         public string Telefone { get; set; }
 
@@ -17,8 +14,6 @@
         public string Cnpj {  get; set; }
 
         public string InscricaoEstadual { get; set; }
-
-        public bool Ativo { get; set; } = true;
 
         public Fornecedor(string telefone, string email, string razaoSocial, string nomeFantasia, string cnpj, string inscricaoEstadual)
         {

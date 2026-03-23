@@ -22,6 +22,12 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
             builder.Property(u=>u.Senha)
                 .HasColumnName("SENHA")
                 .IsRequired();
+            builder.Property(u=>u.DataCriacao)
+                .HasColumnName("DATA_CRIACAO")
+                .IsRequired();
+            builder.Property(u=>u.Ativo)
+                .HasColumnName("ATIVO")
+                .IsRequired();
         }
     }
 }

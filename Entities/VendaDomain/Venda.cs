@@ -3,15 +3,12 @@ using ApiEstagioBicicletaria.Utils;
 
 namespace ApiEstagioBicicletaria.Entities.VendaDomain
 {
-    public class Venda
+    public class Venda : EntityBase
     {
-        public Guid Id { get; private set; } = Guid.NewGuid(); 
         public string CodigoVenda { get; private set; }
         public Cliente Cliente { get;  set; }
 
         public Guid IdCliente { get;  set; }
-
-        public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
         public decimal DescontoTotal { get; set; } = 0.0m;
         //pegar o valor total pela soma de todos os itens menos o desconto
@@ -19,8 +16,6 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
         public decimal ValorTotalSemDesconto { get; set; } = 0.0m;
 
         public decimal ValorTotalComDesconto { get; set; } = 0.0m;
-
-        public bool Ativo { get; set; } = true;
 
         public Vendedor Vendedor { get; set; }
 

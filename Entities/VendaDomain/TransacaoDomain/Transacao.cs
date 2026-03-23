@@ -1,14 +1,11 @@
 ﻿namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
 {
-    public class Transacao
+    public class Transacao : EntityBase
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
 
         public Venda Venda { get; private set; }
 
         public Guid IdVenda { get; private set; }
-
-        public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
         public TipoPagamento TipoPagamento { get; set; }
 
@@ -18,7 +15,6 @@
 
         public bool Pago { get; set; } = false;
 
-        public bool Ativo { get; set; } = true;
 
         protected Transacao()
         {

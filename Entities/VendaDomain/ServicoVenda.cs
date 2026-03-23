@@ -3,9 +3,8 @@ using ApiEstagioBicicletaria.Entities.ServicoDomain;
 
 namespace ApiEstagioBicicletaria.Entities.VendaDomain
 {
-    public class ServicoVenda
+    public class ServicoVenda : EntityBase
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
 
         public Venda Venda { get; private set; }
 
@@ -15,13 +14,11 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public Guid IdServico {  get; private set; }
 
-        public DateTime DataCriacao { get; private set; }=DateTime.Now;
 
         public decimal DescontoServico { get; set; }
 
         public decimal PrecoServicoNaVendaSemDesconto { get;  set; }
 
-        public bool Ativo { get; set; }=true;
 
         protected ServicoVenda()
         {

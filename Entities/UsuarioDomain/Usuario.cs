@@ -1,8 +1,7 @@
 ﻿namespace ApiEstagioBicicletaria.Entities.UsuarioDomain
 {
-    public class Usuario
+    public class Usuario : EntityBase
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
 
         public string Email { get; set; }=string.Empty;
 
