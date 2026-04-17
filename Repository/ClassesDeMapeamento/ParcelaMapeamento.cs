@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class ParcelaConfiguracao : IEntityTypeConfiguration<Parcela>
+    public class ParcelaMapeamento : IEntityTypeConfiguration<Parcela>
     {
         public void Configure(EntityTypeBuilder<Parcela> builder)
         {
-            builder.ToTable("parcela");
+            builder.ToTable("PARCELA");
 
             builder.HasKey(p=>p.Id);
 

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class EstoqueConfiguracao : IEntityTypeConfiguration<Estoque>
+    public class EstoqueMapeamento : IEntityTypeConfiguration<Estoque>
     {
         public void Configure(EntityTypeBuilder<Estoque> builder)
         {
@@ -15,6 +15,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 
             builder.Property(e => e.Id)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID")
                 .IsRequired();
 
             builder.HasOne(e => e.Produto)

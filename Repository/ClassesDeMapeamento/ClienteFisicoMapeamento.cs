@@ -4,11 +4,11 @@ using ApiEstagioBicicletaria.Entities.ClienteDomain;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class ClienteFisicoConfiguracao : IEntityTypeConfiguration<ClienteFisico>
+    public class ClienteFisicoMapeamento : IEntityTypeConfiguration<ClienteFisico>
     {
         public void Configure(EntityTypeBuilder<ClienteFisico> builder)
         {
-            builder.ToTable("cliente_fisico");
+            builder.ToTable("CLIENTE_FISICO");
             //builder.HasKey(c => c.Id);
 
             //banco já faz isso:

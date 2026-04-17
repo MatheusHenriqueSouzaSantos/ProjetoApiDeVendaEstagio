@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class ClienteJuridicoConfiguracao : IEntityTypeConfiguration<ClienteJuridico>
+    public class ClienteJuridicoMapeamento : IEntityTypeConfiguration<ClienteJuridico>
     {
         public void Configure(EntityTypeBuilder<ClienteJuridico> builder)
         {
-            builder.ToTable("cliente_juridico");
+            builder.ToTable("CLIENTE_JURIDICO");
             //builder.HasKey(c => c.Id);
 
             //banco já faz isso:

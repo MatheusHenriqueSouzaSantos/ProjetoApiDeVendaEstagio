@@ -1,5 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Entities.ClienteDomain;
+using ApiEstagioBicicletaria.Entities.EntradaEstoque;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
@@ -43,6 +44,10 @@ namespace ApiEstagioBicicletaria.Repositories
 
         public DbSet<Estoque> Estoques { get; set; }
 
+        public DbSet<EntradaEstoque> EntradasEstoque { get; set; }
+
+        public DbSet<ItemEntradaEstoque> ItensEntradaEstoque {get; set; }
+
         public ContextoDb(DbContextOptions<ContextoDb> options) : base(options)
         {
                 
@@ -54,31 +59,33 @@ namespace ApiEstagioBicicletaria.Repositories
             modelBuilder.Entity<EntityBase>().UseTpcMappingStrategy();
 
             modelBuilder.Entity<Cliente>()
-            .ToTable("cliente");
+            .ToTable("CLIENTE");
 
             modelBuilder.Entity<ClienteFisico>()
-                .ToTable("cliente_fisico")
+                .ToTable("CLIENTE_FISICO")
                 .HasBaseType<Cliente>(); 
 
             modelBuilder.Entity<ClienteJuridico>()
-                .ToTable("cliente_juridico")
+                .ToTable("CLIENTE_JURIDICO")
                 .HasBaseType<Cliente>(); 
 
-            modelBuilder.ApplyConfiguration(new ClienteConfiguracao());
-            modelBuilder.ApplyConfiguration(new ClienteFisicoConfiguracao());
-            modelBuilder.ApplyConfiguration(new ClienteJuridicoConfiguracao());
-            modelBuilder.ApplyConfiguration(new EnderecoConfiguracao());
-            modelBuilder.ApplyConfiguration(new ProdutoConfiguracao());
-            modelBuilder.ApplyConfiguration(new ServicoConfiguracao());
-            modelBuilder.ApplyConfiguration(new UsuarioConfiguracao());
-            modelBuilder.ApplyConfiguration(new VendaConfiguracao());
-            modelBuilder.ApplyConfiguration(new TransacaoConfiguracao());
-            modelBuilder.ApplyConfiguration(new ParcelaConfiguracao());
-            modelBuilder.ApplyConfiguration(new ItemVendaConfiguracao());
-            modelBuilder.ApplyConfiguration(new ServicoVendaConfiguracao());
-            modelBuilder.ApplyConfiguration(new VendedorConfiguracao());
-            modelBuilder.ApplyConfiguration(new FornecedorConfiguracao());
-            modelBuilder.ApplyConfiguration(new EstoqueConfiguracao());
+            modelBuilder.ApplyConfiguration(new ClienteMapeamento());
+            modelBuilder.ApplyConfiguration(new ClienteFisicoMapeamento());
+            modelBuilder.ApplyConfiguration(new ClienteJuridicoMapeamento());
+            modelBuilder.ApplyConfiguration(new EnderecoMapeamento());
+            modelBuilder.ApplyConfiguration(new ProdutoMapeamento());
+            modelBuilder.ApplyConfiguration(new ServicoMapeamento());
+            modelBuilder.ApplyConfiguration(new UsuarioMapeamento());
+            modelBuilder.ApplyConfiguration(new VendaMapeamento());
+            modelBuilder.ApplyConfiguration(new TransacaoMapeamento());
+            modelBuilder.ApplyConfiguration(new ParcelaMapeamento());
+            modelBuilder.ApplyConfiguration(new ItemVendaMapeamento());
+            modelBuilder.ApplyConfiguration(new ServicoVendaMapeamento());
+            modelBuilder.ApplyConfiguration(new VendedorMapeamento());
+            modelBuilder.ApplyConfiguration(new FornecedorMapeamento());
+            modelBuilder.ApplyConfiguration(new EstoqueMapeamento());
+            modelBuilder.ApplyConfiguration(new EntradaEstoqueMapeamento());
+            modelBuilder.ApplyConfiguration(new ItemEntradaEstoqueMapeamento());
         }
 
     }

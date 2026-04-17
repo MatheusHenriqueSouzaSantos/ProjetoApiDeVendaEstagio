@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class EnderecoConfiguracao : IEntityTypeConfiguration<Endereco>
+    public class EnderecoMapeamento : IEntityTypeConfiguration<Endereco>
     {
         public void Configure(EntityTypeBuilder<Endereco> builder) 
         {
-            builder.ToTable("endereco");
+            builder.ToTable("ENDERECO");
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Id)

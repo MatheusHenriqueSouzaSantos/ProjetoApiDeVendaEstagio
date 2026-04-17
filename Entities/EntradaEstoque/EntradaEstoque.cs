@@ -1,17 +1,22 @@
-﻿namespace ApiEstagioBicicletaria.Entities.EntradaEstoque
+﻿﻿namespace ApiEstagioBicicletaria.Entities.EntradaEstoque
 {
     public class EntradaEstoque : EntityBase
     {
-        public Fornecedor Fornecedor { get; private set; }
+        public Fornecedor Fornecedor { get; set; }
 
-        public Guid FornecedorId { get; private set; }
+        public Guid IdFornecedor { get; set; }
 
         public string CodigoEntrada { get; private set; }
+
+        protected EntradaEstoque()
+        {
+
+        }
 
         public EntradaEstoque(Fornecedor fornecedor, string codigoEntrada)
         {
             Fornecedor = fornecedor;
-            FornecedorId = fornecedor.Id;
+            IdFornecedor = fornecedor.Id;
             CodigoEntrada = codigoEntrada;
         }
     }
