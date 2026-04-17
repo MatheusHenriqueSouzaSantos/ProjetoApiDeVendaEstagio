@@ -1,6 +1,6 @@
 ﻿namespace ApiEstagioBicicletaria.Entities
 {
-    public abstract class EntityBase
+    public abstract class EntidadeBase
     {
         public Guid Id { get; private set; }= Guid.NewGuid();
 
@@ -8,6 +8,6 @@
 
         public bool Ativo { get; set; } = false;
 
-        protected EntityBase() { }
+        protected EntidadeBase() { }
     }
 }

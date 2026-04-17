@@ -2,7 +2,7 @@
 
 namespace ApiEstagioBicicletaria.Entities
 {
-    public class Estoque : EntityBase
+    public class Estoque : EntidadeBase
     {
 
         public Produto Produto { get; set; }

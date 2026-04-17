@@ -1,6 +1,6 @@
 ﻿namespace ApiEstagioBicicletaria.Entities.UsuarioDomain
 {
-    public class Usuario : EntityBase
+    public class Usuario : EntidadeBase
     {
 
         public string Email { get; set; }=string.Empty;

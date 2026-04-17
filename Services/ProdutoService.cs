@@ -58,7 +58,7 @@ namespace ApiEstagioBicicletaria.Services
                    ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
             EstoqueSimplificadoOutputDto estoqueDto = new(estoque.Id, estoque.QuantidadeEmEstoque);
             ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoVindoDoBanco.Id, produtoVindoDoBanco.CodigoDeBarra, produtoVindoDoBanco.DataCriacao,
-                produtoVindoDoBanco.NomeProduto, produtoVindoDoBanco.Descricao, produtoVindoDoBanco.PrecoUnitario,
+                produtoVindoDoBanco.NomeProduto, produtoVindoDoBanco.Descricao, produtoVindoDoBanco.Preco,
                 produtoVindoDoBanco.Ativo, podeExcluir,estoqueDto);
             return produtoFormatoDto;
         }
@@ -77,7 +77,7 @@ namespace ApiEstagioBicicletaria.Services
                   ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
             EstoqueSimplificadoOutputDto estoqueDto = new(estoque.Id, estoque.QuantidadeEmEstoque);
             ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoVindoDoBanco.Id, produtoVindoDoBanco.CodigoDeBarra, produtoVindoDoBanco.DataCriacao,
-                produtoVindoDoBanco.NomeProduto, produtoVindoDoBanco.Descricao, produtoVindoDoBanco.PrecoUnitario, 
+                produtoVindoDoBanco.NomeProduto, produtoVindoDoBanco.Descricao, produtoVindoDoBanco.Preco, 
                 produtoVindoDoBanco.Ativo, podeExcluir, estoqueDto);
             return produtoFormatoDto;
         }
@@ -124,7 +124,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             produtoVindoDoBanco.NomeProduto = dto.NomeProduto;
             produtoVindoDoBanco.Descricao = dto.Descricao;
-            produtoVindoDoBanco.PrecoUnitario = dto.PrecoUnitario;
+            produtoVindoDoBanco.Preco = dto.PrecoUnitario;
             _contextoDb.Update(produtoVindoDoBanco);
             _contextoDb.SaveChanges();
             return produtoVindoDoBanco;
@@ -166,7 +166,7 @@ namespace ApiEstagioBicicletaria.Services
                 EstoqueSimplificadoOutputDto estoqueDto = new(estoque.Id, estoque.QuantidadeEmEstoque);
                 ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoIterado.Id, produtoIterado.CodigoDeBarra,
                     produtoIterado.DataCriacao, produtoIterado.NomeProduto, produtoIterado.Descricao, 
-                    produtoIterado.PrecoUnitario, produtoIterado.Ativo, podeExcluir, estoqueDto);
+                    produtoIterado.Preco, produtoIterado.Ativo, podeExcluir, estoqueDto);
                 produtosFomartoDto.Add(produtoFormatoDto);
             }
             return produtosFomartoDto;
@@ -258,7 +258,7 @@ namespace ApiEstagioBicicletaria.Services
                     produto.Id,
                     produto.CodigoDeBarra,
                     produto.NomeProduto,
-                    produto.PrecoUnitario,
+                    produto.Preco,
                     estoque.QuantidadeEmEstoque)
                 ).OrderBy(p => p.QuantidadeEmEstoque)
                 .ToList();

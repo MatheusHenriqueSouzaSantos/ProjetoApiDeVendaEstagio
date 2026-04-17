@@ -2,7 +2,7 @@
 
 namespace ApiEstagioBicicletaria.Entities.VendaDomain
 {
-    public class ItemVenda : EntityBase
+    public class ItemVenda : EntidadeBase
     {
         //todos os atributos deixo que nunca podme ser alterados? se errou crie outro item venda?
         //deixar privado pois ao enviar a venda já esta concluida

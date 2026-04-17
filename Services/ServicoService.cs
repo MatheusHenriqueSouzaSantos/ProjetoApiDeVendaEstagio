@@ -27,7 +27,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 bool podeExcluir = !_contextoDb.ServicosVendas.Any(sv => sv.IdServico == servicoIterado.Id && sv.Ativo);
                 ServicoDtoOutPut servicoFormatoDto = new ServicoDtoOutPut(servicoIterado.Id, servicoIterado.CodigoDoServico, servicoIterado.DataCriacao, servicoIterado.NomeServico,
-                    servicoIterado.Descricao, servicoIterado.PrecoServico, servicoIterado.Ativo, podeExcluir);
+                    servicoIterado.Descricao, servicoIterado.Preco, servicoIterado.Ativo, podeExcluir);
                 servicosFormatoOutPut.Add(servicoFormatoDto);
             }
             return servicosFormatoOutPut;
@@ -42,7 +42,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             bool podeExcluir = !_contextoDb.ServicosVendas.Any(sv => sv.IdServico == servicoVindoDoBanco.Id && sv.Ativo);
             ServicoDtoOutPut servicoFormatoDto=new ServicoDtoOutPut(servicoVindoDoBanco.Id,servicoVindoDoBanco.CodigoDoServico,servicoVindoDoBanco.DataCriacao,servicoVindoDoBanco.NomeServico,
-                servicoVindoDoBanco.Descricao,servicoVindoDoBanco.PrecoServico,servicoVindoDoBanco.Ativo,podeExcluir);
+                servicoVindoDoBanco.Descricao,servicoVindoDoBanco.Preco,servicoVindoDoBanco.Ativo,podeExcluir);
 
             return servicoFormatoDto;
         }
@@ -57,7 +57,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             bool podeExcluir = !_contextoDb.ServicosVendas.Any(sv => sv.IdServico == servicoVindoDoBanco.Id && sv.Ativo);
             ServicoDtoOutPut servicoFormatoDto = new ServicoDtoOutPut(servicoVindoDoBanco.Id, servicoVindoDoBanco.CodigoDoServico, servicoVindoDoBanco.DataCriacao, servicoVindoDoBanco.NomeServico,
-                servicoVindoDoBanco.Descricao, servicoVindoDoBanco.PrecoServico, servicoVindoDoBanco.Ativo, podeExcluir);
+                servicoVindoDoBanco.Descricao, servicoVindoDoBanco.Preco, servicoVindoDoBanco.Ativo, podeExcluir);
 
             return servicoFormatoDto;
         }
@@ -101,7 +101,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             servicoVindoDoBanco.NomeServico = dto.NomeServico;
             servicoVindoDoBanco.Descricao = dto.Descricao;
-            servicoVindoDoBanco.PrecoServico = dto.PrecoServico;
+            servicoVindoDoBanco.Preco = dto.PrecoServico;
             _contextoDb.Update(servicoVindoDoBanco);
             _contextoDb.SaveChanges();
             return servicoVindoDoBanco;
@@ -134,7 +134,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 bool podeExcluir = !_contextoDb.ServicosVendas.Any(sv => sv.IdServico == servicoIterado.Id && sv.Ativo);
                 ServicoDtoOutPut servicoFormatoDto = new ServicoDtoOutPut(servicoIterado.Id, servicoIterado.CodigoDoServico, servicoIterado.DataCriacao, servicoIterado.NomeServico,
-                    servicoIterado.Descricao, servicoIterado.PrecoServico, servicoIterado.Ativo, podeExcluir);
+                    servicoIterado.Descricao, servicoIterado.Preco, servicoIterado.Ativo, podeExcluir);
                 servicosFormatoOutPut.Add(servicoFormatoDto);
             }
             return servicosFormatoOutPut;

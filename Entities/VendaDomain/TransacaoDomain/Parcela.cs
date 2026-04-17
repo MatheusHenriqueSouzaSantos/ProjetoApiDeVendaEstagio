@@ -1,6 +1,6 @@
 ﻿namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
 {
-    public class Parcela : EntityBase
+    public class Parcela : EntidadeBase
     {
         public Transacao Transacao { get; private set; }
 

@@ -200,12 +200,12 @@ namespace ApiEstagioBicicletaria.Services
                         estoqueDoProdutoDoItem.QuantidadeEmEstoque + " unidades em estoque");
                 }
                 decimal descontoPorUnidade = itemEnviado.DescontoUnitario ?? 0.0m;
-                if (itemEnviado.DescontoUnitario > produtoDoItem.PrecoUnitario)
+                if (itemEnviado.DescontoUnitario > produtoDoItem.Preco)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto unitário não dever ser maior do que o valor do produto");
                 }
                 AbaterQuantidadeEmEstoque(estoqueDoProdutoDoItem,itemEnviado.Quantidade);
-                ItemVenda itemCriado = new ItemVenda(vendaCriada, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.PrecoUnitario);
+                ItemVenda itemCriado = new ItemVenda(vendaCriada, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.Preco);
                 listaDeItensDaVendaCriada.Add(itemCriado);
                 _contexto.ItensVendas.Add(itemCriado);
                 //coloco o save changes a cada interação no for each ou no final?
@@ -220,11 +220,11 @@ namespace ApiEstagioBicicletaria.Services
                     throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado!!!");
                 }
                 decimal descontoDoServicoNaVenda = servicoEnviado.DescontoServico ?? 0.0m;
-                if (descontoDoServicoNaVenda > servicoDaVenda.PrecoServico)
+                if (descontoDoServicoNaVenda > servicoDaVenda.Preco)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto do serviço não dever ser maior do que o valor do serviço");
                 }
-                ServicoVenda servicoDaVendaCriado = new ServicoVenda(vendaCriada, servicoDaVenda, descontoDoServicoNaVenda, servicoDaVenda.PrecoServico);
+                ServicoVenda servicoDaVendaCriado = new ServicoVenda(vendaCriada, servicoDaVenda, descontoDoServicoNaVenda, servicoDaVenda.Preco);
                 listaDeServicosDaVendaCriada.Add(servicoDaVendaCriado);
                 _contexto.ServicosVendas.Add(servicoDaVendaCriado);
             }
@@ -293,7 +293,7 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(404,$"Produto com id {itemIterado.IdProduto} não encontrado");
                 }
-                decimal precoDoProdutoComDescontoAplicado =  Math.Round(produtoVindoDoBanco.PrecoUnitario - (itemIterado.DescontoUnitario ?? 0.0m),2, MidpointRounding.AwayFromZero); 
+                decimal precoDoProdutoComDescontoAplicado =  Math.Round(produtoVindoDoBanco.Preco - (itemIterado.DescontoUnitario ?? 0.0m),2, MidpointRounding.AwayFromZero); 
                 decimal totalItem =Math.Round ((precoDoProdutoComDescontoAplicado * itemIterado.Quantidade),2,MidpointRounding.AwayFromZero);
                 totalVenda += totalItem;
             }
@@ -304,7 +304,7 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(404, $"Serviço com id {servicoIterado.IdServico} não encontrado");
                 }
-                decimal precoDoServicoComDescontoAplicado =Math.Round(servicoVindoDoBanco.PrecoServico - (servicoIterado.DescontoServico ?? 0.0m),2, MidpointRounding.AwayFromZero);
+                decimal precoDoServicoComDescontoAplicado =Math.Round(servicoVindoDoBanco.Preco - (servicoIterado.DescontoServico ?? 0.0m),2, MidpointRounding.AwayFromZero);
                 decimal totalServico = Math.Round(precoDoServicoComDescontoAplicado,2,MidpointRounding.AwayFromZero);
                 totalVenda += totalServico;
             }
@@ -440,12 +440,12 @@ namespace ApiEstagioBicicletaria.Services
                         estoqueDoProduto.QuantidadeEmEstoque + " unidades em estoque");
                 }
                 decimal descontoPorUnidade = itemEnviado.DescontoUnitario ?? 0.0m;
-                if (itemEnviado.DescontoUnitario > produtoDoItem.PrecoUnitario)
+                if (itemEnviado.DescontoUnitario > produtoDoItem.Preco)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto unitário não dever ser maior do que o valor do produto");
                 }
                 AbaterQuantidadeEmEstoque(estoqueDoProduto, itemEnviado.Quantidade);
-                ItemVenda itemCriado = new ItemVenda(VendaParaAtualizar, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.PrecoUnitario);
+                ItemVenda itemCriado = new ItemVenda(VendaParaAtualizar, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.Preco);
                 listaDeItensAtualizadosDaVenda.Add(itemCriado);
                 _contexto.ItensVendas.Add(itemCriado);
 
@@ -459,11 +459,11 @@ namespace ApiEstagioBicicletaria.Services
                     throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado!!!");
                 }
                 decimal descontoDoServicoNaVenda = servicoEnviado.DescontoServico ?? 0.0m;
-                if (descontoDoServicoNaVenda > servicoDaVenda.PrecoServico)
+                if (descontoDoServicoNaVenda > servicoDaVenda.Preco)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto do serviço não dever ser maior do que o valor do serviço");
                 }
-                ServicoVenda servicoDaVendaCriado = new ServicoVenda(VendaParaAtualizar, servicoDaVenda, descontoDoServicoNaVenda, servicoDaVenda.PrecoServico);
+                ServicoVenda servicoDaVendaCriado = new ServicoVenda(VendaParaAtualizar, servicoDaVenda, descontoDoServicoNaVenda, servicoDaVenda.Preco);
                 listaDeServicosAtualizadosDaVenda.Add(servicoDaVendaCriado);
                 _contexto.ServicosVendas.Add(servicoDaVendaCriado);
             }

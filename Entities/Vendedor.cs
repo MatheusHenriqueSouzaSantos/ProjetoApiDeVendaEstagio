@@ -1,6 +1,6 @@
 ﻿namespace ApiEstagioBicicletaria.Entities 
 { 
-    public class Vendedor : EntityBase
+    public class Vendedor : EntidadeBase
     { 
         public string Telefone { get; set; } 
         public string Email { get; set; } 

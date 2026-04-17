@@ -24,7 +24,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
             builder.Property(p => p.Descricao)
                 .HasMaxLength(150)
                 .HasColumnName("DESCRICAO");
-            builder.Property(p => p.PrecoUnitario)
+            builder.Property(p => p.Preco)
                 .HasColumnName("PRECO_UNITARIO")
                 .IsRequired();
         }

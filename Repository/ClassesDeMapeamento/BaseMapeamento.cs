@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria;
 
-public class BaseMapeamento<T> : IEntityTypeConfiguration<T> where T: EntityBase
+public class BaseMapeamento<T> : IEntityTypeConfiguration<T> where T: EntidadeBase
 {
     public virtual void Configure(EntityTypeBuilder<T> builder)
     {

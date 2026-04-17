@@ -1,6 +1,6 @@
 ﻿﻿namespace ApiEstagioBicicletaria.Entities.EntradaEstoque
 {
-    public class EntradaEstoque : EntityBase
+    public class EntradaEstoque : EntidadeBase
     {
         public Fornecedor Fornecedor { get; set; }
 

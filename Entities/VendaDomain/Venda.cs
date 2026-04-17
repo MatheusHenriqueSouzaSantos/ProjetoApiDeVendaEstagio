@@ -3,7 +3,7 @@ using ApiEstagioBicicletaria.Utils;
 
 namespace ApiEstagioBicicletaria.Entities.VendaDomain
 {
-    public class Venda : EntityBase
+    public class Venda : EntidadeBase
     {
         public string CodigoVenda { get; private set; }
         public Cliente Cliente { get;  set; }

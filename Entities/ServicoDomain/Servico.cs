@@ -1,6 +1,6 @@
 ﻿namespace ApiEstagioBicicletaria.Entities.ServicoDomain
 {
-    public class Servico: EntityBase
+    public class Servico: EntidadeBase
     {
 
         public string CodigoDoServico { get; private set; }
@@ -9,19 +9,19 @@
 
         public string Descricao { get; set; }
 
-        public decimal PrecoServico { get; set; }
+        public decimal Preco { get; set; }
 
 
         protected Servico()
         {
         }
 
-        public Servico(string codigoDoServico, string nomeServico, string descricao, decimal precoServico)
+        public Servico(string codigoDoServico, string nomeServico, string descricao, decimal preco)
         {
             CodigoDoServico = codigoDoServico;
             NomeServico = nomeServico;
             Descricao = descricao;
-            PrecoServico = precoServico;
+            Preco = preco;
         }
     }
 }

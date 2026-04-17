@@ -1,6 +1,6 @@
 ﻿namespace ApiEstagioBicicletaria.Entities.ClienteDomain
 {
-    public abstract class Cliente : EntityBase
+    public abstract class Cliente : EntidadeBase
     {
         public Endereco Endereco { get; set; }
         //Ter fk também ou só o objeto
