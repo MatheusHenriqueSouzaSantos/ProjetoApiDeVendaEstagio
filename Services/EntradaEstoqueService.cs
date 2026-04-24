@@ -60,7 +60,17 @@ namespace ApiEstagioBicicletaria.Services
 
         public void InativarEntradaEstoque(Guid id)
         {
-            throw new NotImplementedException();
+            EntradaEstoque entrada = _repositorio.BuscarPorId(id)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Entrada de estoque não encontrada");
+            List<ItemEntradaEstoque> itensEntradaEstoque = _ItemEntradaRepositorio
+                .BuscarItensPorIdEntradaEstoque(entrada.Id);
+            foreach(ItemEntradaEstoque item in itensEntradaEstoque)
+            {
+                _ItemEntradaRepositorio.InativarItem(item);
+            }
+
+            _repositorio.Inativar(entrada);
+    
         }
 
 

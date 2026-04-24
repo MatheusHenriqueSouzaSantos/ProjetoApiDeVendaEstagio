@@ -35,10 +35,11 @@ namespace ApiEstagioBicicletaria.Repository.Repositorios
             _contexto.SaveChanges();
             return entidade;
         }
-        public void Inativar(Guid id)
+        public void Inativar(EntradaEstoque entradaEstoque)
         {
-            EntradaEstoque entradaEstoque=_contexto.EntradasEstoque.First(e=>e.Id == id && e.Ativo);
             entradaEstoque.Ativo = false;
+            _contexto.EntradasEstoque.Update(entradaEstoque);
+            _contexto.SaveChanges();
         }
 
     }
