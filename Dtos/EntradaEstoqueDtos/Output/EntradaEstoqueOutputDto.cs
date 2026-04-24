@@ -13,17 +13,18 @@ public class EntradaEstoqueOutputDto
 
     public List<ItemEntradaEstoqueOutputDto> Itens {get; private set;}
 
-    public Vendedor Vendedor {get; private set;}
+    public Fornecedor Fornecedor {get; private set;}
 
     public string CodigoEntrada { get; private set; }
 
-    public EntradaEstoqueOutputDto(Guid id, DateTime dataCriacao, bool ativo, List<ItemEntradaEstoqueOutputDto> itens, Vendedor vendedor)
+    public EntradaEstoqueOutputDto(Guid id, DateTime dataCriacao, 
+        bool ativo, List<ItemEntradaEstoqueOutputDto> itens, Fornecedor fornecedor, string codigoEntrada)
     {
         Id = id;
         DataCriacao = dataCriacao;
         Ativo = ativo;
         Itens = itens;
-        Vendedor = vendedor;
+        Fornecedor = fornecedor;
+        CodigoEntrada = codigoEntrada;
     }
-
 }
