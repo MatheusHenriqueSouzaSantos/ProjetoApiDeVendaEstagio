@@ -68,6 +68,7 @@ namespace ApiEstagioBicicletaria.Services
             Vendedor vendedor = new Vendedor(dto.Telefone,dto.Email,dto.NomeCompleto,dto.Cpf);
 
             _contexto.Vendedores.Add(vendedor);
+            _contexto.SaveChanges();
 
             return vendedor;
         }
@@ -88,7 +89,7 @@ namespace ApiEstagioBicicletaria.Services
             vendedor.NomeCompleto = dto.NomeCompleto;
 
             _contexto.Vendedores.Update(vendedor);
-
+            _contexto.SaveChanges();
             return vendedor;
         }
 
@@ -105,6 +106,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             vendedor.Ativo = false;
             _contexto.Vendedores.Update(vendedor);
+            _contexto.SaveChanges();
         }
     }
 }

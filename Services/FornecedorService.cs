@@ -79,6 +79,7 @@ namespace ApiEstagioBicicletaria.Services
             fornecedorVindoDoBanco.NomeFantasia=dto.NomeFantasia;
             fornecedorVindoDoBanco.InscricaoEstadual=dto.InscricaoEstadual;
             _contexto.Fornecedores.Update(fornecedorVindoDoBanco);
+            _contexto.SaveChanges();
             return fornecedorVindoDoBanco; 
 
         }
