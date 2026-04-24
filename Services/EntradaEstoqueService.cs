@@ -1,6 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Entities.EntradaEstoque;
+using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repository.Repositorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
@@ -11,13 +12,22 @@ namespace ApiEstagioBicicletaria.Services
     {
         private EntradaEstoqueRepositorio _repositorio;
 
-        private ItemEntradaEstoqueRepositorio _ItemEntradaRepositorio;
+        private ItemEntradaEstoqueRepositorio _itemEntradaRepositorio;
 
-        public EntradaEstoqueService(EntradaEstoqueRepositorio repositorio,
-            ItemEntradaEstoqueRepositorio itemEntradaRepositorio)
+        private FornecedorRepositorio _fornecedorRepositorio;
+
+        private ProdutoRepositorio _produtoRepositorio;
+
+        private EstoqueRepositorio _estoqueRepositorio;
+
+        public EntradaEstoqueService(EntradaEstoqueRepositorio repositorio, ItemEntradaEstoqueRepositorio itemEntradaRepositorio, 
+        FornecedorRepositorio fornecedorRepositorio, ProdutoRepositorio produtoRepositorio, EstoqueRepositorio estoqueRepositorio)
         {
             _repositorio = repositorio;
-            _ItemEntradaRepositorio = itemEntradaRepositorio;
+            _itemEntradaRepositorio = itemEntradaRepositorio;
+            _fornecedorRepositorio = fornecedorRepositorio;
+            _produtoRepositorio = produtoRepositorio;
+            _estoqueRepositorio = estoqueRepositorio;
         }
 
         public List<EntradaEstoqueOutputDto> BuscarTodos()
@@ -27,7 +37,7 @@ namespace ApiEstagioBicicletaria.Services
 
             foreach(EntradaEstoque entradaEstoque in entradasEstoque)
             {
-                List<ItemEntradaEstoque> itensEntradaEstoque = _ItemEntradaRepositorio
+                List<ItemEntradaEstoque> itensEntradaEstoque = _itemEntradaRepositorio
                     .BuscarItensPorIdEntradaEstoque(entradaEstoque.Id);
                 EntradaEstoqueOutputDto entradaEstoqueDto = EntidadeParaDto(entradaEstoque, itensEntradaEstoque);
                 entradasEstoqueDto.Add(entradaEstoqueDto);
@@ -41,7 +51,7 @@ namespace ApiEstagioBicicletaria.Services
         {
             EntradaEstoque entradaEstoque = _repositorio.BuscarPorId(id)
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Entrada Estoque não Encontrada");
-            List<ItemEntradaEstoque> itensEntradaEstoque=_ItemEntradaRepositorio.BuscarItensPorIdEntradaEstoque(entradaEstoque.Id);
+            List<ItemEntradaEstoque> itensEntradaEstoque=_itemEntradaRepositorio.BuscarItensPorIdEntradaEstoque(entradaEstoque.Id);
 
             return EntidadeParaDto(entradaEstoque, itensEntradaEstoque);
         }
@@ -49,7 +59,20 @@ namespace ApiEstagioBicicletaria.Services
 
         public EntradaEstoqueOutputDto Cadastrar(EntradaEstoqueInputDto dto)
         {
-            throw new NotImplementedException();
+            Fornecedor fornecedor=_fornecedorRepositorio.BuscarFornecedorPorId(dto.IdFornecedor)
+            ?? throw new ExcecaoDeRegraDeNegocio(404,"Fornecedor nao encontrado");
+
+            List<ItemEntradaEstoque> itens=new List<ItemEntradaEstoque>();
+            foreach(ItemEntradaEstoqueInputDto itemDto in dto.Itens)
+            {
+                if (!_produtoRepositorio.VerificarSeProdutoExistePorId(itemDto.IdProduto))
+                {
+                    throw new ExcecaoDeRegraDeNegocio(404,$"produto com id: {itemDto.IdProduto} não existe");
+                }
+                Estoque estoqueDoItem=_estoqueRepositorio.BuscarEstoquePorProdutoId(itemDto.IdProduto)
+                ?? throw new ExcecaoDeRegraDeNegocio(500,"Estoque do produto não encontrado");
+                
+            }
         }
 
 
@@ -62,11 +85,11 @@ namespace ApiEstagioBicicletaria.Services
         {
             EntradaEstoque entrada = _repositorio.BuscarPorId(id)
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Entrada de estoque não encontrada");
-            List<ItemEntradaEstoque> itensEntradaEstoque = _ItemEntradaRepositorio
+            List<ItemEntradaEstoque> itensEntradaEstoque = _itemEntradaRepositorio
                 .BuscarItensPorIdEntradaEstoque(entrada.Id);
             foreach(ItemEntradaEstoque item in itensEntradaEstoque)
             {
-                _ItemEntradaRepositorio.InativarItem(item);
+                _itemEntradaRepositorio.InativarItem(item);
             }
 
             _repositorio.Inativar(entrada);
