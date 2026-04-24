@@ -1,6 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Entities.EntradaEstoque;
+using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repository.Repositorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 
@@ -10,21 +11,39 @@ namespace ApiEstagioBicicletaria.Services
     {
         private EntradaEstoqueRepositorio _repositorio;
 
-        public EntradaEstoqueService(EntradaEstoqueRepositorio repositorio)
+        private ItemEntradaEstoqueRepositorio _ItemEntradaRepositorio;
+
+        public EntradaEstoqueService(EntradaEstoqueRepositorio repositorio,
+            ItemEntradaEstoqueRepositorio itemEntradaRepositorio)
         {
             _repositorio = repositorio;
+            _ItemEntradaRepositorio = itemEntradaRepositorio;
         }
 
         public List<EntradaEstoqueOutputDto> BuscarTodos()
         {
-            List<EntradaEstoque> EntradasEstoque=_repositorio.BuscarTodos();
-            List<EntradaEstoqueOutputDto> EntradasEstoqueDto = new List<EntradaEstoqueOutputDto>();
+            List<EntradaEstoque> entradasEstoque=_repositorio.BuscarTodos();
+            List<EntradaEstoqueOutputDto> entradasEstoqueDto = new List<EntradaEstoqueOutputDto>();
+
+            foreach(EntradaEstoque entradaEstoque in entradasEstoque)
+            {
+                List<ItemEntradaEstoque> itensEntradaEstoque = _ItemEntradaRepositorio
+                    .BuscarItensPorIdEntradaEstoque(entradaEstoque.Id);
+                EntradaEstoqueOutputDto entradaEstoqueDto = EntidadeParaDto(entradaEstoque, itensEntradaEstoque);
+                entradasEstoqueDto.Add(entradaEstoqueDto);
+            }
+
+            return entradasEstoqueDto;
 
         }
 
         public EntradaEstoqueOutputDto BuscarPorId(Guid id)
         {
-            throw new NotImplementedException();
+            EntradaEstoque entradaEstoque = _repositorio.BuscarPorId(id)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Entrada Estoque não Encontrada");
+            List<ItemEntradaEstoque> itensEntradaEstoque=_ItemEntradaRepositorio.BuscarItensPorIdEntradaEstoque(entradaEstoque.Id);
+
+            return EntidadeParaDto(entradaEstoque, itensEntradaEstoque);
         }
 
 
