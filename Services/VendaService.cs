@@ -26,10 +26,10 @@ namespace ApiEstagioBicicletaria.Services
         //private readonly int _numeroMaximoDePaginas = 5;
         //private readonly int _numeroDeLinhasPorPagina = 42;
         private ContextoDb _contexto;
-        private readonly GeradorCodigoVenda _geradorCodigoVenda;
+        private readonly GeradorCodigoIndentificadorMovimentacao _geradorCodigoVenda;
         private readonly IEstoqueService _estoqueService;
 
-        public VendaService(ContextoDb contexto, GeradorCodigoVenda geradorCodigoVenda, IEstoqueService estoqueService)
+        public VendaService(ContextoDb contexto, GeradorCodigoIndentificadorMovimentacao geradorCodigoVenda, IEstoqueService estoqueService)
         {
             _contexto = contexto;
             _geradorCodigoVenda = geradorCodigoVenda;
@@ -172,7 +172,7 @@ namespace ApiEstagioBicicletaria.Services
 
             decimal valorTotalDaVendaComDescontoAplicado=Math.Round( (valorTotalDaVendaSemDescontoTotalAplicado-descontoVenda),2,MidpointRounding.AwayFromZero);
 
-            string codigoVenda = _geradorCodigoVenda.GerarCodigoVenda();
+            string codigoVenda = _geradorCodigoVenda.GerarCodigo();
 
             Venda vendaCriada = new Venda(clienteDaVenda,codigoVenda, clienteDaVenda.Id, descontoVenda,valorTotalDaVendaSemDescontoTotalAplicado, valorTotalDaVendaComDescontoAplicado);
 

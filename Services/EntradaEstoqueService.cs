@@ -5,29 +5,35 @@ using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repository.Repositorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using ApiEstagioBicicletaria.Utils;
 
 namespace ApiEstagioBicicletaria.Services
 {
     public class EntradaEstoqueService : IEntradaEstoqueService
     {
-        private EntradaEstoqueRepositorio _repositorio;
+        private readonly EntradaEstoqueRepositorio _repositorio;
 
-        private ItemEntradaEstoqueRepositorio _itemEntradaRepositorio;
+        private readonly ItemEntradaEstoqueRepositorio _itemEntradaRepositorio;
 
-        private FornecedorRepositorio _fornecedorRepositorio;
+        private readonly FornecedorRepositorio _fornecedorRepositorio;
 
-        private ProdutoRepositorio _produtoRepositorio;
+        private readonly ProdutoRepositorio _produtoRepositorio;
 
-        private EstoqueRepositorio _estoqueRepositorio;
+        private readonly EstoqueRepositorio _estoqueRepositorio;
 
-        public EntradaEstoqueService(EntradaEstoqueRepositorio repositorio, ItemEntradaEstoqueRepositorio itemEntradaRepositorio, 
-        FornecedorRepositorio fornecedorRepositorio, ProdutoRepositorio produtoRepositorio, EstoqueRepositorio estoqueRepositorio)
+        private readonly GeradorCodigoIndentificadorMovimentacao<EntradaEstoque> geradorCodigo;
+
+        public EntradaEstoqueService(EntradaEstoqueRepositorio repositorio, 
+            ItemEntradaEstoqueRepositorio itemEntradaRepositorio, FornecedorRepositorio fornecedorRepositorio, 
+            ProdutoRepositorio produtoRepositorio, EstoqueRepositorio estoqueRepositorio, 
+            GeradorCodigoIndentificadorMovimentacao<EntradaEstoque> geradorCodigo)
         {
             _repositorio = repositorio;
             _itemEntradaRepositorio = itemEntradaRepositorio;
             _fornecedorRepositorio = fornecedorRepositorio;
             _produtoRepositorio = produtoRepositorio;
             _estoqueRepositorio = estoqueRepositorio;
+            this.geradorCodigo = geradorCodigo;
         }
 
         public List<EntradaEstoqueOutputDto> BuscarTodos()
@@ -62,6 +68,8 @@ namespace ApiEstagioBicicletaria.Services
             Fornecedor fornecedor=_fornecedorRepositorio.BuscarFornecedorPorId(dto.IdFornecedor)
             ?? throw new ExcecaoDeRegraDeNegocio(404,"Fornecedor nao encontrado");
 
+            EntradaEstoque entradaEstoque = new(fornecedor, geradorCodigo.GerarCodigo());
+
             List<ItemEntradaEstoque> itens=new List<ItemEntradaEstoque>();
             foreach(ItemEntradaEstoqueInputDto itemDto in dto.Itens)
             {
@@ -71,8 +79,11 @@ namespace ApiEstagioBicicletaria.Services
                 }
                 Estoque estoqueDoItem=_estoqueRepositorio.BuscarEstoquePorProdutoId(itemDto.IdProduto)
                 ?? throw new ExcecaoDeRegraDeNegocio(500,"Estoque do produto não encontrado");
-                
+                ItemEntradaEstoque item = new(entradaEstoque, estoqueDoItem, itemDto.Quantidade);
+                _itemEntradaRepositorio.Cadastrar(item);
+                estoqueDoItem.AdicionarQuantidadeEmEstoque(itemDto.Quantidade);
             }
+            _repositorio.Cadastrar(entradaEstoque);
         }
 
 

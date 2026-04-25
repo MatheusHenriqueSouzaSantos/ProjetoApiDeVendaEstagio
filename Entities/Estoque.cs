@@ -23,5 +23,9 @@ namespace ApiEstagioBicicletaria.Entities
         {
 
         }
+        public void AdicionarQuantidadeEmEstoque(int quantidadeASerAdicionar)
+        {
+            QuantidadeEmEstoque += quantidadeASerAdicionar;
+        }
     }
 }

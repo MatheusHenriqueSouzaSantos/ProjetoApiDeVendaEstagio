@@ -17,11 +17,17 @@ namespace ApiEstagioBicicletaria.Repository.Repositorios
             return _contexto.ItensEntradaEstoque
                 .Where(i=>i.IdEntradaEstoque==idEntradaEstoque && i.Ativo).ToList();
         }
+        public void Cadastrar(ItemEntradaEstoque item)
+        {
+            _contexto.Add(item);
+            _contexto.SaveChanges();
+        }
         public void InativarItem(ItemEntradaEstoque item)
         {
             item.Ativo = false;
             _contexto.ItensEntradaEstoque.Update(item);
             _contexto.SaveChanges();
         }
+        
     }
 }
