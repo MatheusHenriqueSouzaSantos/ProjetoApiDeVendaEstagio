@@ -6,7 +6,7 @@
 
         public DateTime DataCriacao {  get; private set; }= DateTime.Now;
 
-        public bool Ativo { get; set; } = false;
+        public bool Ativo { get; set; } = true;
 
         protected EntidadeBase() { }
     }

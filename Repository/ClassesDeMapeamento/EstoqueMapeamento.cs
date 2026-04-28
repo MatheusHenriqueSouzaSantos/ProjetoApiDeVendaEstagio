@@ -5,18 +5,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class EstoqueMapeamento : IEntityTypeConfiguration<Estoque>
+    public class EstoqueMapeamento : BaseMapeamento<Estoque>
     {
-        public void Configure(EntityTypeBuilder<Estoque> builder)
+        public override void Configure(EntityTypeBuilder<Estoque> builder)
         {
+            base.Configure(builder);
             builder.ToTable("ESTOQUE");
-
-            builder.HasKey(e => e.Id);
-
-            builder.Property(e => e.Id)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID")
-                .IsRequired();
 
             builder.HasOne(e => e.Produto)
                 .WithOne()
@@ -26,11 +20,6 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
             builder.Property(e => e.ProdutoId)
                 .HasColumnType("binary(16)")
                 .HasColumnName("ID_PRODUTO");
-
-            builder.Property(e => e.DataCriacao)
-                .HasColumnName("DATA_CRIACAO")
-                .IsRequired();
-
 
             builder.Property(e=>e.QuantidadeEmEstoque)
                 .HasColumnName("QUANTIDADE_EM_ESTOQUE")

@@ -4,26 +4,17 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class ClienteMapeamento : IEntityTypeConfiguration<Cliente>
+    public class ClienteMapeamento : BaseMapeamento<Cliente>
     {
-        public void Configure(EntityTypeBuilder<Cliente> builder)
+        public override void Configure(EntityTypeBuilder<Cliente> builder)
         {
+            base.Configure(builder);
             builder.ToTable("CLIENTE");
-
-            builder.HasKey(c=>c.Id);
-
-            builder.Property(c => c.Id)
-                .HasColumnType("Binary(16)")
-                .HasColumnName("ID")
-                .IsRequired();
 
             //duvidaEnderecoTemMaisDeUmCliente
             builder.HasOne(c => c.Endereco)
                 .WithMany()
                 .HasForeignKey("ID_ENDERECO")
-                .IsRequired();
-            builder.Property(c => c.DataCriacao)
-                .HasColumnName("DATA_CRIACAO")
                 .IsRequired();
             builder.Property(c => c.Telefone)
                 .HasMaxLength(2)
@@ -38,9 +29,6 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .HasConversion<string>()
                 .HasMaxLength(25)
                 .HasColumnName("TIPO_CLIENTE")
-                .IsRequired();
-            builder.Property(c=>c.Ativo)
-                .HasColumnName("ATIVO")
                 .IsRequired();
 
 

@@ -4,29 +4,18 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class UsuarioMapeamento : IEntityTypeConfiguration<Usuario>
+    public class UsuarioMapeamento : BaseMapeamento<Usuario>
     {
-        public void Configure(EntityTypeBuilder<Usuario> builder)
+        public override void Configure(EntityTypeBuilder<Usuario> builder)
         {
+            base.Configure(builder);
             builder.ToTable("USUARIO");
 
-            builder.HasKey(u=>u.Id);
-
-            builder.Property(u => u.Id)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID")
-                .IsRequired();
             builder.Property(u => u.Email)
                 .HasColumnName("EMAIL")
                 .IsRequired();
             builder.Property(u=>u.Senha)
                 .HasColumnName("SENHA")
-                .IsRequired();
-            builder.Property(u=>u.DataCriacao)
-                .HasColumnName("DATA_CRIACAO")
-                .IsRequired();
-            builder.Property(u=>u.Ativo)
-                .HasColumnName("ATIVO")
                 .IsRequired();
         }
     }

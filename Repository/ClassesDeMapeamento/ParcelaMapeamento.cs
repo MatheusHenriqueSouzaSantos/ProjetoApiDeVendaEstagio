@@ -5,18 +5,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class ParcelaMapeamento : IEntityTypeConfiguration<Parcela>
+    public class ParcelaMapeamento : BaseMapeamento<Parcela>
     {
-        public void Configure(EntityTypeBuilder<Parcela> builder)
+        public override void Configure(EntityTypeBuilder<Parcela> builder)
         {
+            base.Configure(builder);
             builder.ToTable("PARCELA");
 
-            builder.HasKey(p=>p.Id);
-
-            builder.Property(p => p.Id)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID")
-                .IsRequired();
             builder.HasOne(p => p.Transacao)
                 .WithMany()
                 .HasForeignKey(p=>p.IdTransacao)
@@ -24,9 +19,6 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
             builder.Property(p=>p.IdTransacao)
                 .HasColumnType("binary(16)")
                 .HasColumnName("ID_TRANSACAO")
-                .IsRequired();
-            builder.Property(p => p.DataCriacao)
-                .HasColumnName("DATA_CRIACAO")
                 .IsRequired();
             builder.Property(p => p.NumeroDaParecelaDaVenda)
                 .HasColumnName("NUMERO_DA_PARCELA_DA_VENDA")
@@ -36,9 +28,6 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .IsRequired();
             builder.Property(p=>p.Pago)
                 .HasColumnName("PAGO")
-                .IsRequired();
-            builder.Property(p=>p.Ativo)
-                .HasColumnName("ATIVO")
                 .IsRequired();
         }
     }

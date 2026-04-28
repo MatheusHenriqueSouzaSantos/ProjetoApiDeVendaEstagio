@@ -4,17 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class EnderecoMapeamento : IEntityTypeConfiguration<Endereco>
+    public class EnderecoMapeamento : BaseMapeamento<Endereco>
     {
-        public void Configure(EntityTypeBuilder<Endereco> builder) 
+        public override void Configure(EntityTypeBuilder<Endereco> builder) 
         {
+            base.Configure(builder);
             builder.ToTable("ENDERECO");
-            builder.HasKey(e => e.Id);
 
-            builder.Property(e => e.Id)
-                .HasColumnType("Binary(16)")
-                .HasColumnName("ID")
-                .IsRequired();
             builder.Property(e => e.Logradouro)
                 .HasMaxLength(80)
                 .HasColumnName("LOGRADOURO")

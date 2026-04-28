@@ -21,5 +21,6 @@ namespace ApiEstagioBicicletaria.Entities.EntradaEstoque
             IdEstoque= estoque.Id;
             Quantidade = quantidade;
         }
+        protected ItemEntradaEstoque() { }
     }
 }

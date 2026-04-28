@@ -4,18 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class ServicoVendaMapeamento : IEntityTypeConfiguration<ServicoVenda>
+    public class ServicoVendaMapeamento : BaseMapeamento<ServicoVenda>
     {
-        public void Configure(EntityTypeBuilder<ServicoVenda> builder)
+        public override void Configure(EntityTypeBuilder<ServicoVenda> builder)
         {
+            base.Configure(builder);
             builder.ToTable("SERVICO_VENDA");
 
-            builder.HasKey(s => s.Id);
-
-            builder.Property(s => s.Id)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID")
-                .IsRequired();
             builder.HasOne(s => s.Venda)
                 .WithMany()
                 .HasForeignKey(s=>s.IdVenda)
@@ -32,17 +27,11 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .HasColumnName("ID_SERVICO")
                 .HasColumnType("binary(16)")
                 .IsRequired();
-            builder.Property(s=>s.DataCriacao)
-                .HasColumnName("DATA_CRIACAO")
-                .IsRequired();
             builder.Property(s=>s.DescontoServico)
                 .HasColumnName("DESCONTO_SERVICO")
                 .IsRequired();
             builder.Property(s=>s.PrecoServicoNaVendaSemDesconto)
                 .HasColumnName("PRECO_SERVICO_NA_VENDA_SEM_DESCONTO")
-                .IsRequired();
-            builder.Property(s=>s.Ativo)
-                .HasColumnName("ATIVO")
                 .IsRequired();
         }
     }

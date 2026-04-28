@@ -4,18 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class ItemVendaMapeamento : IEntityTypeConfiguration<ItemVenda>
+    public class ItemVendaMapeamento : BaseMapeamento<ItemVenda>
     {
-        public void Configure(EntityTypeBuilder<ItemVenda> builder)
+        public override void Configure(EntityTypeBuilder<ItemVenda> builder)
         {
+            base.Configure(builder);
             builder.ToTable("ITEM_VENDA");
 
-            builder.HasKey(i => i.Id);
-
-            builder.Property(i => i.Id)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID")
-                .IsRequired();
             builder.HasOne(i => i.Venda)
                 .WithMany()
                 .HasForeignKey(i=>i.IdVenda)
@@ -31,9 +26,6 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .HasColumnType("binary(16)")
                 .HasColumnName("ID_PRODUTO")
                 .IsRequired();
-            builder.Property(i=>i.DataCriacao)
-                .HasColumnName("DATA_CRIACAO")
-                .IsRequired();
             builder.Property(i=>i.Quantidade)
                 .HasColumnName("QUANTIDADE")
                 .IsRequired();
@@ -42,9 +34,6 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .IsRequired();
             builder.Property(i=>i.PrecoUnitarioDoProdutoNaVendaSemDesconto)
                 .HasColumnName("PRECO_UNITARIO_DO_PRODUTO_NA_VENDA_SEM_DESCONTO")
-                .IsRequired();
-            builder.Property(i=>i.Ativo)
-                .HasColumnName("ATIVO")
                 .IsRequired();
         }
     }

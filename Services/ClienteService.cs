@@ -34,7 +34,7 @@ namespace ApiEstagioBicicletaria.Services
                 .Include(c => c.Endereco)
                 .Where(c => c.Ativo)
                 .ToList();
-
+            Console.WriteLine("Passou");
             List<ClienteDtoOutPut> todosClientesFormatoDto = new List<ClienteDtoOutPut>();
             List<ClienteFisicoDtoOutPut> clientesFisicoFormatoDtoOutput = new List<ClienteFisicoDtoOutPut>();
 

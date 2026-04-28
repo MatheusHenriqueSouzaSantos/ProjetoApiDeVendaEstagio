@@ -1,8 +1,7 @@
 ﻿namespace ApiEstagioBicicletaria.Entities.ClienteDomain
 {
-    public class Endereco
+    public class Endereco : EntidadeBase
     {
-        public Guid Id { get; private set; } =  Guid.NewGuid();
         public string Logradouro { get; set; }
         public string Numero { get; set; }
         public string Cidade { get; set; }

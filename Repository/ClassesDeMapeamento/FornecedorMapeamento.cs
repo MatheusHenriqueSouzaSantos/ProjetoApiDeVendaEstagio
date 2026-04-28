@@ -4,22 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
 {
-    public class FornecedorMapeamento : IEntityTypeConfiguration<Fornecedor>
+    public class FornecedorMapeamento : BaseMapeamento<Fornecedor>
     {
-        public void Configure(EntityTypeBuilder<Fornecedor> builder)
+        public override void Configure(EntityTypeBuilder<Fornecedor> builder)
         {
+            base.Configure(builder);
+
             builder.ToTable("FORNECEDOR");
-
-            builder.HasKey(f => f.Id);
-
-            builder.Property(f => f.Id)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID")
-                .IsRequired();
-
-            builder.Property(f => f.DataCriacao)
-                .HasColumnName("DATA_CRIACAO")
-                .IsRequired();
 
             builder.Property(f=>f.Telefone)
                 .HasColumnName("TELEFONE")
@@ -49,9 +40,6 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .HasMaxLength(15)
                 .HasColumnName("INSCRICAO_ESTADUAL");
 
-            builder.Property(f => f.Ativo)
-                .HasColumnName("ATIVO")
-                .IsRequired();
         }
     }
 }

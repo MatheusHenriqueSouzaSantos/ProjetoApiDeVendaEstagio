@@ -56,7 +56,6 @@ namespace ApiEstagioBicicletaria.Repositories
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<EntidadeBase>().UseTpcMappingStrategy();
 
             modelBuilder.Entity<Cliente>()
             .ToTable("CLIENTE");
