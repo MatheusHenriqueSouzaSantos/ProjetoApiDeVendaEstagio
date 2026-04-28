@@ -10,7 +10,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         EntradaEstoqueOutputDto Cadastrar(EntradaEstoqueInputDto dto);
 
-        EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueInputDto dto);
+        // EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueInputDto dto);
 
         void InativarEntradaEstoque(Guid id);
     }

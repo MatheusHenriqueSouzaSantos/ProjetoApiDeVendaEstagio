@@ -20,7 +20,7 @@ namespace ApiEstagioBicicletaria
             options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddSwaggerGen();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddScoped<GeradorCodigoIndentificadorMovimentacao>();
+            builder.Services.AddScoped(typeof(GeradorCodigoIndentificadorMovimentacao<>));
             builder.Services.AddScoped<IClienteService, ClienteService>();
             builder.Services.AddScoped<IProdutoService, ProdutoService>();
             builder.Services.AddScoped<IServicoService, ServicoService>();

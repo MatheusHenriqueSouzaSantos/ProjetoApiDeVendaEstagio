@@ -16,4 +16,10 @@ public class EstoqueRepositorio
         {
             return _contexto.Estoques.FirstOrDefault(e=>e.ProdutoId == idProduto && e.Ativo);
         }
+
+        public void AtualizarEstoque(Estoque estoque)
+        {
+            _contexto.Estoques.Update(estoque);
+            _contexto.SaveChanges();
+        }
 }

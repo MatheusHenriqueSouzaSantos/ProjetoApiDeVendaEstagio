@@ -14,12 +14,14 @@ namespace ApiEstagioBicicletaria.Repository.Repositorios
 
         public List<EntradaEstoque> BuscarTodos()
         {
-            return _contexto.EntradasEstoque.Where(e=>e.Ativo).ToList();
+            return _contexto.EntradasEstoque.
+            OrderBy(e=>e.Status== StatusEntradaEstoque.Criada? 1 : e.Status==StatusEntradaEstoque.Atualizada? 2 : 3)
+            .ToList();
         }
 
         public EntradaEstoque? BuscarPorId(Guid id)
         {
-            return _contexto.EntradasEstoque.FirstOrDefault(e => e.Id == id && e.Ativo);
+            return _contexto.EntradasEstoque.FirstOrDefault(e => e.Id == id);
         }
 
         public EntradaEstoque Cadastrar(EntradaEstoque entidade)
@@ -29,15 +31,17 @@ namespace ApiEstagioBicicletaria.Repository.Repositorios
             return entidade;    
         }
 
-        public EntradaEstoque Atualizar(EntradaEstoque entidade)
-        {
-            _contexto.EntradasEstoque.Update(entidade);
-            _contexto.SaveChanges();
-            return entidade;
-        }
+        // public EntradaEstoque Atualizar(EntradaEstoque entidade)
+        // {
+        //     entidade.Status=StatusEntradaEstoque.Atualizada;
+        //     _contexto.EntradasEstoque.Update(entidade);
+        //     _contexto.SaveChanges();
+        //     return entidade;
+        // }
         public void Inativar(EntradaEstoque entradaEstoque)
         {
             entradaEstoque.Ativo = false;
+            entradaEstoque.Status=StatusEntradaEstoque.Cancelada;
             _contexto.EntradasEstoque.Update(entradaEstoque);
             _contexto.SaveChanges();
         }

@@ -17,8 +17,9 @@ public class EntradaEstoqueOutputDto
 
     public string CodigoEntrada { get; private set; }
 
-    public EntradaEstoqueOutputDto(Guid id, DateTime dataCriacao, 
-        bool ativo, List<ItemEntradaEstoqueOutputDto> itens, Fornecedor fornecedor, string codigoEntrada)
+    public StatusEntradaEstoque Status {get; private set;}
+
+    public EntradaEstoqueOutputDto(Guid id, DateTime dataCriacao, bool ativo, List<ItemEntradaEstoqueOutputDto> itens, Fornecedor fornecedor, string codigoEntrada, StatusEntradaEstoque status)
     {
         Id = id;
         DataCriacao = dataCriacao;
@@ -26,5 +27,7 @@ public class EntradaEstoqueOutputDto
         Itens = itens;
         Fornecedor = fornecedor;
         CodigoEntrada = codigoEntrada;
+        Status = status;
     }
+    
 }

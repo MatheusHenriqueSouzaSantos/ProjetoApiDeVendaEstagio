@@ -26,10 +26,10 @@ namespace ApiEstagioBicicletaria.Services
         //private readonly int _numeroMaximoDePaginas = 5;
         //private readonly int _numeroDeLinhasPorPagina = 42;
         private ContextoDb _contexto;
-        private readonly GeradorCodigoIndentificadorMovimentacao _geradorCodigoVenda;
+        private readonly GeradorCodigoIndentificadorMovimentacao<Venda> _geradorCodigoVenda;
         private readonly IEstoqueService _estoqueService;
 
-        public VendaService(ContextoDb contexto, GeradorCodigoIndentificadorMovimentacao geradorCodigoVenda, IEstoqueService estoqueService)
+        public VendaService(ContextoDb contexto, GeradorCodigoIndentificadorMovimentacao<Venda> geradorCodigoVenda, IEstoqueService estoqueService)
         {
             _contexto = contexto;
             _geradorCodigoVenda = geradorCodigoVenda;

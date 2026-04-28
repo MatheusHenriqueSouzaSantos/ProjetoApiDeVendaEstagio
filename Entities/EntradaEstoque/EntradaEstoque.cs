@@ -8,6 +8,8 @@
 
         public string CodigoEntrada { get; private set; }
 
+        public StatusEntradaEstoque Status {get; set;}=StatusEntradaEstoque.Criada;
+
         protected EntradaEstoque()
         {
 

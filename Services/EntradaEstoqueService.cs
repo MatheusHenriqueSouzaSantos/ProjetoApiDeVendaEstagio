@@ -6,7 +6,7 @@ using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repository.Repositorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Utils;
-
+//code review
 namespace ApiEstagioBicicletaria.Services
 {
     public class EntradaEstoqueService : IEntradaEstoqueService
@@ -70,27 +70,34 @@ namespace ApiEstagioBicicletaria.Services
 
             EntradaEstoque entradaEstoque = new(fornecedor, geradorCodigo.GerarCodigo());
 
-            List<ItemEntradaEstoque> itens=new List<ItemEntradaEstoque>();
-            foreach(ItemEntradaEstoqueInputDto itemDto in dto.Itens)
-            {
-                if (!_produtoRepositorio.VerificarSeProdutoExistePorId(itemDto.IdProduto))
-                {
-                    throw new ExcecaoDeRegraDeNegocio(404,$"produto com id: {itemDto.IdProduto} não existe");
-                }
-                Estoque estoqueDoItem=_estoqueRepositorio.BuscarEstoquePorProdutoId(itemDto.IdProduto)
-                ?? throw new ExcecaoDeRegraDeNegocio(500,"Estoque do produto não encontrado");
-                ItemEntradaEstoque item = new(entradaEstoque, estoqueDoItem, itemDto.Quantidade);
-                _itemEntradaRepositorio.Cadastrar(item);
-                estoqueDoItem.AdicionarQuantidadeEmEstoque(itemDto.Quantidade);
-            }
+            List<ItemEntradaEstoque> itens=CriarItensEntradaEstoque(dto.Itens,entradaEstoque);
+          
             _repositorio.Cadastrar(entradaEstoque);
+            return EntidadeParaDto(entradaEstoque,itens);
         }
 
 
-        public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueInputDto dto)
-        {
-            throw new NotImplementedException();
-        }
+        // public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueInputDto dto)
+        // {
+        //     EntradaEstoque entradaEstoque=_repositorio.BuscarPorId(id)
+        //     ?? throw new ExcecaoDeRegraDeNegocio(404,"Entrada estoque não encontrada");
+
+        //     if (entradaEstoque.Status == StatusEntradaEstoque.Cancelada)
+        //     {
+        //         throw new ExcecaoDeRegraDeNegocio(400)
+        //     }
+
+        //     Fornecedor fornecedorAtualizado=_fornecedorRepositorio.BuscarFornecedorPorId(id)
+        //     ?? throw new ExcecaoDeRegraDeNegocio(404,"Fornecedor não encontrado");
+
+        //     List<ItemEntradaEstoque> itens=CriarItensEntradaEstoque(dto.Itens,entradaEstoque);
+
+        //     //validar se já não foi cancelada?
+            
+        //     DeletarItensEntradaEstoque(entradaEstoque.Id)
+        //     //vou permitir excluir fisicamente os itens da entrada mais vou criar logs, para registrar, 
+        //     // uso delete lógico só quando é exclusão, para atualização uso o delete físico
+        // }
 
         public void InativarEntradaEstoque(Guid id)
         {
@@ -101,8 +108,9 @@ namespace ApiEstagioBicicletaria.Services
             foreach(ItemEntradaEstoque item in itensEntradaEstoque)
             {
                 _itemEntradaRepositorio.InativarItem(item);
+                item.Estoque.AbaterQuantidadeEmEstoque(item.Quantidade);
+                _estoqueRepositorio.AtualizarEstoque(item.Estoque);
             }
-
             _repositorio.Inativar(entrada);
     
         }
@@ -114,18 +122,41 @@ namespace ApiEstagioBicicletaria.Services
 
             foreach (ItemEntradaEstoque item in itens)
             {
-                Estoque estoqueDoItem = item.Estoque;
-                EstoqueSimplificadoOutputDto estoqueSimplificado = new(estoqueDoItem.Id, 
-                    estoqueDoItem.ProdutoId, estoqueDoItem.Produto.NomeProduto, 
-                    estoqueDoItem.QuantidadeEmEstoque);
+                Produto produtoDoItem=item.Estoque.Produto;
                 ItemEntradaEstoqueOutputDto itemDto = new(item.Id, item.DataCriacao, 
-                    item.Ativo, estoqueSimplificado, item.Quantidade);
+                    item.Ativo,produtoDoItem.Id,produtoDoItem.NomeProduto, item.Quantidade);
                 itensDto.Add(itemDto);
             }
             EntradaEstoqueOutputDto entradaEstoqueDto = new(entradaEstoque.Id, entradaEstoque.DataCriacao,
-                entradaEstoque.Ativo, itensDto, entradaEstoque.Fornecedor, entradaEstoque.CodigoEntrada);
+                entradaEstoque.Ativo, itensDto, entradaEstoque.Fornecedor, entradaEstoque.CodigoEntrada,entradaEstoque.Status);
 
             return entradaEstoqueDto;
         }
+
+        public List<ItemEntradaEstoque> CriarItensEntradaEstoque(List<ItemEntradaEstoqueInputDto> dtos,EntradaEstoque entradaEstoque)
+        {
+            List<ItemEntradaEstoque> itens=new List<ItemEntradaEstoque>();
+            foreach(ItemEntradaEstoqueInputDto itemDto in dtos)
+            {
+                if (!_produtoRepositorio.VerificarSeProdutoExistePorId(itemDto.IdProduto))
+                {
+                    throw new ExcecaoDeRegraDeNegocio(404,$"produto com id: {itemDto.IdProduto} não existe");
+                }
+                Estoque estoqueDoItem=_estoqueRepositorio.BuscarEstoquePorProdutoId(itemDto.IdProduto)
+                ?? throw new ExcecaoDeRegraDeNegocio(500,"Estoque do produto não encontrado");
+                ItemEntradaEstoque item = new(entradaEstoque, estoqueDoItem, itemDto.Quantidade);
+                _itemEntradaRepositorio.Cadastrar(item);
+                itens.Add(item);
+                estoqueDoItem.AdicionarQuantidadeEmEstoque(itemDto.Quantidade);
+                _estoqueRepositorio.AtualizarEstoque(estoqueDoItem);
+            }
+            return itens;
+        }
+
+        // public void DeletarItensEntradaEstoque(Guid idEntradaEstoqueDosItens)
+        // {
+            
+        // }
+        
     }
 }
