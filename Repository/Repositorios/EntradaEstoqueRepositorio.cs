@@ -27,7 +27,6 @@ namespace ApiEstagioBicicletaria.Repository.Repositorios
         public EntradaEstoque Cadastrar(EntradaEstoque entidade)
         {
             _contexto.EntradasEstoque.Add(entidade);
-            _contexto.SaveChanges();
             return entidade;    
         }
 

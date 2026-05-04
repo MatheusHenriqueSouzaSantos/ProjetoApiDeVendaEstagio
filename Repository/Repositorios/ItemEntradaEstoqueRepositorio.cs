@@ -1,5 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Entities.EntradaEstoque;
 using ApiEstagioBicicletaria.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiEstagioBicicletaria.Repository.Repositorios
 {
@@ -14,19 +15,17 @@ namespace ApiEstagioBicicletaria.Repository.Repositorios
 
         public List<ItemEntradaEstoque> BuscarItensPorIdEntradaEstoque(Guid idEntradaEstoque)
         {
-            return _contexto.ItensEntradaEstoque
+            return _contexto.ItensEntradaEstoque.Include(e=>e.Estoque).ThenInclude(e=>e.Produto)
                 .Where(i=>i.IdEntradaEstoque==idEntradaEstoque && i.Ativo).ToList();
         }
         public void Cadastrar(ItemEntradaEstoque item)
         {
             _contexto.Add(item);
-            _contexto.SaveChanges();
         }
         public void InativarItem(ItemEntradaEstoque item)
         {
             item.Ativo = false;
             _contexto.ItensEntradaEstoque.Update(item);
-            _contexto.SaveChanges();
         }
         
     }
