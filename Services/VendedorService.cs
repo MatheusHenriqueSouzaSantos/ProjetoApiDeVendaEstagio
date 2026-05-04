@@ -65,7 +65,7 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um vendedor cadastrado com esse email");
             }
 
-            Vendedor vendedor = new Vendedor(dto.Telefone,dto.Email,dto.NomeCompleto,dto.Cpf);
+            Vendedor vendedor = new Vendedor(dto.Telefone,dto.Email,dto.NomeCompleto, cpfSoNumeros);
 
             _contexto.Vendedores.Add(vendedor);
             _contexto.SaveChanges();

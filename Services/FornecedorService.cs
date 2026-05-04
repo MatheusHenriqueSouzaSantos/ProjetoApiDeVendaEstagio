@@ -59,7 +59,8 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um fornecedor cadastrado com esse email");
             }
-            Fornecedor fornecedor = new(dto.Telefone, dto.Email, dto.RazaoSocial, dto.NomeFantasia, dto.Cnpj, dto.InscricaoEstadual);
+            Fornecedor fornecedor = new(dto.Telefone, dto.Email, dto.RazaoSocial, dto.NomeFantasia, cnpjSomenteNumeros, dto.InscricaoEstadual);
+            Console.WriteLine(fornecedor.Cnpj);
             _contexto.Add(fornecedor);
             _contexto.SaveChanges();
             return fornecedor;
