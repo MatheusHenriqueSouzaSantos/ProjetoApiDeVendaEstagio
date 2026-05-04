@@ -107,6 +107,11 @@ namespace ApiEstagioBicicletaria.Services
                 .BuscarItensPorIdEntradaEstoque(entrada.Id);
             foreach(ItemEntradaEstoque item in itensEntradaEstoque)
             {
+                if(item.Quantidade> item.Estoque.QuantidadeEmEstoque)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(400, "Estoque insufisciente para realizar o " +
+                        "cancelamento dessa entrada estoque, adicione uma nova entrada e depois exclua essa");
+                }
                 _itemEntradaRepositorio.InativarItem(item);
                 item.Estoque.AbaterQuantidadeEmEstoque(item.Quantidade);
                 _estoqueRepositorio.AtualizarEstoque(item.Estoque);
@@ -157,6 +162,7 @@ namespace ApiEstagioBicicletaria.Services
         // {
             
         // }
+
         
     }
 }

@@ -1,6 +1,7 @@
 using ApiEstagioBicicletaria.Dtos.ClienteDtos;
 using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Repositories;
+using ApiEstagioBicicletaria.Repository.Repositorios;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Utils;
@@ -29,6 +30,12 @@ namespace ApiEstagioBicicletaria
             builder.Services.AddScoped<IVendedorService, VendedorService>();
             builder.Services.AddScoped<IFornecedorService, FornecedorService>();
             builder.Services.AddScoped<IEstoqueService, EstoqueService>();
+            builder.Services.AddScoped<IEntradaEstoqueService, EntradaEstoqueService>();
+            builder.Services.AddScoped<EntradaEstoqueRepositorio>();
+            builder.Services.AddScoped<ItemEntradaEstoqueRepositorio>();
+            builder.Services.AddScoped<FornecedorRepositorio>();
+            builder.Services.AddScoped<ProdutoRepositorio>();
+            builder.Services.AddScoped<EstoqueRepositorio>();
             builder.Services.AddCors(options =>
             {
                 //mudar quando rodar o sistema

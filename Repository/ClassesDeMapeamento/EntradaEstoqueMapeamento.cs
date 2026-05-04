@@ -23,6 +23,9 @@ public class EntradaEstoqueMapeamento : BaseMapeamento<EntradaEstoque>
         builder.Property(e=>e.CodigoEntrada)
             .HasColumnName("CODIGO_ENTRADA")
             .IsRequired();
+        builder.Property(e => e.Status)
+            .HasColumnName("STATUS")
+            .IsRequired();
         
     }
 }
