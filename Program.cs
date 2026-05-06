@@ -5,7 +5,10 @@ using ApiEstagioBicicletaria.Repository.Repositorios;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
@@ -48,53 +51,81 @@ namespace ApiEstagioBicicletaria
                 });
             });
             builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.WriteIndented = true;
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-
-        options.JsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver
-        {
-            Modifiers =
-            {
-                ti =>
+                .AddJsonOptions(options =>
                 {
-                    if (ti.Type == typeof(Cliente))
-                    {
-                        ti.PolymorphismOptions = new JsonPolymorphismOptions
-                        {
-                            TypeDiscriminatorPropertyName = "$type",
-                            IgnoreUnrecognizedTypeDiscriminators = true,
-                            DerivedTypes =
-                            {
-                                new JsonDerivedType(typeof(ClienteFisico), "fisico"),
-                                new JsonDerivedType(typeof(ClienteJuridico), "juridico")
-                            }
-                        };
-                    }
+                    options.JsonSerializerOptions.WriteIndented = true;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 
-                    if (ti.Type == typeof(ClienteDtoOutPut))
+                    options.JsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver
                     {
-                        ti.PolymorphismOptions = new JsonPolymorphismOptions
+                        Modifiers =
                         {
-                            TypeDiscriminatorPropertyName = "$type",
-                            IgnoreUnrecognizedTypeDiscriminators = true,
-                            DerivedTypes =
+                            ti =>
                             {
-                                new JsonDerivedType(typeof(ClienteFisicoDtoOutPut), "fisico"),
-                                new JsonDerivedType(typeof(ClienteJuridicoDtoOutPut), "juridico")
+                                if (ti.Type == typeof(Cliente))
+                                {
+                                    ti.PolymorphismOptions = new JsonPolymorphismOptions
+                                    {
+                                        TypeDiscriminatorPropertyName = "$type",
+                                        IgnoreUnrecognizedTypeDiscriminators = true,
+                                        DerivedTypes =
+                                        {
+                                            new JsonDerivedType(typeof(ClienteFisico), "fisico"),
+                                            new JsonDerivedType(typeof(ClienteJuridico), "juridico")
+                                        }
+                                    };
+                                }
+
+                                if (ti.Type == typeof(ClienteDtoOutPut))
+                                {
+                                    ti.PolymorphismOptions = new JsonPolymorphismOptions
+                                    {
+                                        TypeDiscriminatorPropertyName = "$type",
+                                        IgnoreUnrecognizedTypeDiscriminators = true,
+                                        DerivedTypes =
+                                        {
+                                            new JsonDerivedType(typeof(ClienteFisicoDtoOutPut), "fisico"),
+                                            new JsonDerivedType(typeof(ClienteJuridicoDtoOutPut), "juridico")
+                                        }
+                                    };
+                                }
                             }
-                        };
-                    }
-                }
-            }
-        };
-    });
+                        }
+                    };
+                });
+            
+            var jwtKey = builder.Configuration["JWT_KEY"];
+
+            var bytesJwtKey=Encoding.UTF8.GetBytes(jwtKey);
+
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(bytesJwtKey)
+                    };
+                });
+
+            builder.Services.AddAuthorization();
+
+
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseCors("PermitirTudo");
             app.UseHttpsRedirection();

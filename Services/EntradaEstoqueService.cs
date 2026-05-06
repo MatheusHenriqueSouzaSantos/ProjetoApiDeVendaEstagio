@@ -113,8 +113,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 if(item.Quantidade> item.Estoque.QuantidadeEmEstoque)
                 {
-                    throw new ExcecaoDeRegraDeNegocio(400, "Estoque insufisciente para realizar o " +
-                        "cancelamento dessa entrada estoque, adicione uma nova entrada e depois exclua essa");
+                    throw new ExcecaoDeRegraDeNegocio(400, "Não é possível cancelar essa entrada, pois o estoque é insufisciente");
                 }
                 _itemEntradaRepositorio.InativarItem(item);
                 item.Estoque.AbaterQuantidadeEmEstoque(item.Quantidade);
