@@ -11,11 +11,17 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
             base.Configure(builder);
             builder.ToTable("USUARIO");
 
+            builder.Property(u => u.Nome)
+                .HasColumnName("NOME")
+                .HasMaxLength(70)
+                .IsRequired();
             builder.Property(u => u.Email)
                 .HasColumnName("EMAIL")
+                .HasMaxLength(150)
                 .IsRequired();
             builder.Property(u=>u.Senha)
                 .HasColumnName("SENHA")
+                .HasMaxLength(20)
                 .IsRequired();
         }
     }

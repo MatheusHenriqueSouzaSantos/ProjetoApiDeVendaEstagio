@@ -1,14 +1,22 @@
-﻿using ApiEstagioBicicletaria.Dtos;
+﻿using ApiEstagioBicicletaria.Dtos.Usuario;
+using ApiEstagioBicicletaria.Dtos.UsuarioDtos;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces
 {
     public interface IUsuarioService
     {
-        //criar users por enquanto direto no banco ou aplicação
-        //depois no lugar de bool retornar jwt
-        //se não lançar erro esta certo, ou retornar um bool
-        //ou retornar um bool para dizer se esta válido explicitamente?
-        string Login(UsuarioDto dto);
+        // o usuario inicial sempre será criado pelo sistema
+        List<UsuarioOutputDto> BuscarTodos();
+
+        UsuarioOutputDto BuscarPorId(Guid id);
+
+        UsuarioOutputDto Cadastrar(UsuarioInputDto dto);
+
+        UsuarioOutputDto Atualizar(Guid id, UsuarioInputDto dto);
+
+        void Desativar(Guid id);
+
+        string Login(UsuarioLoginDto dto);
     }
 }

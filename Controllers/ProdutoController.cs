@@ -3,6 +3,7 @@ using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -17,6 +18,7 @@ namespace ApiEstagioBicicletaria.Controllers
             this._produtoService = produtoService;
         }
         [HttpGet]
+        [Authorize]
         public ActionResult<List<ProdutoDtoOutPut>> BuscarProdutos()
         {
             
@@ -37,17 +39,12 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ProdutoDtoOutPut> BuscarProdutoPorId([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
+        [Authorize]
+        public ActionResult<ProdutoDtoOutPut> BuscarProdutoPorId([FromRoute] Guid id)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
-                    return _produtoService.BuscarProdutoPorId(id);
+                return _produtoService.BuscarProdutoPorId(id);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -59,16 +56,11 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpGet("busca-por-codigo-de-barra/{codigoDeBarra}")]
-        public ActionResult<ProdutoDtoOutPut> BuscarProdutoPorCodigoDeBarra([FromRoute, Required(ErrorMessage = "O Código de Barras é obrigatório")] string codigoDeBarra)
+        [Authorize]
+        public ActionResult<ProdutoDtoOutPut> BuscarProdutoPorCodigoDeBarra([FromRoute] string codigoDeBarra)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
                 return _produtoService.BuscarProdutoPorCodigoDeBarra(codigoDeBarra);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -81,6 +73,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpPost]
+        [Authorize]
         public ActionResult<Produto> CadastrarProduto([FromBody] ProdutoInputDto dto)
         {
             try
@@ -104,6 +97,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize]
         public ActionResult<Produto> AtualizarProduto([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ProdutoInputDto dto)
         {
             try
@@ -126,16 +120,11 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize]
         public ActionResult DeletarProduto([FromRoute] Guid id)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
                 _produtoService.DeletarProdutoPorId(id);
                 return Ok("Operação realizada com sucesso ");
             }
@@ -149,16 +138,11 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpGet("buscar-produtos-por-nome/{nome}")]
-        public ActionResult<List<ProdutoDtoOutPut>> BuscarProdutosPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
+        [Authorize]
+        public ActionResult<List<ProdutoDtoOutPut>> BuscarProdutosPorNome([FromRoute] string nome)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
                 return _produtoService.BuscarProdutosPorNome(nome);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -172,6 +156,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPost("relatorio-produtos-com-maior-faturamento-por-periodo")]
+        [Authorize]
         public ActionResult<byte[]> GerarRelatorioDeProdutosComMaiorFaturamento(DatasParaGeracaoDeRelatorioDto dto)
         {
             try
@@ -192,6 +177,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("relatorio-de-produtos-em-falta/{quantidadeParaBuscarDosProdutosEmFalta}")]
+        [Authorize]
         public ActionResult<byte[]> GerarRelatorioDeProdutosEmFalta(int quantidadeParaBuscarDosProdutosEmFalta)
         {
             try

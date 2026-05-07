@@ -4,6 +4,7 @@ using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Utilities;
 
@@ -21,6 +22,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<List<VendaTransacaoOutputDto>> BuscarTodasVendas()
         {
             try
@@ -38,16 +40,12 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<VendaTransacaoOutputDto> BuscarVendaPorId([FromRoute]string id)
+        [Authorize]
+        public ActionResult<VendaTransacaoOutputDto> BuscarVendaPorId([FromRoute]Guid id)
         {
             try
             {
-                Guid idConvertido;
-                if (!Guid.TryParse(id, out idConvertido))
-                {
-                    return BadRequest("id no formato inválido de GUID");
-                }
-                return Ok(_vendaService.BuscarVendaPorId(idConvertido));
+                return Ok(_vendaService.BuscarVendaPorId(id));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -60,6 +58,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult<VendaTransacaoOutputDto> CadastrarVenda([FromBody] VendaTransacaoInputDto dto)
         {
             try
@@ -83,22 +82,18 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<VendaTransacaoOutputDto> AtualizarVenda([FromRoute]string id, [FromBody] VendaTransacaoInputDto dto)
+        [Authorize]
+        public ActionResult<VendaTransacaoOutputDto> AtualizarVenda([FromRoute]Guid id, [FromBody] VendaTransacaoInputDto dto)
         {
             try
             {
-                Guid idConvertido;
-                if (!Guid.TryParse(id, out idConvertido))
-                {
-                    return BadRequest("id no formato inválido de GUID");
-                }
                 if (!ModelState.IsValid)
                 {
                     var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
 
                     return BadRequest(mensagensDeErro);
                 }
-                return Ok(_vendaService.AtualizarVenda(idConvertido, dto));
+                return Ok(_vendaService.AtualizarVenda(id, dto));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -111,16 +106,12 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeletarVendaPorId([FromRoute] string id)
+        [Authorize]
+        public ActionResult DeletarVendaPorId([FromRoute] Guid id)
         {
             try
             {
-                Guid idConvertido;
-                if (!Guid.TryParse(id, out idConvertido))
-                {
-                    return BadRequest("id no formato inválido de GUID");
-                }
-                _vendaService.DeletarVendaPorId(idConvertido);
+                _vendaService.DeletarVendaPorId(id);
                 return Ok("Operação Realizada com Sucesso !!");
             }
             catch(ExcecaoDeRegraDeNegocio ex)
@@ -134,18 +125,20 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPatch("{idTransacao}")]
+        [Authorize]
         //so retorno a transação ou a venda também??,  receber o id da transação ou da venda???
         //fica dificl pro front enviar o id da transação???
-        public ActionResult<TransacaoOutputDto> AtualizarQuantidadeDeParcelasPagasEmUmTransacao([FromRoute]string idTransacao, [FromBody]AtualizarQuantidadeDeParcelasPagasInputDto dto)
+        public ActionResult<TransacaoOutputDto> AtualizarQuantidadeDeParcelasPagasEmUmTransacao([FromRoute]Guid idTransacao, [FromBody]AtualizarQuantidadeDeParcelasPagasInputDto dto)
         {
             try
             {
-                Guid idTransacaoConvertido;
-                if (!Guid.TryParse(idTransacao, out idTransacaoConvertido))
+                if (!ModelState.IsValid)
                 {
-                    return BadRequest("id no formato inválido de GUID");
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
                 }
-                TransacaoOutputDto transacaoASerRetornada= _vendaService.AtualizarQuantidadeDeParcelasPagasEmUmaTransacao(idTransacaoConvertido,dto.QuantidadeDeParcelasASerAtualizadaParaPaga);
+                TransacaoOutputDto transacaoASerRetornada= _vendaService.AtualizarQuantidadeDeParcelasPagasEmUmaTransacao(idTransacao,dto.QuantidadeDeParcelasASerAtualizadaParaPaga);
                 return Ok(transacaoASerRetornada);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -159,10 +152,17 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPost("relatorio-de-vendas-por-periodo")]
-        public ActionResult<byte[]> GerarRelatoriosDeVendaPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        [Authorize]
+        public ActionResult<byte[]> GerarRelatoriosDeVendaPorPeriodo([FromBody]DatasParaGeracaoDeRelatorioDto dto)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 byte[] bytesPdf= _vendaService.GerarRelatorioDeVendasPorPeriodo(dto);
                 return File(bytesPdf, "application/pdf", "relatorioDeVendasPorPeriodo.pdf");
             }
@@ -177,10 +177,17 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpGet("buscar-vendas-por-documento-indentificador-do-cliente")]
-        public ActionResult<List<VendaTransacaoOutputDto>> BuscarVendasPorCpfOuCnpj(DocumentoClienteInputDto dto)
+        [Authorize]
+        public ActionResult<List<VendaTransacaoOutputDto>> BuscarVendasPorCpfOuCnpj([FromBody] DocumentoClienteInputDto dto)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 return _vendaService.BuscarVendasPorCpfOuCnpj(dto);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -194,7 +201,8 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("buscar-venda-por-codigo-venda/{codigoVenda}")]
-        public ActionResult<VendaTransacaoOutputDto> BuscarVendaPorCodigoVenda(string codigoVenda)
+        [Authorize]
+        public ActionResult<VendaTransacaoOutputDto> BuscarVendaPorCodigoVenda([FromRoute]string codigoVenda)
         {
             try
             {

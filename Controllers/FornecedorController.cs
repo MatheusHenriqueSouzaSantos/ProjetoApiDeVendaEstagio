@@ -6,6 +6,7 @@ using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -24,6 +25,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<List<Fornecedor>> BuscarTodos() {
             try
             {
@@ -40,6 +42,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<Fornecedor> BuscarPorId([FromRoute]Guid id)
         {
             try
@@ -57,6 +60,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("buscar-por-cnpj/{cnpj}")]
+        [Authorize]
         public ActionResult<Fornecedor> BuscarPorCnpj([FromRoute] string cnpj)
         {
             try
@@ -75,6 +79,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult<Fornecedor> Cadastrar(FornecedorCreateDto dto)
         {
             try
@@ -100,6 +105,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
 
         [HttpPut("{id}")]
+        [Authorize]
         public ActionResult<Fornecedor> Atualizar([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] FornecedorUpdateDto dto)
         {
             try
@@ -122,16 +128,11 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize]
         public ActionResult Desativar([FromRoute] Guid id)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
                 _service.Desativar(id);
                 return Ok("Operação realizada com sucesso ");
             }

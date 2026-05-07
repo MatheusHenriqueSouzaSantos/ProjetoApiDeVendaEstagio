@@ -5,6 +5,7 @@ using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -19,6 +20,7 @@ namespace ApiEstagioBicicletaria.Controllers
             this._servicoService = servicoService;
         }
         [HttpGet]
+        [Authorize]
         public ActionResult<List<ServicoDtoOutPut>> BuscarServicos()
         {
             //if (!ModelState.IsValid)
@@ -39,16 +41,11 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ServicoDtoOutPut> BuscarServicoPorId([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
+        [Authorize]
+        public ActionResult<ServicoDtoOutPut> BuscarServicoPorId([FromRoute] Guid id)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
                 return _servicoService.BuscarServicoPorId(id);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -62,16 +59,11 @@ namespace ApiEstagioBicicletaria.Controllers
         }
         //mudar para codigo do serviço em tudo ou deixa como esta?
         [HttpGet("busca-por-codigo-do-servico/{codigoDoServico}")]
-        public ActionResult<ServicoDtoOutPut> BuscarServicoPorCodigoDoServico([FromRoute, Required(ErrorMessage = "O Código do Serviço é obrigatório")] string codigoDoServico)
+        [Authorize]
+        public ActionResult<ServicoDtoOutPut> BuscarServicoPorCodigoDoServico([FromRoute] string codigoDoServico)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
                 return _servicoService.BuscarServicoPorCodigoDoServico(codigoDoServico);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -84,6 +76,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpPost]
+        [Authorize]
         public ActionResult<Servico> CadastrarServico([FromBody] ServicoDto dto)
         {
             try
@@ -108,7 +101,8 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpPut("{id}")]
-        public ActionResult<Servico> AtualizarServico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ServicoDto dto)
+        [Authorize]
+        public ActionResult<Servico> AtualizarServico([FromRoute] Guid id, [FromBody] ServicoDto dto)
         {
             try
             {
@@ -130,16 +124,11 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public ActionResult DeletarServico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
+        [Authorize]
+        public ActionResult DeletarServico([FromRoute] Guid id)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
                 _servicoService.DeletarServicoPorId(id);
                 return Ok("Operação realizada com sucesso ");
             }
@@ -154,16 +143,11 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("buscar-servicos-por-nome/{nome}")]
-        public ActionResult<List<ServicoDtoOutPut>> BuscarServicosPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
+        [Authorize]
+        public ActionResult<List<ServicoDtoOutPut>> BuscarServicosPorNome([FromRoute] string nome)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
                 return _servicoService.BuscarServicosPorNome(nome);
             }
             catch (ExcecaoDeRegraDeNegocio ex)

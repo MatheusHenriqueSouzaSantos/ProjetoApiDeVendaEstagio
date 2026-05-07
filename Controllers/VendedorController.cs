@@ -4,6 +4,7 @@ using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiEstagioBicicletaria.Controllers
@@ -20,6 +21,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<List<Vendedor>> BuscarTodosVendedores()
         {
             try
@@ -37,7 +39,8 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<List<Vendedor>> BuscarVendedorPorId(Guid id)
+        [Authorize]
+        public ActionResult<List<Vendedor>> BuscarVendedorPorId([FromRoute]Guid id)
         {
             try
             {
@@ -54,7 +57,8 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("buscar-por-cpf{cpf}")]
-        public ActionResult<List<Vendedor>> BuscarVendedorPorCpf(string cpf)
+        [Authorize]
+        public ActionResult<List<Vendedor>> BuscarVendedorPorCpf([FromRoute]string cpf)
         {
             try
             {
@@ -72,7 +76,8 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("buscar-por-nome{nome}")]
-        public ActionResult<List<Vendedor>> BuscarVendedorPorNome(string nome)
+        [Authorize] 
+        public ActionResult<List<Vendedor>> BuscarVendedorPorNome([FromRoute]string nome)
         {
             try
             {
@@ -90,6 +95,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult<Vendedor> CadastrarVendedor([FromBody] VendedorCreateDto dto)
         {
             try
@@ -114,7 +120,8 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Vendedor> AtualizarVendedor(Guid id,[FromBody] VendedorUpdatedDto dto)
+        [Authorize]
+        public ActionResult<Vendedor> AtualizarVendedor([FromRoute]Guid id,[FromBody] VendedorUpdatedDto dto)
         {
             try
             {
@@ -138,17 +145,11 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<Vendedor> Desativar(Guid id)
+        [Authorize]
+        public ActionResult<Vendedor> Desativar([FromRoute]Guid id)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
-
                 _service.DesativarVendedor(id);
 
                 return NoContent();

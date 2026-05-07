@@ -3,9 +3,10 @@ using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-
+//revisar e tirar as funções de adicionar e remover quantidade em estoque, pois esse é o objetivo de entrada estoque
 namespace ApiEstagioBicicletaria.Controllers
 {
     [ApiController]
@@ -20,7 +21,8 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<EstoqueSimplificadoOutputDto> BuscarPorId(Guid id)
+        [Authorize]
+        public ActionResult<EstoqueSimplificadoOutputDto> BuscarPorId([FromRoute]Guid id)
         {
             try
             {
@@ -37,7 +39,8 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPatch("{id}/adicionar-quantidade-em-estoque/{quantidade}")]
-        public ActionResult<Produto> AdicionarQuantidadeEmEstoqueDeProdutoPorId(Guid id, int quantidade)
+        [Authorize]
+        public ActionResult<Produto> AdicionarQuantidadeEmEstoqueDeProdutoPorId([FromRoute]Guid id,[FromRoute] int quantidade)
         {
             try
             {
@@ -54,7 +57,8 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPatch("{id}/abater-quantidade-em-estoque/{quantidade}")]
-        public ActionResult<Produto> AbaterQuantidadeEmEstoqueDeProdutoPorId(Guid id, int quantidade)
+        [Authorize]
+        public ActionResult<Produto> AbaterQuantidadeEmEstoqueDeProdutoPorId([FromRoute] Guid id,[FromRoute] int quantidade)
         {
             try
             {

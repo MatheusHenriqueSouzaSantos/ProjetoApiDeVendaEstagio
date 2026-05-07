@@ -44,16 +44,10 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        public ActionResult<ClienteDtoOutPut> BuscarClientePorId([FromRoute,Required(ErrorMessage ="O id é obrigatório")] Guid id )
+        public ActionResult<ClienteDtoOutPut> BuscarClientePorId([FromRoute] Guid id )
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
                 return _clienteService.BuscarClientePorId(id);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -178,17 +172,11 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpDelete("{id}")]
         [Authorize]
-        public ActionResult DeletarClientePorId([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
+        public ActionResult DeletarClientePorId([FromRoute] Guid id)
         {
             //revisar esssa lógica
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
                 _clienteService.DeletarCLientePorId(id);
                 return Ok("Operação realizada com sucesso ");
             }
@@ -207,16 +195,10 @@ namespace ApiEstagioBicicletaria.Controllers
         [HttpGet("buscar-clientes-por-nome/{nome}")]
         [Authorize]
         //pedir para mandar se quer que venha fisicos ou júridicos
-        public ActionResult<List<ClienteDtoOutPut>> BuscarClientesPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
+        public ActionResult<List<ClienteDtoOutPut>> BuscarClientesPorNome([FromRoute] string nome)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-
-                    return BadRequest(mensagensDeErro);
-                }
                 return _clienteService.BuscarClientesPorNome(nome);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -235,6 +217,12 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
                 return _clienteService.BuscarClientePorDocumentoIndentificador(dto);
             }
             catch(ExcecaoDeRegraDeNegocio ex)

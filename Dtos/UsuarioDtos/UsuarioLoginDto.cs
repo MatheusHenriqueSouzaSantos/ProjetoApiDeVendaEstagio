@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ApiEstagioBicicletaria.Dtos
+namespace ApiEstagioBicicletaria.Dtos.Usuario
 {
-    public class UsuarioDto
+    public class UsuarioLoginDto
     {
         [Required(ErrorMessage ="O email não pode ser vazio")]
         public string Email { get; set; }
@@ -10,12 +10,12 @@ namespace ApiEstagioBicicletaria.Dtos
         [Required(ErrorMessage = "a enha não pode ser vazio")]
         public string Senha { get; set; }
 
-        protected UsuarioDto() 
+        protected UsuarioLoginDto() 
         {
             
         }
 
-        public UsuarioDto(string email, string senha)
+        public UsuarioLoginDto(string email, string senha)
         {
             Email = email;
             Senha = senha;
