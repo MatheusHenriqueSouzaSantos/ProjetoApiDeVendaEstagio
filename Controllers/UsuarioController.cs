@@ -27,7 +27,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             try
             {
-                bool resultadoValidacao=_usuarioService.ValidarUsuario(dto);
+                bool resultadoValidacao=_usuarioService.Login(dto);
                 if (!resultadoValidacao)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400,"Email ou senha inválida");

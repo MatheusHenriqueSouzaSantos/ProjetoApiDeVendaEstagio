@@ -9,6 +9,6 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         //depois no lugar de bool retornar jwt
         //se não lançar erro esta certo, ou retornar um bool
         //ou retornar um bool para dizer se esta válido explicitamente?
-        bool ValidarUsuario(UsuarioDto dto);
+        string Login(UsuarioDto dto);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiEstagioBicicletaria.Controllers
@@ -17,6 +18,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<List<EntradaEstoqueOutputDto>> BuscarTodos()
         {
             try
@@ -34,6 +36,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<EntradaEstoqueOutputDto> BuscarPorId([FromRoute]Guid id)
         {
             try
@@ -51,6 +54,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult<EntradaEstoqueOutputDto> Cadastrar([FromBody] EntradaEstoqueInputDto dto)
         {
             try
@@ -69,6 +73,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public ActionResult InativarEntradaEstoque([FromRoute] Guid id)
         {
             try

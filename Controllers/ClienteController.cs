@@ -5,6 +5,7 @@ using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -22,6 +23,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<List<ClienteDtoOutPut>> BuscarClientes()
         {
             try
@@ -41,6 +43,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<ClienteDtoOutPut> BuscarClientePorId([FromRoute,Required(ErrorMessage ="O id é obrigatório")] Guid id )
         {
             try
@@ -66,6 +69,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPost("fisico")]
+        [Authorize]
         public ActionResult<ClienteFisico> CadastrarClienteFisico([FromBody]ClienteFisicoDto dto)
         {
             try
@@ -93,6 +97,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPost("juridico")]
+        [Authorize]
         public ActionResult<ClienteJuridico> CadastrarClienteJuridico([FromBody]ClienteJuridicoDto dto)
         {
             try
@@ -119,6 +124,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPut("fisico/{id}")]
+        [Authorize]
         public ActionResult<ClienteFisico> AtualizarClienteFisico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody]ClienteFisicoDto dto)
         {
             try
@@ -145,6 +151,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPut("juridico/{id}")]
+        [Authorize]
         public ActionResult<ClienteJuridico> AtualizarClienteJuridico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ClienteJuridicoDto dto)
         {
             try
@@ -170,6 +177,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public ActionResult DeletarClientePorId([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id)
         {
             //revisar esssa lógica
@@ -197,6 +205,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("buscar-clientes-por-nome/{nome}")]
+        [Authorize]
         //pedir para mandar se quer que venha fisicos ou júridicos
         public ActionResult<List<ClienteDtoOutPut>> BuscarClientesPorNome([FromRoute, Required(ErrorMessage = "O Nome é obrigatório")] string nome)
         {
@@ -221,6 +230,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPost("buscar-cliente-por-documento-indentificador")]
+        [Authorize]
         public ActionResult<ClienteDtoOutPut> BuscarClientePorDocumentoIndentificador([FromBody] DocumentoClienteInputDto dto)
         {
             try
