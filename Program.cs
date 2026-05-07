@@ -2,6 +2,7 @@ using ApiEstagioBicicletaria.Dtos.ClienteDtos;
 using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Repository.Repositorios;
+using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Utils;
@@ -24,6 +25,7 @@ namespace ApiEstagioBicicletaria
             options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddSwaggerGen();
             builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddScoped<ServicoJwt>();
             builder.Services.AddScoped(typeof(GeradorCodigoIndentificadorMovimentacao<>));
             builder.Services.AddScoped<IClienteService, ClienteService>();
             builder.Services.AddScoped<IProdutoService, ProdutoService>();
@@ -39,6 +41,7 @@ namespace ApiEstagioBicicletaria
             builder.Services.AddScoped<FornecedorRepositorio>();
             builder.Services.AddScoped<ProdutoRepositorio>();
             builder.Services.AddScoped<EstoqueRepositorio>();
+
             builder.Services.AddCors(options =>
             {
                 //mudar quando rodar o sistema
