@@ -145,5 +145,23 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
+
+        [HttpGet("buscar-por-nome/{nome}")]
+        [Authorize]
+        public ActionResult<Fornecedor> BuscarFornecedoresPorNome([FromRoute] string nome)
+        {
+            try
+            {
+                return Ok(_service.BuscarFornecedoresPorNome(nome));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
     }
 }

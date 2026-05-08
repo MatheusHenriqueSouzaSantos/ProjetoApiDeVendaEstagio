@@ -2,6 +2,7 @@
 using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
+using ApiEstagioBicicletaria.Repository.Repositorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Validacao;
 
@@ -12,9 +13,12 @@ namespace ApiEstagioBicicletaria.Services
 
         private ContextoDb _contexto;
 
-        public FornecedorService(ContextoDb contexto)
+        private FornecedorRepositorio _fornecedorRepositorio;
+
+        public FornecedorService(ContextoDb contexto, FornecedorRepositorio fornecedorRepositorio)
         {
             _contexto = contexto;
+            _fornecedorRepositorio = fornecedorRepositorio;
         }
 
         public List<Fornecedor> BuscarTodos()
@@ -94,6 +98,11 @@ namespace ApiEstagioBicicletaria.Services
             _contexto.Fornecedores.Update(fornecedorVindoDoBanco);
             _contexto.SaveChanges();
 
+        }
+
+        public List<Fornecedor> BuscarFornecedoresPorNome(string nome)
+        {
+            return _fornecedorRepositorio.BuscarFornecedoresPorNome(nome);
         }
     }
 }

@@ -16,4 +16,9 @@ public class FornecedorRepositorio
     {
         return _contexto.Fornecedores.FirstOrDefault(v=>v.Id==id && v.Ativo);
     }
+
+    public List<Fornecedor> BuscarFornecedoresPorNome(string nome)
+    {
+        return _contexto.Fornecedores.Where(f=>f.RazaoSocial.Contains(nome)).Take(10).ToList();
+    }
 }
