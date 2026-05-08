@@ -837,7 +837,7 @@ namespace ApiEstagioBicicletaria.Services
 
 
                 VendaOutputDto vendaOutput = new VendaOutputDto(vendaIterada.Id, vendaIterada.CodigoVenda, vendaIterada.DataCriacao, vendaIterada.DescontoTotal, vendaIterada.ValorTotalSemDesconto, vendaIterada.ValorTotalComDesconto,
-                    vendaIterada.Cliente, itensDaVendaNoFormatoOutput, servicosVendaFormatoOutput);
+                    vendaIterada.Cliente, itensDaVendaNoFormatoOutput, servicosVendaFormatoOutput,vendaIterada.Vendedor);
 
                 Transacao? transacaoDaVenda = _contexto.Transacoes.FirstOrDefault(t => t.IdVenda == vendaIterada.Id && vendaIterada.Ativo);
 
@@ -898,7 +898,7 @@ namespace ApiEstagioBicicletaria.Services
             decimal valorPago = Math.Round((_contexto.Parcelas.Where(p => p.IdTransacao==transacaoDaVenda.Id && p.Pago).Sum(p => p.ValorParcela)), 2, MidpointRounding.AwayFromZero);
 
             VendaOutputDto vendaFormatoDto = new VendaOutputDto(vendaVindaDoBanco.Id, vendaVindaDoBanco.CodigoVenda, vendaVindaDoBanco.DataCriacao, vendaVindaDoBanco.DescontoTotal, vendaVindaDoBanco.ValorTotalSemDesconto,
-                vendaVindaDoBanco.ValorTotalComDesconto, vendaVindaDoBanco.Cliente, itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput);
+                vendaVindaDoBanco.ValorTotalComDesconto, vendaVindaDoBanco.Cliente, itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput,vendaVindaDoBanco.Vendedor);
             TransacaoOutputDto transacaoFormatoOutput = new TransacaoOutputDto(transacaoDaVenda.Id, transacaoDaVenda.DataCriacao, transacaoDaVenda.TipoPagamento, transacaoDaVenda.MeioPagamento,
                 transacaoDaVenda.TransacaoEmCurso, transacaoDaVenda.Pago, QuantidadeDeParcelasNaoPagasDaVenda, QuantidadeDeParcelasPagasVenda, valorPago);
 
