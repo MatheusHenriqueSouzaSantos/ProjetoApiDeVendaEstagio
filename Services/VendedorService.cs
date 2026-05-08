@@ -1,9 +1,11 @@
-﻿using ApiEstagioBicicletaria.Dtos.VendedorDtos;
+﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Dtos.VendedorDtos;
 using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Validacao;
+using System.Globalization;
 
 namespace ApiEstagioBicicletaria.Services
 {
@@ -107,6 +109,40 @@ namespace ApiEstagioBicicletaria.Services
             vendedor.Ativo = false;
             _contexto.Vendedores.Update(vendedor);
             _contexto.SaveChanges();
+        }
+
+        public byte[] GerarRelatorioDeVendedoresQueMaisRealizaramVendasPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        {
+            DateTime dataDeInicioDoPeriodoConvertidaDateTime;
+
+            DateTime dataDeFinalDoPeriodoConvertidaDateTime;
+
+            bool sucessoAoFazerConversaoDataInicio = DateTime.TryParseExact(
+                    dto.DataDeInicioDoPeriodo,
+                    "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out dataDeInicioDoPeriodoConvertidaDateTime
+            );
+            if (!sucessoAoFazerConversaoDataInicio)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Data de início está no formato inválido");
+            }
+
+            bool sucessoAoFazerConversaoDataFinal = DateTime.TryParseExact(
+                   dto.DataFinalDoPeriodo,
+                   "yyyy-MM-dd",
+                   CultureInfo.InvariantCulture,
+                   DateTimeStyles.None,
+                   out dataDeFinalDoPeriodoConvertidaDateTime
+           );
+            if (!sucessoAoFazerConversaoDataFinal)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Data final está no formato inválido");
+            }
+
+
+
         }
     }
 }

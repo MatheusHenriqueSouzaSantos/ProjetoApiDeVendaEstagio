@@ -660,7 +660,7 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "O formato da data deve estar no padrão ISO");
             }
 
-            bool dataFimDoPeriodoNoFormatoCorreto = DateOnly.TryParseExact(dto.DataDeFimDoPeriodo,
+            bool dataFimDoPeriodoNoFormatoCorreto = DateOnly.TryParseExact(dto.DataFinalDoPeriodo,
                "yyyy-MM-dd",
                CultureInfo.InvariantCulture,
                DateTimeStyles.None,

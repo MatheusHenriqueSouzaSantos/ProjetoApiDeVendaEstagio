@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos.VendedorDtos;
+﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Dtos.VendedorDtos;
 using ApiEstagioBicicletaria.Entities;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces
@@ -18,5 +19,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         Vendedor AtualizarVendedor(Guid id,VendedorUpdatedDto dto);
 
         void DesativarVendedor(Guid id);
+
+        byte[] GerarRelatorioDeVendedoresQueMaisRealizaramVendasPorPeriodo
+            (DatasParaGeracaoDeRelatorioDto dto);
     }
 }

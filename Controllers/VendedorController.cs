@@ -1,8 +1,10 @@
-﻿using ApiEstagioBicicletaria.Dtos.VendedorDtos;
+﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Dtos.VendedorDtos;
 using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
+using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -153,6 +155,31 @@ namespace ApiEstagioBicicletaria.Controllers
                 _service.DesativarVendedor(id);
 
                 return NoContent();
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+        [Authorize]
+        [HttpGet("relatorio-de-vendedores-que-mais-realizaram-vendas-por-periodo")]
+        public ActionResult<byte[]> GerarRelatorioDeVendedoresQueMaisRealizaramVendasPorPeriodo
+            (DatasParaGeracaoDeRelatorioDto dto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
+                byte[] bytesPdf = _service.GerarRelatorioDeVendedoresQueMaisRealizaramVendasPorPeriodo(dto);
+                return File(bytesPdf, "application/pdf", "RelatorioDeVendedoresQueMaisRealizaramVendasPorPeriodo");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
