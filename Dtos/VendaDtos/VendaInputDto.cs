@@ -8,28 +8,26 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
         public Guid IdCliente { get; set; }
         [Range(0,1000000, ErrorMessage ="O valor do desconto não pode ser negativo")]
         public decimal? DescontoSobreTotalVenda { get; set; } = 0.0m;
-        [Required(ErrorMessage = "O campo itensVenda é obrigatório")]
+        [Required(ErrorMessage = "O campo itens Venda é obrigatório")]
         public List<ItemVendaInputDto> ItensVenda { get; set; }
-        [Required(ErrorMessage = "O campo servicosVenda é obrigatório")]
+        [Required(ErrorMessage = "O campo servicos Venda é obrigatório")]
         public List<ServicoVendaInputDto> ServicosVenda { get; set; }
 
-        //public TransacaoDto Transacao { get; set; }
+        [Required(ErrorMessage = "O campo Vendedor Id é obrigatório")]
+        public Guid VendedorId { get; private set; }
 
         protected VendaInputDto()
         {
 
         }
 
-        public VendaInputDto(Guid idCliente, decimal? descontoSobreTotalVenda, List<ItemVendaInputDto> itensVenda, List<ServicoVendaInputDto> servicosVenda)
+        public VendaInputDto(Guid idCliente, decimal? descontoSobreTotalVenda, List<ItemVendaInputDto> itensVenda, List<ServicoVendaInputDto> servicosVenda, Guid vendedorId)
         {
             IdCliente = idCliente;
             DescontoSobreTotalVenda = descontoSobreTotalVenda;
-            //Desconto = desconto ?? 0.0m; fazer isso no service pois se estiver vazio o asp net usa o contrutor sem parametros, se null desconsidera, se diferente considera se não usa o valor
             ItensVenda = itensVenda;
             ServicosVenda = servicosVenda;
-            //Transacao = transacaoDto;
+            VendedorId = vendedorId;
         }
-
-        
     }
 }

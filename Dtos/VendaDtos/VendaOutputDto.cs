@@ -1,33 +1,38 @@
-﻿using ApiEstagioBicicletaria.Entities.ClienteDomain;
+﻿using ApiEstagioBicicletaria.Entities;
+using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain;
 
 namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 {
     public class VendaOutputDto
     {
-        public Guid IdVenda { get; set; }
+        public Guid IdVenda { get; private set; }
 
-        public string CodigoVenda { get; set; }
+        public string CodigoVenda { get; private set; }
 
-        public DateTime DataCriacao { get; set; }
+        public DateTime DataCriacao { get; private set; }
 
-        public decimal DescontoTotalVenda { get; set; }
+        public decimal DescontoTotalVenda { get; private set; }
 
-        public decimal ValorTotalSemDesconto { get; set; }
+        public decimal ValorTotalSemDesconto { get; private set; }
 
-        public decimal ValorTotalComDesconto { get; set; }
+        public decimal ValorTotalComDesconto { get; private set; }
 
-        public Cliente Cliente { get; set; }
+        public Cliente Cliente { get; private set; }
         
-        public List<ItemVendaOutputDto> ItensVenda { get; set; }
-        public List<ServicoVendaOutputDto> ServicosVenda { get; set; }
+        public List<ItemVendaOutputDto> ItensVenda { get; private set; }
+        public List<ServicoVendaOutputDto> ServicosVenda { get; private set; }
+
+        public Vendedor Vendedor { get; private set; }
 
         protected VendaOutputDto()
         {
 
         }
 
-        public VendaOutputDto(Guid idVenda, string codigoVenda, DateTime dataCriacao, decimal descontoTotalVenda,decimal valorTotalSemDesconto, decimal valorTotalComDesconto, Cliente cliente, List<ItemVendaOutputDto> itensVenda, List<ServicoVendaOutputDto> servicosVenda)
+        public VendaOutputDto(Guid idVenda, string codigoVenda, DateTime dataCriacao, 
+            decimal descontoTotalVenda, decimal valorTotalSemDesconto, decimal valorTotalComDesconto, 
+            Cliente cliente, List<ItemVendaOutputDto> itensVenda, List<ServicoVendaOutputDto> servicosVenda, Vendedor vendedor)
         {
             IdVenda = idVenda;
             CodigoVenda = codigoVenda;
@@ -38,6 +43,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
             Cliente = cliente;
             ItensVenda = itensVenda;
             ServicosVenda = servicosVenda;
+            Vendedor = vendedor;
         }
     }
 }
