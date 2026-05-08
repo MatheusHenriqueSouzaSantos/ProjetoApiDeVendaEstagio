@@ -33,7 +33,10 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .IsRequired();
             builder.HasOne(v=>v.Vendedor)
                 .WithMany()
-                .HasForeignKey("ID_VENDEDOR")
+                .HasForeignKey(v=>v.VendedorId)
+                .IsRequired();
+            builder.Property(v=>v.VendedorId)
+                .HasColumnName("ID_VENDEDOR")
                 .IsRequired();
         }
     }

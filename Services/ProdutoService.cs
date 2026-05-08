@@ -16,7 +16,6 @@ namespace ApiEstagioBicicletaria.Services
     public class ProdutoService : IProdutoService
     {
         //implementar mexer em estoque no lugar de estoque em produto
-        //redis
         //private readonly int _numeroMaximoDePaginas = 5;
         //private readonly int _numeroDeLinhasPorPagina = 42;
         private ContextoDb _contextoDb;
@@ -172,7 +171,7 @@ namespace ApiEstagioBicicletaria.Services
             return produtosFomartoDto;
         }
 
-        public byte[] GerarRelatorioDeProdutosComMaiorFaturamentoPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        public byte[] GerarRelatorioDeProdutosComMaiorQuantidadeVendidaPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
         {
             DateTime dataDeInicioDoPeriodoConvertidaDateTime;
 
@@ -230,11 +229,11 @@ namespace ApiEstagioBicicletaria.Services
 
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var documento = new RelatorioProdutosComMaiorFaturamentoPorPeriodo(produtosMaisVendidos, dataDeInicioDoPeriodoFormatoDateOnly,dataDeFimDoPeriodoDateOnly);
+            var modeloDocumento = new RelatorioProdutosComMaiorFaturamentoPorPeriodo(produtosMaisVendidos, dataDeInicioDoPeriodoFormatoDateOnly,dataDeFimDoPeriodoDateOnly);
 
-            byte[] pdf = documento.GeneratePdf();
+            return modeloDocumento.GeneratePdf();
 
-            return pdf;
+            
         }
 
         public byte[] GerarRelatorioDeProdutosComEstoqueAbaixoOuIgualUmaQuantidade(int quantidadeParaBuscarDosProdutosEmFalta)

@@ -1,10 +1,14 @@
 ﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Dtos.VendedorDtos;
 using ApiEstagioBicicletaria.Entities;
+using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
+using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Validacao;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
 using System.Globalization;
 
 namespace ApiEstagioBicicletaria.Services
@@ -111,7 +115,7 @@ namespace ApiEstagioBicicletaria.Services
             _contexto.SaveChanges();
         }
 
-        public byte[] GerarRelatorioDeVendedoresQueMaisRealizaramVendasPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        public byte[] GerarRelatorioDeVendedoresComMaiorFaturamentoPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
         {
             DateTime dataDeInicioDoPeriodoConvertidaDateTime;
 
@@ -141,8 +145,31 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "Data final está no formato inválido");
             }
 
+            if (dataDeInicioDoPeriodoConvertidaDateTime > dataDeFinalDoPeriodoConvertidaDateTime)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A data de inícion deve ser antes ou igual da data final");
+            }
 
+            
+            List<VendedoreComMaiorFaturamentoPorPeriodo> vendedores= _contexto.Vendas
+                .Where(v => v.Ativo && v.DataCriacao >= dataDeInicioDoPeriodoConvertidaDateTime
+            && v.DataCriacao <= dataDeFinalDoPeriodoConvertidaDateTime)
+                .GroupBy(v=>new { v.VendedorId,v.Vendedor.NomeCompleto})
+                .Select(g=>new VendedoreComMaiorFaturamentoPorPeriodo(
+                        g.Key.VendedorId,
+                        g.Key.NomeCompleto,
+                        g.Count(),
+                        g.Sum(g=>g.ValorTotalComDesconto)
+                    ))
+                .OrderByDescending(v=>v.Faturamento)
+                .ToList();
+            QuestPDF.Settings.License=LicenseType.Community;
+
+            var modeloDocumento = new RelatorioDeVendedoresComMaiorFaturamentoPorPeriodo(vendedores);
+
+            return modeloDocumento.GeneratePdf();
 
         }
+
     }
 }

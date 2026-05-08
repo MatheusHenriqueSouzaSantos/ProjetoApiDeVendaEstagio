@@ -178,7 +178,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
                     return BadRequest(mensagensDeErro);
                 }
-                byte[] bytesPdf = _service.GerarRelatorioDeVendedoresQueMaisRealizaramVendasPorPeriodo(dto);
+                byte[] bytesPdf = _service.GerarRelatorioDeVendedoresComMaiorFaturamentoPorPeriodo(dto);
                 return File(bytesPdf, "application/pdf", "RelatorioDeVendedoresQueMaisRealizaramVendasPorPeriodo");
             }
             catch (ExcecaoDeRegraDeNegocio ex)

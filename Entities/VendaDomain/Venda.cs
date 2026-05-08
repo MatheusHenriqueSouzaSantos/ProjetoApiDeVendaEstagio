@@ -19,20 +19,13 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public Vendedor Vendedor { get; set; }
 
+        public Guid VendedorId {  get; set; }
+
         protected Venda()
         {
 
         }
-        //excluir esse controller depois
-        public Venda(Cliente cliente, string codigoVenda, Guid idCliente, decimal descontoTotal,decimal valorTotalSemDesconto, decimal valorTotalComDesconto)
-        {
-            CodigoVenda= codigoVenda;
-            Cliente = cliente;
-            IdCliente = idCliente;
-            DescontoTotal = descontoTotal;
-            ValorTotalSemDesconto = valorTotalSemDesconto;
-            ValorTotalComDesconto = valorTotalComDesconto;
-        }
+        //excluir esse construtor depois
 
         public Venda(Cliente cliente, string codigoVenda, Guid idCliente, decimal descontoTotal, decimal valorTotalSemDesconto, decimal valorTotalComDesconto,Vendedor vendedor)
         {
@@ -43,6 +36,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
             ValorTotalSemDesconto = valorTotalSemDesconto;
             ValorTotalComDesconto = valorTotalComDesconto;
             Vendedor = vendedor;
+            VendedorId=vendedor.Id;
         }
 
 

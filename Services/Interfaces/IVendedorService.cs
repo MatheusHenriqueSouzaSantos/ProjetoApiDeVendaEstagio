@@ -20,7 +20,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         void DesativarVendedor(Guid id);
 
-        byte[] GerarRelatorioDeVendedoresQueMaisRealizaramVendasPorPeriodo
+        byte[] GerarRelatorioDeVendedoresComMaiorFaturamentoPorPeriodo
             (DatasParaGeracaoDeRelatorioDto dto);
     }
 }
