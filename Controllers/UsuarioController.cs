@@ -123,7 +123,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpPost("/login")]
+        [HttpPost("login")]
         public ActionResult Login(UsuarioLoginDto dto)
         {
             if (!ModelState.IsValid)
