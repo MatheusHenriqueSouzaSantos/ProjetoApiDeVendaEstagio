@@ -133,12 +133,12 @@ namespace ApiEstagioBicicletaria
 
             var app = builder.Build();
 
-            
+            app.UseHttpsRedirection();
+            app.UseCors("PermitirTudo");
+
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseCors("PermitirTudo");
-            app.UseHttpsRedirection();
+  
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseAuthorization();
