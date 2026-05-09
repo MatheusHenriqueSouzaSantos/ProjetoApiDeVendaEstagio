@@ -23,7 +23,6 @@ namespace ApiEstagioBicicletaria
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            Console.WriteLine("Passou no program");
             builder.Services.AddDbContext<ContextoDb>(options =>
             options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddSwaggerGen();
@@ -157,8 +156,6 @@ namespace ApiEstagioBicicletaria
 
                     contexto.Usuarios.Add(usuario);
                     contexto.SaveChanges();
-
-                    Console.WriteLine("Usuário inicial criado.");
                 }
             }
 
