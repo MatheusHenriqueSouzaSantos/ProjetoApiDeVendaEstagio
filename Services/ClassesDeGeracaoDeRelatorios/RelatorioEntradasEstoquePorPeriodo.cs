@@ -1,4 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Entities.EntradaEstoque;
 using QuestPDF.Infrastructure;
 
 namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
@@ -6,9 +7,9 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
     public class RelatorioEntradasEstoquePorPeriodo : IDocument
     {
 
-        private List<EntradaEsoqueComSeusItensDto> entradas;
+        private List<EntradaEstoque> entradas;
 
-        public RelatorioEntradasEstoquePorPeriodo(List<EntradaEsoqueComSeusItensDto> entradas)
+        public RelatorioEntradasEstoquePorPeriodo(List<EntradaEstoque> entradas)
         {
             this.entradas = entradas;
         }

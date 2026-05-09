@@ -13,7 +13,7 @@ public class ItemEntradaEstoqueMapeamento : BaseMapeamento<ItemEntradaEstoque>
         builder.ToTable("ITEM_ENTRADA_ESTOQUE");
 
         builder.HasOne(i=>i.EntradaEstoque)
-            .WithMany()
+            .WithMany(e=>e.Itens)
             .HasForeignKey(i=>i.IdEntradaEstoque)
             .IsRequired();
 

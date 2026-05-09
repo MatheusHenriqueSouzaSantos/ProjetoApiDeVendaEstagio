@@ -10,6 +10,8 @@
 
         public StatusEntradaEstoque Status {get; set;}=StatusEntradaEstoque.Criada;
 
+        public List<ItemEntradaEstoque> Itens { get; set;}
+
         protected EntradaEstoque()
         {
 

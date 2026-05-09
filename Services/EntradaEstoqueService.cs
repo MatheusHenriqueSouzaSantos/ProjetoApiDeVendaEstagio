@@ -9,6 +9,7 @@ using ApiEstagioBicicletaria.Repository.Repositorios;
 using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Utils;
+using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using System.Globalization;
@@ -202,23 +203,28 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "A data de inícion deve ser antes ou igual da data final");
             }
 
-            List<EntradaEsoqueComSeusItensDto> entradasEstoquesComSeusItens = new();
+            //List<EntradaEsoqueComSeusItensDto> entradasEstoquesComSeusItens = new();
 
-            List<EntradaEstoque> entradas=_contexto.EntradasEstoque
-                .Where(e=>e.Ativo && e.DataCriacao>=dataDeInicioDoPeriodoConvertidaDateTime 
-                && e.DataCriacao<=dataDeFinalDoPeriodoConvertidaDateTime).ToList();
+            //List<EntradaEstoque> entradas=_contexto.EntradasEstoque
+            //    .Where(e=>e.Ativo && e.DataCriacao>=dataDeInicioDoPeriodoConvertidaDateTime 
+            //    && e.DataCriacao<=dataDeFinalDoPeriodoConvertidaDateTime).ToList();
 
-            foreach(EntradaEstoque entrada in entradas) 
-            {
-                List<ItemEntradaEstoque> itensDeEntradaEstoqueIterada = _contexto.ItensEntradaEstoque
-                    .Where(i => i.Ativo && i.IdEntradaEstoque == entrada.Id).ToList();
+            //foreach(EntradaEstoque entrada in entradas) 
+            //{
+            //    List<ItemEntradaEstoque> itensDeEntradaEstoqueIterada = _contexto.ItensEntradaEstoque
+            //        .Where(i => i.Ativo && i.IdEntradaEstoque == entrada.Id).ToList();
 
-                entradasEstoquesComSeusItens
-                    .Add(new EntradaEsoqueComSeusItensDto(entrada, itensDeEntradaEstoqueIterada));
-            }
+            //    entradasEstoquesComSeusItens
+            //        .Add(new EntradaEsoqueComSeusItensDto(entrada, itensDeEntradaEstoqueIterada));
+            //}
 
-            entradasEstoquesComSeusItens=entradasEstoquesComSeusItens
-                .OrderBy(e=>e.EntradaEstoque.DataCriacao).ToList();
+            //entradasEstoquesComSeusItens=entradasEstoquesComSeusItens
+            //    .OrderBy(e=>e.EntradaEstoque.DataCriacao).ToList();
+
+            List<EntradaEstoque> entradasEstoquesComSeusItens=
+                _contexto.EntradasEstoque.Where(e=>e.Ativo && e.DataCriacao>=dataDeInicioDoPeriodoConvertidaDateTime 
+                && e.DataCriacao<=dataDeFinalDoPeriodoConvertidaDateTime).Include(e=>e.Itens.Where(i=>i.Ativo))
+                .OrderBy(e=>e.DataCriacao).ToList();
 
             QuestPDF.Settings.License = LicenseType.Community;
 
