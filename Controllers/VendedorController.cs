@@ -58,7 +58,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpGet("buscar-por-cpf{cpf}")]
+        [HttpGet("buscar-por-cpf/{cpf}")]
         [Authorize]
         public ActionResult<List<Vendedor>> BuscarVendedorPorCpf([FromRoute]string cpf)
         {
@@ -77,7 +77,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         }
 
-        [HttpGet("buscar-por-nome{nome}")]
+        [HttpGet("buscar-por-nome/{nome}")]
         [Authorize] 
         public ActionResult<List<Vendedor>> BuscarVendedorPorNome([FromRoute]string nome)
         {
