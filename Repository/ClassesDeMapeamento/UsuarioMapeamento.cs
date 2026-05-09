@@ -21,7 +21,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao
                 .IsRequired();
             builder.Property(u=>u.Senha)
                 .HasColumnName("SENHA")
-                .HasMaxLength(20)
+                .HasMaxLength(300)
                 .IsRequired();
         }
     }

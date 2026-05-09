@@ -86,16 +86,16 @@ namespace ApiEstagioBicicletaria.Services
         public string Login(UsuarioLoginDto dto)
         {
             Usuario? usuarioVindoDoBanco = _repositorio.BuscarPorEmail(dto.Email);
-
             if(usuarioVindoDoBanco==null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"usuário ou senha inválida");
             }
-            if (_senhaService.ValidarSenha(usuarioVindoDoBanco.Senha,dto.Senha))
+            if (!_senhaService.ValidarSenha(usuarioVindoDoBanco.Senha,dto.Senha))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "usuário ou senha inválida");
             }
-            return _servicoJwt.GerarJWT(usuarioVindoDoBanco);
+            var jwt= _servicoJwt.GerarJWT(usuarioVindoDoBanco);
+            return jwt;
         }
 
         private UsuarioOutputDto EntidadeParaDto(Usuario usuario)

@@ -134,7 +134,10 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             try
             {
+                Console.WriteLine("email: "+ dto.Email);
+                Console.WriteLine("senha: "+ dto.Senha);
                 string tokenJWT=_usuarioService.Login(dto);
+                Console.WriteLine(tokenJWT);
                 return Ok(new { TokenJWT = tokenJWT });
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -143,6 +146,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
+                //return StatusCode(500, ex.Message);
                 return StatusCode(500, "Erro Inesperado");
             }
         }

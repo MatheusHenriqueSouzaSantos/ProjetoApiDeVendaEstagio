@@ -1,5 +1,6 @@
 using ApiEstagioBicicletaria.Dtos.ClienteDtos;
 using ApiEstagioBicicletaria.Entities.ClienteDomain;
+using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Repository.Repositorios;
 using ApiEstagioBicicletaria.Seguranca;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -21,7 +23,7 @@ namespace ApiEstagioBicicletaria
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            Console.WriteLine("Passou no program");
             builder.Services.AddDbContext<ContextoDb>(options =>
             options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddSwaggerGen();
@@ -44,7 +46,6 @@ namespace ApiEstagioBicicletaria
             builder.Services.AddScoped<EstoqueRepositorio>();
             builder.Services.AddScoped<UsuarioRepositorio>();
             builder.Services.AddScoped<SenhaService>();
-            builder.Services.AddScoped<PasswordHasher<object>>();
             builder.Services.AddScoped<VendedorRepositorio>();
 
             builder.Services.AddCors(options =>
@@ -102,8 +103,10 @@ namespace ApiEstagioBicicletaria
                         }
                     };
                 });
+
             
             var jwtKey = builder.Configuration["JWT_KEY"];
+        
 
             var bytesJwtKey=Encoding.UTF8.GetBytes(jwtKey);
 
@@ -131,7 +134,7 @@ namespace ApiEstagioBicicletaria
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -139,9 +142,26 @@ namespace ApiEstagioBicicletaria
             app.UseHttpsRedirection();
             app.UseSwagger();
             app.UseSwaggerUI();
-            //app.UseAuthorization();
+            app.UseAuthorization();
 
             app.MapControllers();
+
+            using(var scope = app.Services.CreateScope())
+            {
+                var contexto = scope.ServiceProvider.GetRequiredService<ContextoDb>();
+                var senhaService = scope.ServiceProvider.GetRequiredService<SenhaService>();
+
+                if (!contexto.Usuarios.Any())
+                {
+                    Usuario usuario = new Usuario("teste","teste@gmail.com",senhaService.GerarHashDaSenha("teste"));
+
+                    contexto.Usuarios.Add(usuario);
+                    contexto.SaveChanges();
+
+                    Console.WriteLine("Usuário inicial criado.");
+                }
+            }
+
 
             app.Run();
           

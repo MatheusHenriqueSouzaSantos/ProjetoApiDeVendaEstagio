@@ -1,26 +1,22 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using ApiEstagioBicicletaria.Entities.UsuarioDomain;
+using BCrypt.Net;
+using Microsoft.AspNetCore.Identity;
+using Org.BouncyCastle.Crypto.Generators;
 
 namespace ApiEstagioBicicletaria.Services
 {
     public class SenhaService
     {
-        private PasswordHasher<object> _passwordHasher;
-
-        public SenhaService(PasswordHasher<object> passwordHasher)
-        {
-            _passwordHasher = passwordHasher;
-        }
-
         public string GerarHashDaSenha(string senha)
         {
-            return _passwordHasher.HashPassword(null, senha);
+            return BCrypt.Net.BCrypt.HashPassword(senha);
         }
 
         public bool ValidarSenha(string hashSenhaSalva, string senhaInformada)
         {
-            var resultado= _passwordHasher.VerifyHashedPassword(null, hashSenhaSalva, senhaInformada);
+            var resultado = BCrypt.Net.BCrypt.Verify(senhaInformada, hashSenhaSalva);
 
-            return resultado == PasswordVerificationResult.Success;
+            return resultado;
         }
     }
 }

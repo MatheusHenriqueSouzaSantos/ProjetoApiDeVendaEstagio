@@ -18,6 +18,7 @@ namespace ApiEstagioBicicletaria.Seguranca
         public string GerarJWT(Usuario usuario)
         {
             var chave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_chaveJwtEmString));
+            Console.WriteLine("CHAVE: " + chave);
             var configuracoesDeAssinatura = new SigningCredentials(chave, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
