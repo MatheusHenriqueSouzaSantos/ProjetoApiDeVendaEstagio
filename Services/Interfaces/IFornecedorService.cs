@@ -1,4 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
+using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces

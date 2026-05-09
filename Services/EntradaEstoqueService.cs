@@ -1,12 +1,17 @@
 ﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
+using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Entities.EntradaEstoque;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Repository.Repositorios;
+using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Utils;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
+using System.Globalization;
 //code review
 namespace ApiEstagioBicicletaria.Services
 {
@@ -162,11 +167,72 @@ namespace ApiEstagioBicicletaria.Services
             return itens;
         }
 
+        public byte[] GerarRelatorioDeEntradasEstoquePorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        {
+            DateTime dataDeInicioDoPeriodoConvertidaDateTime;
+
+            DateTime dataDeFinalDoPeriodoConvertidaDateTime;
+
+            bool sucessoAoFazerConversaoDataInicio = DateTime.TryParseExact(
+                    dto.DataDeInicioDoPeriodo,
+                    "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out dataDeInicioDoPeriodoConvertidaDateTime
+            );
+            if (!sucessoAoFazerConversaoDataInicio)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Data de início está no formato inválido");
+            }
+
+            bool sucessoAoFazerConversaoDataFinal = DateTime.TryParseExact(
+                   dto.DataFinalDoPeriodo,
+                   "yyyy-MM-dd",
+                   CultureInfo.InvariantCulture,
+                   DateTimeStyles.None,
+                   out dataDeFinalDoPeriodoConvertidaDateTime
+           );
+            if (!sucessoAoFazerConversaoDataFinal)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Data final está no formato inválido");
+            }
+
+            if (dataDeInicioDoPeriodoConvertidaDateTime > dataDeFinalDoPeriodoConvertidaDateTime)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A data de inícion deve ser antes ou igual da data final");
+            }
+
+            List<EntradaEsoqueComSeusItensDto> entradasEstoquesComSeusItens = new();
+
+            List<EntradaEstoque> entradas=_contexto.EntradasEstoque
+                .Where(e=>e.Ativo && e.DataCriacao>=dataDeInicioDoPeriodoConvertidaDateTime 
+                && e.DataCriacao<=dataDeFinalDoPeriodoConvertidaDateTime).ToList();
+
+            foreach(EntradaEstoque entrada in entradas) 
+            {
+                List<ItemEntradaEstoque> itensDeEntradaEstoqueIterada = _contexto.ItensEntradaEstoque
+                    .Where(i => i.Ativo && i.IdEntradaEstoque == entrada.Id).ToList();
+
+                entradasEstoquesComSeusItens
+                    .Add(new EntradaEsoqueComSeusItensDto(entrada, itensDeEntradaEstoqueIterada));
+            }
+
+            entradasEstoquesComSeusItens=entradasEstoquesComSeusItens
+                .OrderBy(e=>e.EntradaEstoque.DataCriacao).ToList();
+
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var modeloDocumento = new RelatorioEntradasEstoquePorPeriodo(entradasEstoquesComSeusItens);
+
+            return modeloDocumento.GeneratePdf();
+
+        }
+
         // public void DeletarItensEntradaEstoque(Guid idEntradaEstoqueDosItens)
         // {
-            
+
         // }
 
-        
+
     }
 }

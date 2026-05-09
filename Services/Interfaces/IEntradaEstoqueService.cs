@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Entities.EntradaEstoque;
+﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Entities.EntradaEstoque;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces
 {
@@ -13,5 +14,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         // EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueInputDto dto);
 
         void InativarEntradaEstoque(Guid id);
+
+        byte[] GerarRelatorioDeEntradasEstoquePorPeriodo(DatasParaGeracaoDeRelatorioDto dto);
     }
 }
