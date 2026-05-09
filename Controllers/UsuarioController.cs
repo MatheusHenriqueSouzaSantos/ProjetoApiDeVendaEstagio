@@ -134,8 +134,6 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             try
             {
-                Console.WriteLine("email: "+ dto.Email);
-                Console.WriteLine("senha: "+ dto.Senha);
                 string tokenJWT=_usuarioService.Login(dto);
                 Console.WriteLine(tokenJWT);
                 return Ok(new { TokenJWT = tokenJWT });
