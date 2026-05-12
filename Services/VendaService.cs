@@ -795,7 +795,7 @@ namespace ApiEstagioBicicletaria.Services
                     throw new ExcecaoDeRegraDeNegocio(400, "Cnpj inválido");
                 }
 
-                clienteDasVendasASeremBuscadas = _contexto.ClientesJuridicos.FirstOrDefault(cj => cj.Cnpj == dto.NumeroDocumento && cj.Ativo);
+                clienteDasVendasASeremBuscadas = _contexto.ClientesJuridicos.FirstOrDefault(cj => cj.Cnpj == cnpjSomenteNumericos && cj.Ativo);
                 if (clienteDasVendasASeremBuscadas == null)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "Cliente não encontrado!!");
