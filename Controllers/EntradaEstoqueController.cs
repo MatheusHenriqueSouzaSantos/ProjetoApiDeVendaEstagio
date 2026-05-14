@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ApiEstagioBicicletaria.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/entrada-estoque")]
     public class EntradaEstoqueController : ControllerBase
     {
         private readonly IEntradaEstoqueService _service;

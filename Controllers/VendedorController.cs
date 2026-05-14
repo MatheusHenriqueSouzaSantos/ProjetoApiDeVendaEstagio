@@ -166,8 +166,8 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [Authorize]
-        [HttpGet("relatorio-de-vendedores-que-mais-realizaram-vendas-por-periodo")]
-        public ActionResult<byte[]> GerarRelatorioDeVendedoresQueMaisRealizaramVendasPorPeriodo
+        [HttpPost("relatorio-de-vendedores-com-maior-faturamento-por-periodo")]
+        public ActionResult<byte[]> GerarRelatorioDeVendedoresComMaiorFaturamentoPorPeriodo
             (DatasParaGeracaoDeRelatorioDto dto)
         {
             try
@@ -187,7 +187,9 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, "Erro Inesperado");
+                return StatusCode(500, ex.Message);
+
             }
         }
     }

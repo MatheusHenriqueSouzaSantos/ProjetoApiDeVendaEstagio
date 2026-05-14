@@ -2,7 +2,7 @@
 
 namespace ApiEstagioBicicletaria.Dtos.RelatorioDtos
 {
-    public class VendedoreComMaiorFaturamentoPorPeriodo
+    public class VendedorComMaiorFaturamentoPorPeriodo
     {
         public Guid VendedorId { get; private set; }
 
@@ -12,7 +12,7 @@ namespace ApiEstagioBicicletaria.Dtos.RelatorioDtos
 
         public decimal Faturamento { get; private set; }
 
-        public VendedoreComMaiorFaturamentoPorPeriodo(Guid vendedorId, string vendedorNome, int quantidadeDeVendas, decimal faturamento)
+        public VendedorComMaiorFaturamentoPorPeriodo(Guid vendedorId, string vendedorNome, int quantidadeDeVendas, decimal faturamento)
         {
             VendedorId = vendedorId;
             VendedorNome = vendedorNome;

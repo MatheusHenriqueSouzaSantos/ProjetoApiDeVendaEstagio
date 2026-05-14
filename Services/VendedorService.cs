@@ -151,11 +151,11 @@ namespace ApiEstagioBicicletaria.Services
             }
 
             
-            List<VendedoreComMaiorFaturamentoPorPeriodo> vendedores= _contexto.Vendas
+            List<VendedorComMaiorFaturamentoPorPeriodo> vendedores= _contexto.Vendas
                 .Where(v => v.Ativo && v.DataCriacao >= dataDeInicioDoPeriodoConvertidaDateTime
             && v.DataCriacao <= dataDeFinalDoPeriodoConvertidaDateTime)
                 .GroupBy(v=>new { v.VendedorId,v.Vendedor.NomeCompleto})
-                .Select(g=>new VendedoreComMaiorFaturamentoPorPeriodo(
+                .Select(g=>new VendedorComMaiorFaturamentoPorPeriodo(
                         g.Key.VendedorId,
                         g.Key.NomeCompleto,
                         g.Count(),
@@ -165,7 +165,9 @@ namespace ApiEstagioBicicletaria.Services
                 .ToList();
             QuestPDF.Settings.License=LicenseType.Community;
 
-            var modeloDocumento = new RelatorioDeVendedoresComMaiorFaturamentoPorPeriodo(vendedores);
+            var modeloDocumento = new RelatorioDeVendedoresComMaiorFaturamentoPorPeriodo(vendedores,
+                DateOnly.FromDateTime(dataDeInicioDoPeriodoConvertidaDateTime),
+                DateOnly.FromDateTime(dataDeFinalDoPeriodoConvertidaDateTime));
 
             return modeloDocumento.GeneratePdf();
 
