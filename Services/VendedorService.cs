@@ -150,22 +150,46 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "A data de inícion deve ser antes ou igual da data final");
             }
 
-            
-            List<VendedorComMaiorFaturamentoPorPeriodo> vendedores= _contexto.Vendas
-                .Where(v => v.Ativo && v.DataCriacao >= dataDeInicioDoPeriodoConvertidaDateTime
-            && v.DataCriacao <= dataDeFinalDoPeriodoConvertidaDateTime)
-                .GroupBy(v=>new { v.VendedorId,v.Vendedor.NomeCompleto})
-                .Select(g=>new VendedorComMaiorFaturamentoPorPeriodo(
-                        g.Key.VendedorId,
-                        g.Key.NomeCompleto,
-                        g.Count(),
-                        g.Sum(g=>g.ValorTotalComDesconto)
-                    ))
-                .OrderByDescending(v=>v.Faturamento)
-                .ToList();
+            dataDeFinalDoPeriodoConvertidaDateTime = dataDeFinalDoPeriodoConvertidaDateTime.AddDays(1).AddTicks(-1);
+
+            var dados = _contexto.Vendas
+                        .Where(v => v.Ativo &&
+                            v.DataCriacao >= dataDeInicioDoPeriodoConvertidaDateTime &&
+                            v.DataCriacao <= dataDeFinalDoPeriodoConvertidaDateTime)
+                        .Join(_contexto.Vendedores,
+                            v => v.VendedorId,
+                            ve => ve.Id,
+                            (v, ve) => new { v, ve })
+                        .GroupBy(x => new
+                        {
+                            x.ve.Id,
+                            x.ve.NomeCompleto,
+                            x.ve.Cpf
+                        })
+                        .Select(g => new
+                        {
+                            VendedorId = g.Key.Id,
+                            Nome = g.Key.NomeCompleto,
+                            Cpf = g.Key.Cpf,
+                            TotalVendas = g.Count(),
+                            Faturamento = g.Sum(x => x.v.ValorTotalComDesconto)
+                        })
+                        .OrderByDescending(x => x.Faturamento)
+                        .ToList();
+
+            var resultado = dados
+                            .Select(x => new VendedorComMaiorFaturamentoPorPeriodo(
+                                x.VendedorId,
+                                x.Nome,
+                                x.Cpf,
+                                x.TotalVendas,
+                                x.Faturamento
+                            ))
+                            .ToList();
+
             QuestPDF.Settings.License=LicenseType.Community;
 
-            var modeloDocumento = new RelatorioDeVendedoresComMaiorFaturamentoPorPeriodo(vendedores,
+            var modeloDocumento = new RelatorioDeVendedoresComMaiorFaturamentoPorPeriodo(resultado,
                 DateOnly.FromDateTime(dataDeInicioDoPeriodoConvertidaDateTime),
                 DateOnly.FromDateTime(dataDeFinalDoPeriodoConvertidaDateTime));
 

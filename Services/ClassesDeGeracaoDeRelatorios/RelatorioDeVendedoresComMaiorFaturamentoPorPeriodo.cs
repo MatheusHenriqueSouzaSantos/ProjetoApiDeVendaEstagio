@@ -48,7 +48,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         });
 
                         table.Cell().ColumnSpan(5);
-                        table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().AlignTop().PaddingBottom(-80).Width(120).Height(60).Image("Resources/LogoBikeCiaShopParaEstagio.jpg").FitArea();
+                        table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().PaddingBottom(15).AlignTop().PaddingBottom(-80).Width(120).Height(60).Image("Resources/LogoBikeCiaShopParaEstagio.jpg").FitArea();
                     });
                     col.Item().Text($"Relatório de Vendedores Com Maior faturamento Por Período: {DataInicial} à {DataFinal}").FontSize(20).Bold();
                     col.Item().PaddingVertical(10);
@@ -63,7 +63,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         });
                         table.Header(header =>
                         {
-                            header.Cell().AlignCenter().Text("Indentificador").Bold();
+                            header.Cell().AlignCenter().Text("CPF").Bold();
                             header.Cell().AlignCenter().Text("Nome Do Vendedor").Bold();
                             header.Cell().AlignRight().Text("Quantidade De Vendas Realizadas").Bold();
                             header.Cell().AlignRight().Text("Faturamento").Bold();
@@ -78,7 +78,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         {
                             foreach (VendedorComMaiorFaturamentoPorPeriodo vendedor in _vendedores)
                             {
-                                table.Cell().AlignRight().PaddingRight(17).Text(vendedor.VendedorId);
+                                table.Cell().AlignLeft().PaddingRight(10).Text(vendedor.Cpf);
                                 table.Cell().AlignLeft().PaddingLeft(11).Text(vendedor.VendedorNome);
                                 table.Cell().AlignRight().PaddingRight(1).Text(vendedor.QuantidadeDeVendas);
                                 table.Cell().AlignRight().Text($"R$ {vendedor.Faturamento}");

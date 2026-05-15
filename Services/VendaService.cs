@@ -43,7 +43,7 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<VendaTransacaoOutputDto> BuscarTodasVendas()
         {
-            List<Venda> vendas = _contexto.Vendas.Include(v => v.Cliente).ThenInclude(c=>c.Endereco).Where(v=>v.Ativo).ToList();
+            List<Venda> vendas = _contexto.Vendas.Include(v => v.Vendedor).Include(v => v.Cliente).ThenInclude(c=>c.Endereco).Where(v=>v.Ativo).ToList();
             //List<ItemVenda> itensVenda = _contexto.ItensVendas.Include(i => i.Produto).Where(v => v.Ativo).ToList();
             //List<ServicoVenda> servicosVenda = _contexto.ServicosVendas.Include(i => i.Servico).Where(v => v.Ativo).ToList();
             //List<Transacao> transacoes = _contexto.Transacoes.Where(t => t.Ativo).ToList();
@@ -99,7 +99,7 @@ namespace ApiEstagioBicicletaria.Services
         
         public VendaTransacaoOutputDto BuscarVendaPorId(Guid id)
         {
-            Venda? venda = _contexto.Vendas.Include(v => v.Cliente).ThenInclude(c => c.Endereco).FirstOrDefault(v=>v.Id==id && v.Ativo);
+            Venda? venda = _contexto.Vendas.Include(v=>v.Vendedor).Include(v => v.Cliente).ThenInclude(c => c.Endereco).FirstOrDefault(v=>v.Id==id && v.Ativo);
             if (venda == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(404,"Venda não encontrada!!!");
@@ -152,6 +152,8 @@ namespace ApiEstagioBicicletaria.Services
 
             Vendedor vendedorDaVenda = _vendedorRepositorio.BuscarPorId(dto.Venda.VendedorId)
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Vendedor não encontrado");
+
+            Console.WriteLine(vendedorDaVenda.NomeCompleto);
 
             List<ItemVendaInputDto> itensVenda = dto.Venda.ItensVenda;
             List<ServicoVendaInputDto> servicosVenda = dto.Venda.ServicosVenda;
