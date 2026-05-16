@@ -105,9 +105,5 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
-        public List<Fornecedor> BuscarFornecedoresPorNome(string nome)
-        {
-            return _fornecedorRepositorio.BuscarFornecedoresPorNome(nome);
-        }
     }
 }

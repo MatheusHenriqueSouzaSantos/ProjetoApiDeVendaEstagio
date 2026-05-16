@@ -20,6 +20,5 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         void Desativar(Guid id);
 
-        List<Fornecedor> BuscarFornecedoresPorNome(string nome);
     }
 }
