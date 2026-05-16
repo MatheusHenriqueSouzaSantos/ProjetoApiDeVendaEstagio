@@ -48,7 +48,7 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<Vendedor> BuscarVendedoresPorNome(string nome)
         {
-            return _contexto.Vendedores.Where(v => v.NomeCompleto.Contains(nome)).Take(10).ToList();
+            return _contexto.Vendedores.Where(v => v.NomeCompleto.Contains(nome) && v.Ativo).Take(10).ToList();
         }
 
 
