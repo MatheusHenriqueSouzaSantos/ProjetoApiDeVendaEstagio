@@ -78,6 +78,25 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [HttpGet("buscar-por-nome/{nome}")]
+        [Authorize]
+        public ActionResult<List<Fornecedor>> BuscarFornecedorPorNome([FromRoute] string nome)
+        {
+            try
+            {
+                return Ok(_service.BuscarPorNome(nome));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+
+        }
+
         [HttpPost]
         [Authorize]
         public ActionResult<Fornecedor> Cadastrar(FornecedorCreateDto dto)

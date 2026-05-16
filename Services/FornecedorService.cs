@@ -46,6 +46,11 @@ namespace ApiEstagioBicicletaria.Services
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor nao encontrado");
         }
 
+        public List<Fornecedor> BuscarPorNome(string nome)
+        {
+            return _contexto.Fornecedores.Where(v => v.RazaoSocial.Contains(nome) && v.Ativo).Take(10).ToList();
+        }
+
 
         public Fornecedor Cadastrar(FornecedorCreateDto dto)
         {

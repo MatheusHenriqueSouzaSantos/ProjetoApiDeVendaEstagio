@@ -12,6 +12,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         Fornecedor BuscarPorCnpj(string cnpj);
 
+        List<Fornecedor> BuscarPorNome(string nome);
+
         Fornecedor Cadastrar(FornecedorCreateDto dto);
 
         Fornecedor Atualizar(Guid id,FornecedorUpdateDto dto);
