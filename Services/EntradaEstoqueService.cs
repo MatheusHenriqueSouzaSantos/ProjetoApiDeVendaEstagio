@@ -86,6 +86,8 @@ namespace ApiEstagioBicicletaria.Services
             return EntidadeParaDto(entradaEstoque,itens);
         }
 
+        //logs?
+
 
         // public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueInputDto dto)
         // {
@@ -203,28 +205,24 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "A data de inícion deve ser antes ou igual da data final");
             }
 
-            //List<EntradaEsoqueComSeusItensDto> entradasEstoquesComSeusItens = new();
+            dataDeFinalDoPeriodoConvertidaDateTime = dataDeFinalDoPeriodoConvertidaDateTime.AddDays(1).AddTicks(-1);
 
-            //List<EntradaEstoque> entradas=_contexto.EntradasEstoque
-            //    .Where(e=>e.Ativo && e.DataCriacao>=dataDeInicioDoPeriodoConvertidaDateTime 
-            //    && e.DataCriacao<=dataDeFinalDoPeriodoConvertidaDateTime).ToList();
-
-            //foreach(EntradaEstoque entrada in entradas) 
-            //{
-            //    List<ItemEntradaEstoque> itensDeEntradaEstoqueIterada = _contexto.ItensEntradaEstoque
-            //        .Where(i => i.Ativo && i.IdEntradaEstoque == entrada.Id).ToList();
-
-            //    entradasEstoquesComSeusItens
-            //        .Add(new EntradaEsoqueComSeusItensDto(entrada, itensDeEntradaEstoqueIterada));
-            //}
-
-            //entradasEstoquesComSeusItens=entradasEstoquesComSeusItens
-            //    .OrderBy(e=>e.EntradaEstoque.DataCriacao).ToList();
-
-            List<EntradaEstoque> entradasEstoquesComSeusItens=
-                _contexto.EntradasEstoque.Where(e=>e.Ativo && e.DataCriacao>=dataDeInicioDoPeriodoConvertidaDateTime 
-                && e.DataCriacao<=dataDeFinalDoPeriodoConvertidaDateTime).Include(e=>e.Itens.Where(i=>i.Ativo))
-                .OrderBy(e=>e.DataCriacao).ToList();
+            List<EntradaEstoqueRelatorioDto> entradasEstoquesComSeusItens =
+                _contexto.EntradasEstoque.AsNoTracking().Where(e => e.Ativo && e.DataCriacao >= dataDeInicioDoPeriodoConvertidaDateTime
+                && e.DataCriacao <= dataDeFinalDoPeriodoConvertidaDateTime && e.Status != StatusEntradaEstoque.Cancelada)
+                .Include(e => e.Fornecedor)
+                .Include(e => e.Itens.Where(i => i.Ativo))
+                .ThenInclude(i => i.Estoque)
+                .ThenInclude(e => e.Produto)
+                .OrderBy(e => e.DataCriacao)
+                .Select(e => new EntradaEstoqueRelatorioDto(
+                        e.CodigoEntrada,
+                        e.Fornecedor.RazaoSocial,
+                        e.Fornecedor.Cnpj,
+                        e.Itens.Count,
+                        e.Itens.Select(i => new ItemEntradaEstoqueRelatorio(i.Estoque.Produto.CodigoDeBarra, i.Estoque.Produto.NomeProduto, i.Quantidade)).ToList()
+                        )
+                ).ToList();
 
             QuestPDF.Settings.License = LicenseType.Community;
 

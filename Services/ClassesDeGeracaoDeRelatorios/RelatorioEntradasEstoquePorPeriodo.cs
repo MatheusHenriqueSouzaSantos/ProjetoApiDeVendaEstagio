@@ -7,11 +7,11 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
     public class RelatorioEntradasEstoquePorPeriodo : IDocument
     {
 
-        private List<EntradaEstoque> entradas;
+        private List<EntradaEstoqueRelatorioDto> _entradas;
 
-        public RelatorioEntradasEstoquePorPeriodo(List<EntradaEstoque> entradas)
+        public RelatorioEntradasEstoquePorPeriodo(List<EntradaEstoqueRelatorioDto> entradas)
         {
-            this.entradas = entradas;
+            _entradas = entradas;
         }
 
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
