@@ -172,16 +172,16 @@ namespace ApiEstagioBicicletaria.Services
 
         public byte[] GerarRelatorioDeEntradasEstoquePorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
         {
-            DateTime dataDeInicioDoPeriodoConvertidaDateTime;
+            DateTime dataInicialDoPeriodoConvertidaDateTime;
 
-            DateTime dataDeFinalDoPeriodoConvertidaDateTime;
+            DateTime dataFinalDoPeriodoConvertidaDateTime;
 
             bool sucessoAoFazerConversaoDataInicio = DateTime.TryParseExact(
                     dto.DataDeInicioDoPeriodo,
                     "yyyy-MM-dd",
                     CultureInfo.InvariantCulture,
                     DateTimeStyles.None,
-                    out dataDeInicioDoPeriodoConvertidaDateTime
+                    out dataInicialDoPeriodoConvertidaDateTime
             );
             if (!sucessoAoFazerConversaoDataInicio)
             {
@@ -193,23 +193,23 @@ namespace ApiEstagioBicicletaria.Services
                    "yyyy-MM-dd",
                    CultureInfo.InvariantCulture,
                    DateTimeStyles.None,
-                   out dataDeFinalDoPeriodoConvertidaDateTime
+                   out dataFinalDoPeriodoConvertidaDateTime
            );
             if (!sucessoAoFazerConversaoDataFinal)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Data final está no formato inválido");
             }
 
-            if (dataDeInicioDoPeriodoConvertidaDateTime > dataDeFinalDoPeriodoConvertidaDateTime)
+            if (dataInicialDoPeriodoConvertidaDateTime > dataFinalDoPeriodoConvertidaDateTime)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "A data de inícion deve ser antes ou igual da data final");
             }
 
-            dataDeFinalDoPeriodoConvertidaDateTime = dataDeFinalDoPeriodoConvertidaDateTime.AddDays(1).AddTicks(-1);
+            dataFinalDoPeriodoConvertidaDateTime = dataFinalDoPeriodoConvertidaDateTime.AddDays(1).AddTicks(-1);
 
             List<EntradaEstoqueRelatorioDto> entradasEstoquesComSeusItens =
-                _contexto.EntradasEstoque.AsNoTracking().Where(e => e.Ativo && e.DataCriacao >= dataDeInicioDoPeriodoConvertidaDateTime
-                && e.DataCriacao <= dataDeFinalDoPeriodoConvertidaDateTime && e.Status != StatusEntradaEstoque.Cancelada)
+                _contexto.EntradasEstoque.AsNoTracking().Where(e => e.Ativo && e.DataCriacao >= dataInicialDoPeriodoConvertidaDateTime
+                && e.DataCriacao <= dataFinalDoPeriodoConvertidaDateTime && e.Status != StatusEntradaEstoque.Cancelada)
                 .Include(e => e.Fornecedor)
                 .Include(e => e.Itens.Where(i => i.Ativo))
                 .ThenInclude(i => i.Estoque)
@@ -226,7 +226,8 @@ namespace ApiEstagioBicicletaria.Services
 
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var modeloDocumento = new RelatorioEntradasEstoquePorPeriodo(entradasEstoquesComSeusItens);
+            var modeloDocumento = new RelatorioEntradasEstoquePorPeriodo(entradasEstoquesComSeusItens,
+                DateOnly.FromDateTime(dataInicialDoPeriodoConvertidaDateTime),DateOnly.FromDateTime(dataFinalDoPeriodoConvertidaDateTime));
 
             return modeloDocumento.GeneratePdf();
 
