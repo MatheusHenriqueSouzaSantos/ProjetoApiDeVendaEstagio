@@ -98,24 +98,5 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpGet("gerar-relatorio-entrada-estoque-por-periodo")]
-        [Authorize]
-        public ActionResult<byte[]> GerarRelatorioEntradaEstoquePorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
-        {
-            try
-            {
-                byte[] bytesPdf = _service.GerarRelatorioDeEntradasEstoquePorPeriodo(dto);
-                return File(bytesPdf, "aplication/pdf", "relatorioEntradaEstoquePorPeriodo");
-            }
-            catch (ExcecaoDeRegraDeNegocio ex)
-            {
-                return StatusCode(ex.StatusCode, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Erro interno");
-            }
-        }
-
     }
 }

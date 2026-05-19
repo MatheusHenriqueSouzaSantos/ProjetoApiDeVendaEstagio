@@ -170,67 +170,9 @@ namespace ApiEstagioBicicletaria.Services
             return itens;
         }
 
-        public byte[] GerarRelatorioDeEntradasEstoquePorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueInputDto dto)
         {
-            DateTime dataInicialDoPeriodoConvertidaDateTime;
-
-            DateTime dataFinalDoPeriodoConvertidaDateTime;
-
-            bool sucessoAoFazerConversaoDataInicio = DateTime.TryParseExact(
-                    dto.DataDeInicioDoPeriodo,
-                    "yyyy-MM-dd",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out dataInicialDoPeriodoConvertidaDateTime
-            );
-            if (!sucessoAoFazerConversaoDataInicio)
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "Data de início está no formato inválido");
-            }
-
-            bool sucessoAoFazerConversaoDataFinal = DateTime.TryParseExact(
-                   dto.DataFinalDoPeriodo,
-                   "yyyy-MM-dd",
-                   CultureInfo.InvariantCulture,
-                   DateTimeStyles.None,
-                   out dataFinalDoPeriodoConvertidaDateTime
-           );
-            if (!sucessoAoFazerConversaoDataFinal)
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "Data final está no formato inválido");
-            }
-
-            if (dataInicialDoPeriodoConvertidaDateTime > dataFinalDoPeriodoConvertidaDateTime)
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "A data de inícion deve ser antes ou igual da data final");
-            }
-
-            dataFinalDoPeriodoConvertidaDateTime = dataFinalDoPeriodoConvertidaDateTime.AddDays(1).AddTicks(-1);
-
-            List<EntradaEstoqueRelatorioDto> entradasEstoquesComSeusItens =
-                _contexto.EntradasEstoque.AsNoTracking().Where(e => e.Ativo && e.DataCriacao >= dataInicialDoPeriodoConvertidaDateTime
-                && e.DataCriacao <= dataFinalDoPeriodoConvertidaDateTime && e.Status != StatusEntradaEstoque.Cancelada)
-                .Include(e => e.Fornecedor)
-                .Include(e => e.Itens.Where(i => i.Ativo))
-                .ThenInclude(i => i.Estoque)
-                .ThenInclude(e => e.Produto)
-                .OrderBy(e => e.DataCriacao)
-                .Select(e => new EntradaEstoqueRelatorioDto(
-                        e.CodigoEntrada,
-                        e.Fornecedor.RazaoSocial,
-                        e.Fornecedor.Cnpj,
-                        e.Itens.Count,
-                        e.Itens.Select(i => new ItemEntradaEstoqueRelatorio(i.Estoque.Produto.CodigoDeBarra, i.Estoque.Produto.NomeProduto, i.Quantidade)).ToList()
-                        )
-                ).ToList();
-
-            QuestPDF.Settings.License = LicenseType.Community;
-
-            var modeloDocumento = new RelatorioEntradasEstoquePorPeriodo(entradasEstoquesComSeusItens,
-                DateOnly.FromDateTime(dataInicialDoPeriodoConvertidaDateTime),DateOnly.FromDateTime(dataFinalDoPeriodoConvertidaDateTime));
-
-            return modeloDocumento.GeneratePdf();
-
+            throw new NotImplementedException();
         }
 
         // public void DeletarItensEntradaEstoque(Guid idEntradaEstoqueDosItens)

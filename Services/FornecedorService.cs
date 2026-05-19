@@ -1,10 +1,16 @@
 ﻿using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
+using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Repository.Repositorios;
+using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Validacao;
+using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
+using System.Globalization;
 
 namespace ApiEstagioBicicletaria.Services
 {
@@ -104,6 +110,88 @@ namespace ApiEstagioBicicletaria.Services
             _contexto.SaveChanges();
 
         }
+
+        public byte[] GerarRelatorioFornecedoresComMaiorQuantidaDeEntradaItensPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        {
+            DateTime dataInicialDoPeriodoConvertidaDateTime;
+
+            DateTime dataFinalDoPeriodoConvertidaDateTime;
+
+            bool sucessoAoFazerConversaoDataInicio = DateTime.TryParseExact(
+                    dto.DataDeInicioDoPeriodo,
+                    "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out dataInicialDoPeriodoConvertidaDateTime
+            );
+            if (!sucessoAoFazerConversaoDataInicio)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Data de início está no formato inválido");
+            }
+
+            bool sucessoAoFazerConversaoDataFinal = DateTime.TryParseExact(
+                   dto.DataFinalDoPeriodo,
+                   "yyyy-MM-dd",
+                   CultureInfo.InvariantCulture,
+                   DateTimeStyles.None,
+                   out dataFinalDoPeriodoConvertidaDateTime
+           );
+            if (!sucessoAoFazerConversaoDataFinal)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Data final está no formato inválido");
+            }
+
+            if (dataInicialDoPeriodoConvertidaDateTime > dataFinalDoPeriodoConvertidaDateTime)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A data de inícion deve ser antes ou igual da data final");
+            }
+
+            dataFinalDoPeriodoConvertidaDateTime = dataFinalDoPeriodoConvertidaDateTime.AddDays(1).AddTicks(-1);
+
+            List<FornecedorComMaisEntradasDto> fornecedoresComDadosEntrada =
+                _contexto.EntradasEstoque.Where(e => e.Ativo && e.DataCriacao >= dataInicialDoPeriodoConvertidaDateTime
+                && e.DataCriacao <= dataFinalDoPeriodoConvertidaDateTime)
+                .Include(e => e.Itens)
+                .GroupBy(e => new
+                {
+                    e.IdFornecedor,
+                    e.Fornecedor.Cnpj,
+                    e.Fornecedor.RazaoSocial
+                })
+                .Select(g=>new FornecedorComMaisEntradasDto(
+                    g.Key.RazaoSocial,
+                    g.Key.Cnpj,
+                    g.Count(),
+                    g.Sum(e=>e.Itens.Count()),
+                    g.Sum(e=>e.Itens.Sum(it=>it.Quantidade))
+                ))
+                .OrderByDescending(fce=>fce.QuantidadeTotalDosItens)
+                .ToList();
+
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var modeloDocumento = new RelatorioFornecedoresComMaisEntradasPerPeriodo(fornecedoresComDadosEntrada,
+                DateOnly.FromDateTime(dataInicialDoPeriodoConvertidaDateTime), DateOnly.FromDateTime(dataFinalDoPeriodoConvertidaDateTime));
+
+            return modeloDocumento.GeneratePdf();
+
+        }
+        //List<EntradaEstoqueRelatorioDto> entradasEstoquesComSeusItens =
+        //        _contexto.EntradasEstoque.AsNoTracking().Where(e => e.Ativo && e.DataCriacao >= dataInicialDoPeriodoConvertidaDateTime
+        //        && e.DataCriacao <= dataFinalDoPeriodoConvertidaDateTime && e.Status != StatusEntradaEstoque.Cancelada)
+        //        .Include(e => e.Fornecedor)
+        //        .Include(e => e.Itens.Where(i => i.Ativo))
+        //        .ThenInclude(i => i.Estoque)
+        //        .ThenInclude(e => e.Produto)
+        //        .OrderBy(e => e.DataCriacao)
+        //        .Select(e => new EntradaEstoqueRelatorioDto(
+        //                e.CodigoEntrada,
+        //                e.Fornecedor.RazaoSocial,
+        //                e.Fornecedor.Cnpj,
+        //                e.Itens.Count,
+        //                e.Itens.Select(i => new ItemEntradaEstoqueRelatorio(i.Estoque.Produto.CodigoDeBarra, i.Estoque.Produto.NomeProduto, i.Quantidade)).ToList()
+        //                )
+        //        ).ToList();
 
     }
 }

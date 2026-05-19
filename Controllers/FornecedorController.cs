@@ -1,5 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
 using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
+using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
@@ -164,6 +165,27 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
+
+        [HttpPost("gerar-relatorio-fornecedores-com-maior-quantidade-entrada-itens-por-periodo")]
+        [Authorize]
+        public ActionResult<byte[]> GerarRelatorioFornecedoresComMaiorQuantidaDeEntradaItensPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        {
+            try
+            {
+                byte[] bytesPdf = _service.GerarRelatorioFornecedoresComMaiorQuantidaDeEntradaItensPorPeriodo(dto);
+                return File(bytesPdf, "aplication/pdf", "relatorioEntradaEstoquePorPeriodo");
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,ex.Message);
+                //return StatusCode(500, "Erro interno");
+            }
+        }
+
 
     }
 }
