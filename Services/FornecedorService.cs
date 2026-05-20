@@ -157,7 +157,7 @@ namespace ApiEstagioBicicletaria.Services
                     e.IdFornecedor,
                     e.Fornecedor.Cnpj,
                     e.Fornecedor.RazaoSocial
-                })
+                }).ToList()
                 .Select(g=>new FornecedorComMaisEntradasDto(
                     g.Key.RazaoSocial,
                     g.Key.Cnpj,
@@ -170,7 +170,7 @@ namespace ApiEstagioBicicletaria.Services
 
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var modeloDocumento = new RelatorioFornecedoresComMaisEntradasPerPeriodo(fornecedoresComDadosEntrada,
+            var modeloDocumento = new RelatorioFornecedoresComMaiorQuantidadeDeEntradaItensPerPeriodo(fornecedoresComDadosEntrada,
                 DateOnly.FromDateTime(dataInicialDoPeriodoConvertidaDateTime), DateOnly.FromDateTime(dataFinalDoPeriodoConvertidaDateTime));
 
             return modeloDocumento.GeneratePdf();

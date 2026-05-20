@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 
 namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 {
-    public class RelatorioFornecedoresComMaisEntradasPerPeriodo : IDocument
+    public class RelatorioFornecedoresComMaiorQuantidadeDeEntradaItensPerPeriodo : IDocument
     {
 
         private readonly List<FornecedorComMaisEntradasDto> _fornecedoresComDadosEntrada;
@@ -14,7 +14,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 
         private readonly DateOnly _dataFinalDoPeriodo;
 
-        public RelatorioFornecedoresComMaisEntradasPerPeriodo(List<FornecedorComMaisEntradasDto> fornecedoresComDadosEntrada, 
+        public RelatorioFornecedoresComMaiorQuantidadeDeEntradaItensPerPeriodo(List<FornecedorComMaisEntradasDto> fornecedoresComDadosEntrada,
             DateOnly dataInicialDoPeriodo, DateOnly dataFinalDoPeriodo)
         {
             _fornecedoresComDadosEntrada = fornecedoresComDadosEntrada;
@@ -72,11 +72,11 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                             header.Cell().AlignRight().Text("Quantidade De Produtos das Entrada").Bold();
                             header.Cell().AlignRight().Text("QuantidadeTotalDosItens").Bold();
                         });
-                        table.Cell().ColumnSpan(4).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
+                        table.Cell().ColumnSpan(5).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
 
                         if (_fornecedoresComDadosEntrada.Count == 0)
                         {
-                            table.Cell().ColumnSpan(4).AlignCenter().Text("Nenhum Registro Encontrado");
+                            table.Cell().ColumnSpan(5).AlignCenter().Text("Nenhum Registro Encontrado");
                         }
                         else
                         {
@@ -87,7 +87,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                                 table.Cell().AlignRight().PaddingRight(1).Text(fornecedorComDadosEntrada.QuantidadeDeEntradas);
                                 table.Cell().AlignRight().Text(fornecedorComDadosEntrada.QuantidadeDeProdutosDasEntrada);
                                 table.Cell().AlignRight().Text(fornecedorComDadosEntrada.QuantidadeTotalDosItens);
-                                table.Cell().ColumnSpan(4).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
+                                table.Cell().ColumnSpan(5).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
                             }
                         }
                     });
