@@ -166,13 +166,13 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpPost("gerar-relatorio-fornecedores-com-maior-quantidade-entrada-itens-por-periodo")]
+        [HttpPost("gerar-relatorio-fornecedores-com-maior-volume-de-entrada-por-periodo")]
         [Authorize]
-        public ActionResult<byte[]> GerarRelatorioFornecedoresComMaiorQuantidaDeEntradaItensPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        public ActionResult<byte[]> GerarRelatorioFornecedoresComMaiorVolumeDeEntradaPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
         {
             try
             {
-                byte[] bytesPdf = _service.GerarRelatorioFornecedoresComMaiorQuantidaDeEntradaItensPorPeriodo(dto);
+                byte[] bytesPdf = _service.GerarRelatorioFornecedoresComMaiorVolumeDeEntradaPorPeriodo(dto);
                 return File(bytesPdf, "application/pdf", "relatorioEntradaEstoquePorPeriodo");
             }
             catch (ExcecaoDeRegraDeNegocio ex)

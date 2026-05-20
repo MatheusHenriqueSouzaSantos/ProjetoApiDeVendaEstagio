@@ -111,7 +111,7 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
-        public byte[] GerarRelatorioFornecedoresComMaiorQuantidaDeEntradaItensPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        public byte[] GerarRelatorioFornecedoresComMaiorVolumeDeEntradaPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
         {
             DateTime dataInicialDoPeriodoConvertidaDateTime;
 
@@ -170,7 +170,7 @@ namespace ApiEstagioBicicletaria.Services
 
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var modeloDocumento = new RelatorioFornecedoresComMaiorQuantidadeDeEntradaItensPerPeriodo(fornecedoresComDadosEntrada,
+            var modeloDocumento = new RelatorioFornecedoresComMaiorVolumeDeEntradaPorPeriodo(fornecedoresComDadosEntrada,
                 DateOnly.FromDateTime(dataInicialDoPeriodoConvertidaDateTime), DateOnly.FromDateTime(dataFinalDoPeriodoConvertidaDateTime));
 
             return modeloDocumento.GeneratePdf();

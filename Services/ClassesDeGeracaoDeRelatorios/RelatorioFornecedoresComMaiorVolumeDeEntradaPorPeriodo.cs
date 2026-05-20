@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 
 namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 {
-    public class RelatorioFornecedoresComMaiorQuantidadeDeEntradaItensPerPeriodo : IDocument
+    public class RelatorioFornecedoresComMaiorVolumeDeEntradaPorPeriodo : IDocument
     {
 
         private readonly List<FornecedorComMaisEntradasDto> _fornecedoresComDadosEntrada;
@@ -14,7 +14,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 
         private readonly DateOnly _dataFinalDoPeriodo;
 
-        public RelatorioFornecedoresComMaiorQuantidadeDeEntradaItensPerPeriodo(List<FornecedorComMaisEntradasDto> fornecedoresComDadosEntrada,
+        public RelatorioFornecedoresComMaiorVolumeDeEntradaPorPeriodo(List<FornecedorComMaisEntradasDto> fornecedoresComDadosEntrada,
             DateOnly dataInicialDoPeriodo, DateOnly dataFinalDoPeriodo)
         {
             _fornecedoresComDadosEntrada = fornecedoresComDadosEntrada;
@@ -51,7 +51,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         table.Cell().ColumnSpan(5);
                         table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().PaddingBottom(15).AlignTop().PaddingBottom(-80).Width(120).Height(60).Image("Resources/LogoBikeCiaShopParaEstagio.jpg").FitArea();
                     });
-                    col.Item().Text($"Relatório de Fornecedores Com Maior Entrada De Quantidade De Itens Por Período: {_dataInicialDoPeriodo} à " +
+                    col.Item().Text($"Relatório de Fornecedores Com Maior Volumen de Entrada Por Período: {_dataInicialDoPeriodo} à " +
                         $"{_dataFinalDoPeriodo}").FontSize(20).Bold();
                     col.Item().PaddingVertical(10);
                     col.Item().Table(table =>
@@ -66,11 +66,11 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         });
                         table.Header(header =>
                         {
-                            header.Cell().AlignCenter().Text("Razao Social").Bold();
-                            header.Cell().AlignCenter().Text("Cnpj").Bold();
-                            header.Cell().AlignRight().Text("Quantidade De Entradas").Bold();
-                            header.Cell().AlignRight().Text("Quantidade De Produtos das Entrada").Bold();
-                            header.Cell().AlignRight().Text("QuantidadeTotalDosItens").Bold();
+                            header.Cell().AlignCenter().Text("Razao Social").Bold().FontSize(10);
+                            header.Cell().AlignCenter().Text("Cnpj").Bold().FontSize(10);
+                            header.Cell().AlignRight().Text("Total De Entradas").Bold().FontSize(10);
+                            header.Cell().AlignRight().PaddingRight(-5).Text("Total De Produtos").Bold().FontSize(10);
+                            header.Cell().AlignRight().Text("Total De Itens").Bold().FontSize(10);
                         });
                         table.Cell().ColumnSpan(5).PaddingTop(8).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Darken3);
 
@@ -85,7 +85,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                                 table.Cell().AlignLeft().PaddingRight(10).Text(fornecedorComDadosEntrada.RazaoSocial);
                                 table.Cell().AlignLeft().PaddingLeft(11).Text(fornecedorComDadosEntrada.Cnpj);
                                 table.Cell().AlignRight().PaddingRight(1).Text(fornecedorComDadosEntrada.QuantidadeDeEntradas);
-                                table.Cell().AlignRight().Text(fornecedorComDadosEntrada.QuantidadeDeProdutosDasEntrada);
+                                table.Cell().AlignRight().PaddingRight(-5).Text(fornecedorComDadosEntrada.QuantidadeDeProdutosDasEntrada);
                                 table.Cell().AlignRight().Text(fornecedorComDadosEntrada.QuantidadeTotalDosItens);
                                 table.Cell().ColumnSpan(5).PaddingTop(6).PaddingBottom(6).Border(1).BorderColor(Colors.Grey.Medium);
                             }
