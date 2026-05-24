@@ -46,6 +46,7 @@ namespace ApiEstagioBicicletaria
             builder.Services.AddScoped<UsuarioRepositorio>();
             builder.Services.AddScoped<SenhaService>();
             builder.Services.AddScoped<VendedorRepositorio>();
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddCors(options =>
             {

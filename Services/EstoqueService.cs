@@ -22,7 +22,7 @@ namespace ApiEstagioBicicletaria.Services
                     ?? throw new ExcecaoDeRegraDeNegocio(400,"Estoque não encontrado");
             return EntityToDto(estoque);
         }
-
+        //desativar isso???
         public EstoqueSimplificadoOutputDto AdicionarQuantidadeEmEstoque(Guid id, int quantidade)
         {
             Estoque? estoqueVindoDoBanco = _contexto.Estoques.FirstOrDefault(p => p.Id == id && p.Ativo );
