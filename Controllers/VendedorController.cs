@@ -1,7 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Dtos.VendedorDtos;
-using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
+using ApiEstagioBicicletaria.Entities.VendedorDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;

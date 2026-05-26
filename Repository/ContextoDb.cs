@@ -1,6 +1,6 @@
-﻿using ApiEstagioBicicletaria.Entities;
-using ApiEstagioBicicletaria.Entities.ClienteDomain;
+﻿using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Entities.EntradaEstoque;
+using ApiEstagioBicicletaria.Entities.FornecedorDomain.Fornecedor;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
@@ -8,6 +8,10 @@ using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
 using ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao;
 using Microsoft.EntityFrameworkCore;
+using ApiEstagioBicicletaria.Entities.FornecedorDomain;
+using ApiEstagioBicicletaria.Entities.EstoqueDomain;
+using ApiEstagioBicicletaria.Entities.VendedorDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteMapeamentoDomain;
 
 namespace ApiEstagioBicicletaria.Repositories
 {

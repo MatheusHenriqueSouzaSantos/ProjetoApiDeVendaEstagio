@@ -1,4 +1,4 @@
-﻿using ApiEstagioBicicletaria.Entities;
+﻿using ApiEstagioBicicletaria.Entities.EstoqueDomain;
 using ApiEstagioBicicletaria.Repositories;
 using Microsoft.EntityFrameworkCore;
 

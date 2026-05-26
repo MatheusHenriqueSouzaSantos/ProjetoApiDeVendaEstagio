@@ -1,7 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
-using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Entities.EntradaEstoque;
+using ApiEstagioBicicletaria.Entities.FornecedorDomain.Fornecedor;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
@@ -13,6 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using System.Globalization;
+using ApiEstagioBicicletaria.Entities.FornecedorDomain;
+using ApiEstagioBicicletaria.Entities.EstoqueDomain;
 //code review
 namespace ApiEstagioBicicletaria.Services
 {

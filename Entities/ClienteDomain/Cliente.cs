@@ -1,4 +1,6 @@
-﻿namespace ApiEstagioBicicletaria.Entities.ClienteDomain
+﻿using ApiEstagioBicicletaria.Entities;
+
+namespace ApiEstagioBicicletaria.Entities.ClienteDomain
 {
     public abstract class Cliente : EntidadeBase
     {

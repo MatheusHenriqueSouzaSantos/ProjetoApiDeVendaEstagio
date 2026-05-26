@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Entities;
+﻿using ApiEstagioBicicletaria.Entities.FornecedorDomain.Fornecedor;
+using ApiEstagioBicicletaria.Entities.FornecedorDomain;
 
 namespace ApiEstagioBicicletaria;
 
