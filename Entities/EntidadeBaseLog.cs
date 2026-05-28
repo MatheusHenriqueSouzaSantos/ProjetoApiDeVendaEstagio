@@ -26,7 +26,7 @@ namespace ApiEstagioBicicletaria.Entities
             ValorAntigo = valorAntigo;
             ValorNovo = valorNovo;
             UsuarioResponsavel = usuarioResponsavel;
-            IdUsuarioResponsavel=usuarioResponsavel.Id
+            IdUsuarioResponsavel = usuarioResponsavel.Id;
         }
 
         protected EntidadeBaseLog()

@@ -1,6 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
-using ApiEstagioBicicletaria.Entities;
+using ApiEstagioBicicletaria.Entities.FornedorDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Repository.Repositorios;

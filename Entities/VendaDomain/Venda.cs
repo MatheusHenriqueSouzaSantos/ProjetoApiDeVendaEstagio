@@ -1,4 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Entities.ClienteDomain;
+using ApiEstagioBicicletaria.Entities.VendedorDomain;
 using ApiEstagioBicicletaria.Utils;
 
 namespace ApiEstagioBicicletaria.Entities.VendaDomain

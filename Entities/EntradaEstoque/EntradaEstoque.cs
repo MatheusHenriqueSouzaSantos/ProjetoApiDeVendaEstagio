@@ -1,4 +1,6 @@
-﻿﻿namespace ApiEstagioBicicletaria.Entities.EntradaEstoque
+﻿using ApiEstagioBicicletaria.Entities.FornedorDomain;
+
+namespace ApiEstagioBicicletaria.Entities.EntradaEstoque
 {
     public class EntradaEstoque : EntidadeBase
     {

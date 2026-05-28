@@ -1,4 +1,4 @@
-﻿using ApiEstagioBicicletaria.Entities;
+﻿using ApiEstagioBicicletaria.Entities.VendedorDomain;
 using ApiEstagioBicicletaria.Repositories;
 using Microsoft.EntityFrameworkCore;
 

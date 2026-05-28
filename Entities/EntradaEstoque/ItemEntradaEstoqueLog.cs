@@ -9,20 +9,20 @@ namespace ApiEstagioBicicletaria.Entities.EntradaEstoque
         public ItemEntradaEstoque ItemEntradaEstoque { get; private set; }
         public Guid IdItemEntradaEstoque { get; private set; }
 
-        public Venda Venda { get; private set; }
-        public Guid IdVenda { get; private set; }
+        public EntradaEstoque EntradaEstoque { get; private set; }
+        public Guid IdEntradaEstoque { get; private set; }
         public ItemEntradaEstoqueLog()
         {
         }
 
-        public ItemEntradaEstoqueLog(ItemEntradaEstoque itemEntradaEstoque, Venda venda,LogAcao acao, string campoAlterado, string valorAntigo,
+        public ItemEntradaEstoqueLog(ItemEntradaEstoque itemEntradaEstoque, EntradaEstoque entradaEstoque,LogAcao acao, string campoAlterado, string valorAntigo,
             string valorNovo, Usuario usuarioResponsavel) 
             : base(acao, campoAlterado, valorAntigo, valorNovo, usuarioResponsavel)
         {
             ItemEntradaEstoque = itemEntradaEstoque;
             IdItemEntradaEstoque = itemEntradaEstoque.Id;
-            Venda = venda;
-            IdVenda = venda.Id; 
+            EntradaEstoque = entradaEstoque;
+            IdEntradaEstoque = entradaEstoque.Id; 
         }
 
 

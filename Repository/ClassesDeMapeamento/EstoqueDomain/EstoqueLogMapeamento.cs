@@ -1,0 +1,26 @@
+﻿using ApiEstagioBicicletaria.Entities.EntradaEstoque;
+using ApiEstagioBicicletaria.Entities.EstoqueDomain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EstoqueDomain
+{
+    public class EstoqueLogMapeamento : BaseLogMapeamento<EstoqueLog>
+    {
+        public override void Configure(EntityTypeBuilder<EstoqueLog> builder)
+        {
+            base.Configure(builder);
+
+            builder.ToTable("LOG_ESTOQUE");
+
+            builder.HasOne(e => e.Estoque)
+                .WithMany()
+                .HasForeignKey(e => e.IdEstoque)
+                .IsRequired();
+            builder.Property(e => e.IdEstoque)
+                .HasColumnType("binary(16)")
+                .IsRequired();
+
+        }
+    }
+}

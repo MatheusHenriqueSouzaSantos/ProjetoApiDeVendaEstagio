@@ -1,7 +1,8 @@
 ﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
-using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Entities.EntradaEstoque;
+using ApiEstagioBicicletaria.Entities.EstoqueDomain;
+using ApiEstagioBicicletaria.Entities.FornedorDomain;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;

@@ -1,12 +1,30 @@
-﻿using ApiEstagioBicicletaria.Entities;
-using ApiEstagioBicicletaria.Entities.ClienteDomain;
+﻿using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Entities.EntradaEstoque;
+using ApiEstagioBicicletaria.Entities.EstoqueDomain;
+using ApiEstagioBicicletaria.Entities.FornedorDomain;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
-using ApiEstagioBicicletaria.Repository.ClassesDeConfiguracao;
+using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain.ParcelaDomain;
+using ApiEstagioBicicletaria.Entities.VendedorDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain.Endereco;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoque;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoque.ItemEntradaDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EstoqueDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.FornecedorDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ProdutoDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ServicoDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.UsuarioDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.FinancialTransactionDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.FinancialTransactionDomain.ParcelaDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.ItemVendaDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.ServicoVendaDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendedorDomain;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiEstagioBicicletaria.Repositories
@@ -85,6 +103,10 @@ namespace ApiEstagioBicicletaria.Repositories
             modelBuilder.ApplyConfiguration(new EstoqueMapeamento());
             modelBuilder.ApplyConfiguration(new EntradaEstoqueMapeamento());
             modelBuilder.ApplyConfiguration(new ItemEntradaEstoqueMapeamento());
+            modelBuilder.ApplyConfiguration(new ClienteLogMapeamento());
+            modelBuilder.ApplyConfiguration(new EnderecoLogMapeamento());
+            modelBuilder.ApplyConfiguration(new ItemEntradaEstoqueLogMapeamento());
+            modelBuilder.ApplyConfiguration(new EntradaEstoqueLogMapeamento());
         }
 
     }
