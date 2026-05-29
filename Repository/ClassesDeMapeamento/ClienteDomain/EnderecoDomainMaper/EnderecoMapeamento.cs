@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain.Endereco
+namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain.EnderecoDomainMaper
 {
     public class EnderecoMapeamento : BaseMapeamento<Endereco>
     {

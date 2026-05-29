@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoque
+namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoqueDomain
 {
     public class EntradaEstoqueLogMapeamento : BaseLogMapeamento<EntradaEstoqueLog>
     {

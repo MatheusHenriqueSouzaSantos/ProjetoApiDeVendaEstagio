@@ -11,9 +11,9 @@ using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain.ParcelaDomain;
 using ApiEstagioBicicletaria.Entities.VendedorDomain;
 using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento;
 using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain;
-using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain.Endereco;
-using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoque;
-using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoque.ItemEntradaDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain.EnderecoDomainMaper;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoqueDomain;
+using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoqueDomain.ItemEntradaDomain;
 using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EstoqueDomain;
 using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.FornecedorDomain;
 using ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ProdutoDomain;
@@ -66,6 +66,37 @@ namespace ApiEstagioBicicletaria.Repositories
 
         public DbSet<ItemEntradaEstoque> ItensEntradaEstoque {get; set; }
 
+
+        public DbSet<ClienteLog> ClienteLogs { get; set; }
+
+        public DbSet<EnderecoLog> EnderecoLogs { get; set; }
+
+        public DbSet<ProdutoLog> ProdutoLogs { get; set; }
+
+        public DbSet<ServicoLog> ServicoLogs { get; set; }
+
+        public DbSet<UsuarioLog> UsuarioLogs { get; set; }
+
+        public DbSet<VendaLog> VendaLog { get; set; }
+
+        public DbSet<TransacaoLog> TransacaoLogs { get; set; }
+
+        public DbSet<ParcelaLog> ParcelaLogs { get; set; }
+
+        public DbSet<ItemVendaLog> ItensVendaLogs { get; set; }
+
+        public DbSet<ServicoVendaLog> ServicosVendaLog { get; set; }
+
+        public DbSet<VendedorLog> VendedorLogs { get; set; }
+
+        public DbSet<FornecedorLog> FornecedorLogs { get; set; }
+
+        public DbSet<EstoqueLog> EstoqueLogs { get; set; }
+
+        public DbSet<EntradaEstoqueLog> EntradasEstoqueLgs { get; set; }
+
+        public DbSet<ItemEntradaEstoqueLog> ItensEntradaEstoqueLogs { get; set; }
+
         public ContextoDb(DbContextOptions<ContextoDb> options) : base(options)
         {
                 
@@ -107,6 +138,18 @@ namespace ApiEstagioBicicletaria.Repositories
             modelBuilder.ApplyConfiguration(new EnderecoLogMapeamento());
             modelBuilder.ApplyConfiguration(new ItemEntradaEstoqueLogMapeamento());
             modelBuilder.ApplyConfiguration(new EntradaEstoqueLogMapeamento());
+            modelBuilder.ApplyConfiguration(new EstoqueLogMapeamento());
+            modelBuilder.ApplyConfiguration(new FornecedorLogMapeamento());
+            modelBuilder.ApplyConfiguration(new ProdutoLogMapeamento());
+            modelBuilder.ApplyConfiguration(new ServicoLogMapeamento());
+            modelBuilder.ApplyConfiguration(new UsuarioLogMapeamento());
+            modelBuilder.ApplyConfiguration(new ParcelaLogMapeamento());
+            modelBuilder.ApplyConfiguration(new TransacaoLogMapeamento());
+            modelBuilder.ApplyConfiguration(new ItemVendaLogMapeamento());
+            modelBuilder.ApplyConfiguration(new ServicoVendaLogMapeamento());
+            modelBuilder.ApplyConfiguration(new VendaLogMapeamento());
+            modelBuilder.ApplyConfiguration(new VendedorLogMapeamento());
+
         }
 
     }
