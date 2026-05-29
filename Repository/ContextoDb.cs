@@ -135,7 +135,6 @@ namespace ApiEstagioBicicletaria.Repositories
             modelBuilder.ApplyConfiguration(new EntradaEstoqueMapeamento());
             modelBuilder.ApplyConfiguration(new ItemEntradaEstoqueMapeamento());
             modelBuilder.ApplyConfiguration(new ClienteLogMapeamento());
-            modelBuilder.ApplyConfiguration(new EnderecoLogMapeamento());
             modelBuilder.ApplyConfiguration(new ItemEntradaEstoqueLogMapeamento());
             modelBuilder.ApplyConfiguration(new EntradaEstoqueLogMapeamento());
             modelBuilder.ApplyConfiguration(new EstoqueLogMapeamento());
@@ -149,6 +148,7 @@ namespace ApiEstagioBicicletaria.Repositories
             modelBuilder.ApplyConfiguration(new ServicoVendaLogMapeamento());
             modelBuilder.ApplyConfiguration(new VendaLogMapeamento());
             modelBuilder.ApplyConfiguration(new VendedorLogMapeamento());
+            modelBuilder.ApplyConfiguration(new EnderecoLogMapeamento());
 
         }
 

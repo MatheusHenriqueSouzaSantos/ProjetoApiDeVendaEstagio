@@ -9,7 +9,6 @@ namespace ApiEstagioBicicletaria.Entities.EstoqueDomain
 
         public Guid ProdutoId { get; set; }
 
-
         public int QuantidadeEmEstoque { get; set; } = 0;
 
 

@@ -6,6 +6,8 @@ using ApiEstagioBicicletaria.Repository.Repositorios;
 using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using ApiEstagioBicicletaria.Services.LogServices;
+using ApiEstagioBicicletaria.Services.ServicesLogs;
 using ApiEstagioBicicletaria.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -46,6 +48,11 @@ namespace ApiEstagioBicicletaria
             builder.Services.AddScoped<UsuarioRepositorio>();
             builder.Services.AddScoped<SenhaService>();
             builder.Services.AddScoped<VendedorRepositorio>();
+            builder.Services.AddScoped<ProdutoLogRepositorio>();
+            builder.Services.AddScoped<ProdutoLogService>();
+            builder.Services.AddScoped<EstoqueLogRepositorio>();
+            builder.Services.AddScoped<EstoqueLogService>();
+            builder.Services.AddScoped<UsuarioLogadoService>();
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddCors(options =>

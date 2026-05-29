@@ -2,10 +2,14 @@
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.EstoqueDomain;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
+using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
+using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using ApiEstagioBicicletaria.Services.LogServices;
+using ApiEstagioBicicletaria.Services.ServicesLogs;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using System.Globalization;
@@ -18,11 +22,19 @@ namespace ApiEstagioBicicletaria.Services
         //implementar mexer em estoque no lugar de estoque em produto
         //private readonly int _numeroMaximoDePaginas = 5;
         //private readonly int _numeroDeLinhasPorPagina = 42;
-        private ContextoDb _contextoDb;
+        private readonly ContextoDb _contextoDb;
+        private readonly ProdutoLogService _produtoLogService;
+        private readonly EstoqueLogService _estoqueLogService;
+        private readonly UsuarioLogadoService _userService;
+        private readonly Usuario _usuarioLogado;
 
-        public ProdutoService(ContextoDb contextoDb)
+        public ProdutoService(ContextoDb contextoDb, ProdutoLogService produtoLogService, EstoqueLogService estoqueLogService, UsuarioLogadoService userService)
         {
-            this._contextoDb = contextoDb;
+            _contextoDb = contextoDb;
+            _produtoLogService = produtoLogService;
+            _estoqueLogService = estoqueLogService;
+            _userService = userService;
+            _usuarioLogado = _userService.ObterUsuario();
         }
 
         public List<ProdutoDtoOutPut> BuscarProdutos()
@@ -104,6 +116,8 @@ namespace ApiEstagioBicicletaria.Services
             Console.WriteLine(estoque.Ativo);
             _contextoDb.Add(produtoAInserirNoBanco);
             _contextoDb.Add(estoque);
+            _produtoLogService.CriarLogsDeCriacao(produtoAInserirNoBanco,_usuarioLogado);
+            _estoqueLogService.criarLogsDeCriacao(estoque,_usuarioLogado);
             _contextoDb.SaveChanges();
             return produtoAInserirNoBanco;
 
@@ -148,6 +162,8 @@ namespace ApiEstagioBicicletaria.Services
             estoque.Ativo=false;
             //rever essa regra, para garantir que possa inativar um produto que ainda tenha quantidade em estoque
             _contextoDb.Update(produtoVindoDoBanco);
+            _produtoLogService.CriarLogsDeExclusao(produtoVindoDoBanco,_usuarioLogado);
+            _estoqueLogService.CriarLogsDeExclusao(estoque, _usuarioLogado);
             _contextoDb.SaveChanges();
         }
 
