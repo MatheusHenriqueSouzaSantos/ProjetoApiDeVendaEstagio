@@ -24,5 +24,11 @@
             Cnpj = cnpj;
             InscricaoEstadual = inscricaoEstadual;
         }
+
+        public Fornecedor Copia()
+        {
+            return new Fornecedor(Telefone, Email, RazaoSocial, NomeFantasia, Cnpj, InscricaoEstadual);
+        }
+
     }
 }

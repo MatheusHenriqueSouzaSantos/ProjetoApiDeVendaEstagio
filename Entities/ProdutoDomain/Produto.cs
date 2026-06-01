@@ -4,7 +4,7 @@
     {
 
         //deixar alterar codigo de barra?
-        public string CodigoDeBarra { get; private set; }
+        public string CodigoDeBarra { get; set; }
 
         public string NomeProduto { get; set; }
 
@@ -23,6 +23,11 @@
             NomeProduto = nomeProduto;
             Descricao = descricao;
             Preco = preco;
+        }
+
+        public Produto Copia()
+        {
+            return new Produto(CodigoDeBarra, NomeProduto, Descricao, Preco);
         }
     }
 }

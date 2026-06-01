@@ -1,4 +1,6 @@
-﻿using ApiEstagioBicicletaria.Entities.ProdutoDomain;
+﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
+using ApiEstagioBicicletaria.Entities;
+using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Repository.Repositorios;
 using System.Reflection;
@@ -7,9 +9,9 @@ namespace ApiEstagioBicicletaria.Services.ServicesLogs
 {
     public class ProdutoLogService
     {
-        private readonly ProdutoLogRepositorio _repositorio;
+        private readonly LogRepositorio<ProdutoLog> _repositorio;
 
-        public ProdutoLogService(ProdutoLogRepositorio repositorio)
+        public ProdutoLogService(LogRepositorio<ProdutoLog> repositorio)
         {
             _repositorio = repositorio;
         }
@@ -20,18 +22,49 @@ namespace ApiEstagioBicicletaria.Services.ServicesLogs
             {
                 var valorPropriedade=propriedade.GetValue(produto);
 
-                _repositorio.criarLog(produto,
-                    Entities.LogAcao.Criacao,
+                ProdutoLog log = new(produto,
+                    LogAcao.Criacao,
                     propriedade.Name,
                     null,
-                    valorPropriedade!=null ? valorPropriedade.ToString() : null,
+                    valorPropriedade?.ToString(),
                     usuarioResponsavel);
+
+                _repositorio.CriarLog(log);
+            }
+        }
+
+        public void CriarLogsDeAtualizacao(Produto produtoAntigo,Produto produtoAtualizado, Usuario usuarioResponsavel)
+        {
+            PropertyInfo[] propriedades = typeof(Produto).GetProperties();
+            foreach (PropertyInfo propriedade in propriedades)
+            {
+                if (Attribute.IsDefined(propriedade, typeof(AnotacaoDeAtributoASerIgnoradoLog)))
+                {
+                    continue;
+                }
+                var valorAntigoPropriedade = propriedade.GetValue(produtoAntigo);
+                var valorAtualizadoPropriedade = propriedade.GetValue(produtoAtualizado);
+
+                if (valorAntigoPropriedade != valorAtualizadoPropriedade)
+                {
+                   ProdutoLog log = new(produtoAtualizado,
+                   LogAcao.Atualizacao,
+                   propriedade.Name,
+                   valorAntigoPropriedade?.ToString(),
+                   valorAtualizadoPropriedade?.ToString(),
+                   usuarioResponsavel);
+
+                   _repositorio.CriarLog(log);
+                }
+
             }
         }
 
         public void CriarLogsDeExclusao(Produto produto,Usuario usuarioResponsavel) 
         {
-            _repositorio.criarLog(produto,Entities.LogAcao.Exclusao,"Ativo",true.ToString(),false.ToString(),usuarioResponsavel);
+            ProdutoLog log = new ProdutoLog(produto, LogAcao.Exclusao, "Ativo", true.ToString(), false.ToString(), usuarioResponsavel);
+
+            _repositorio.CriarLog(log);
         }
     }
 }

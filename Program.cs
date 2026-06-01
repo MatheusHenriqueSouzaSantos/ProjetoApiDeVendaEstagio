@@ -48,9 +48,9 @@ namespace ApiEstagioBicicletaria
             builder.Services.AddScoped<UsuarioRepositorio>();
             builder.Services.AddScoped<SenhaService>();
             builder.Services.AddScoped<VendedorRepositorio>();
-            builder.Services.AddScoped<ProdutoLogRepositorio>();
+            builder.Services.AddScoped<VendedorogRepositorio>();
             builder.Services.AddScoped<ProdutoLogService>();
-            builder.Services.AddScoped<EstoqueLogRepositorio>();
+            builder.Services.AddScoped<LogRepositorio>();
             builder.Services.AddScoped<EstoqueLogService>();
             builder.Services.AddScoped<UsuarioLogadoService>();
             builder.Services.AddHttpContextAccessor();

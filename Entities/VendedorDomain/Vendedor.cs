@@ -14,5 +14,10 @@
             NomeCompleto = nomeCompleto;
             Cpf = cpf;
         }
+
+        public Vendedor Copia()
+        {
+            return new Vendedor(Telefone, Email, NomeCompleto, Cpf);    
+        }
     }
 }

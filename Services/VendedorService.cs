@@ -1,11 +1,14 @@
 ﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Dtos.VendedorDtos;
+using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Entities.VendedorDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
+using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using ApiEstagioBicicletaria.Services.LogServices;
 using ApiEstagioBicicletaria.Validacao;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -17,10 +20,14 @@ namespace ApiEstagioBicicletaria.Services
     {
 
         private ContextoDb _contexto;
+        private VendedorLogService _logService;
+        private readonly Usuario _usuarioLogado;
 
-        public VendedorService(ContextoDb contexto)
+        public VendedorService(ContextoDb contexto, VendedorLogService logService, UsuarioLogadoService usuarioLogadoService)
         {
             _contexto = contexto;
+            _logService = logService;
+            _usuarioLogado = usuarioLogadoService.ObterUsuario();
         }
 
         public List<Vendedor> BuscarTodosOsVendedores()
@@ -74,6 +81,7 @@ namespace ApiEstagioBicicletaria.Services
             Vendedor vendedor = new Vendedor(dto.Telefone,dto.Email,dto.NomeCompleto, cpfSoNumeros);
 
             _contexto.Vendedores.Add(vendedor);
+            _logService.CriarLogsDeCriacao(vendedor, _usuarioLogado);
             _contexto.SaveChanges();
 
             return vendedor;
@@ -90,11 +98,14 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um vendedor cadastrado com esse email");
             }
 
+            Vendedor vendedorAntigo = vendedor.Copia();
+
             vendedor.Telefone = dto.Telefone;
             vendedor.Email = dto.Email;
             vendedor.NomeCompleto = dto.NomeCompleto;
 
             _contexto.Vendedores.Update(vendedor);
+            _logService.CriarLogsDeAtualizacao(vendedorAntigo,vendedor,_usuarioLogado);
             _contexto.SaveChanges();
             return vendedor;
         }
@@ -112,6 +123,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             vendedor.Ativo = false;
             _contexto.Vendedores.Update(vendedor);
+            _logService.CriarLogsDeExclusao(vendedor, _usuarioLogado);
             _contexto.SaveChanges();
         }
 

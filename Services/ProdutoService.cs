@@ -25,16 +25,14 @@ namespace ApiEstagioBicicletaria.Services
         private readonly ContextoDb _contextoDb;
         private readonly ProdutoLogService _produtoLogService;
         private readonly EstoqueLogService _estoqueLogService;
-        private readonly UsuarioLogadoService _userService;
         private readonly Usuario _usuarioLogado;
 
-        public ProdutoService(ContextoDb contextoDb, ProdutoLogService produtoLogService, EstoqueLogService estoqueLogService, UsuarioLogadoService userService)
+        public ProdutoService(ContextoDb contextoDb, ProdutoLogService produtoLogService, EstoqueLogService estoqueLogService, UsuarioLogadoService userLogadoService)
         {
             _contextoDb = contextoDb;
             _produtoLogService = produtoLogService;
             _estoqueLogService = estoqueLogService;
-            _userService = userService;
-            _usuarioLogado = _userService.ObterUsuario();
+            _usuarioLogado = userLogadoService.ObterUsuario();
         }
 
         public List<ProdutoDtoOutPut> BuscarProdutos()
@@ -117,7 +115,7 @@ namespace ApiEstagioBicicletaria.Services
             _contextoDb.Add(produtoAInserirNoBanco);
             _contextoDb.Add(estoque);
             _produtoLogService.CriarLogsDeCriacao(produtoAInserirNoBanco,_usuarioLogado);
-            _estoqueLogService.criarLogsDeCriacao(estoque,_usuarioLogado);
+            _estoqueLogService.CriarLogsDeCriacao(estoque,_usuarioLogado);
             _contextoDb.SaveChanges();
             return produtoAInserirNoBanco;
 
@@ -125,20 +123,26 @@ namespace ApiEstagioBicicletaria.Services
 
         public Produto AtualizarProduto(Guid id, ProdutoInputDto dto)
         {
-            if (!(string.IsNullOrWhiteSpace(dto.CodigoDeBarra)))
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "O código de barra deve vir vazio, não é possível atualizar um código de barra");
-            }
-            Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
+            Produto? produtoVindoDoBanco = 
+                _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault() ?? throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
 
-            if(produtoVindoDoBanco== null)
+            Produto? produtoVindoDoBancoComMesmoCodigoDeBarras = _contextoDb.Produtos.Where(p => p.CodigoDeBarra == dto.CodigoDeBarra && p.Id != id && p.Ativo)
+                .FirstOrDefault();
+
+
+            if (produtoVindoDoBancoComMesmoCodigoDeBarras != null)
             {
-                throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
+                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um produto com esse código de barras");
             }
+
+            Produto produtoSemAtualizar = produtoVindoDoBanco.Copia();
+
+            produtoVindoDoBanco.CodigoDeBarra = dto.CodigoDeBarra;
             produtoVindoDoBanco.NomeProduto = dto.NomeProduto;
             produtoVindoDoBanco.Descricao = dto.Descricao;
             produtoVindoDoBanco.Preco = dto.PrecoUnitario;
             _contextoDb.Update(produtoVindoDoBanco);
+            _produtoLogService.CriarLogsDeAtualizacao(produtoSemAtualizar,produtoVindoDoBanco,_usuarioLogado);
             _contextoDb.SaveChanges();
             return produtoVindoDoBanco;
         }
@@ -160,7 +164,6 @@ namespace ApiEstagioBicicletaria.Services
                   ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
             produtoVindoDoBanco.Ativo = false;
             estoque.Ativo=false;
-            //rever essa regra, para garantir que possa inativar um produto que ainda tenha quantidade em estoque
             _contextoDb.Update(produtoVindoDoBanco);
             _produtoLogService.CriarLogsDeExclusao(produtoVindoDoBanco,_usuarioLogado);
             _estoqueLogService.CriarLogsDeExclusao(estoque, _usuarioLogado);

@@ -1,11 +1,14 @@
 ﻿using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.FornedorDomain;
+using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Repository.Repositorios;
+using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using ApiEstagioBicicletaria.Services.LogServices;
 using ApiEstagioBicicletaria.Validacao;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
@@ -21,10 +24,17 @@ namespace ApiEstagioBicicletaria.Services
 
         private FornecedorRepositorio _fornecedorRepositorio;
 
-        public FornecedorService(ContextoDb contexto, FornecedorRepositorio fornecedorRepositorio)
+        private FornecedorLogService _logService;
+
+        private Usuario _usuarioLogado;
+
+        public FornecedorService(ContextoDb contexto, FornecedorRepositorio fornecedorRepositorio, FornecedorLogService logService, 
+            UsuarioLogadoService usuarioLogadoService)
         {
             _contexto = contexto;
             _fornecedorRepositorio = fornecedorRepositorio;
+            _logService = logService;
+            _usuarioLogado = usuarioLogadoService.ObterUsuario();
         }
 
         public List<Fornecedor> BuscarTodos()
@@ -75,8 +85,8 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um fornecedor cadastrado com esse email");
             }
             Fornecedor fornecedor = new(dto.Telefone, dto.Email, dto.RazaoSocial, dto.NomeFantasia, cnpjSomenteNumeros, dto.InscricaoEstadual);
-            Console.WriteLine(fornecedor.Cnpj);
             _contexto.Add(fornecedor);
+            _logService.CriarLogsDeCriacao(fornecedor,_usuarioLogado);
             _contexto.SaveChanges();
             return fornecedor;
         }
@@ -89,12 +99,15 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um fornecedor cadastrado com esse email");
             }
+            Fornecedor fornecedorAntigo = fornecedorVindoDoBanco.Copia();
+
             fornecedorVindoDoBanco.Telefone=dto.Telefone;
             fornecedorVindoDoBanco.Email=dto.Email;
             fornecedorVindoDoBanco.RazaoSocial=dto.RazaoSocial;
             fornecedorVindoDoBanco.NomeFantasia=dto.NomeFantasia;
             fornecedorVindoDoBanco.InscricaoEstadual=dto.InscricaoEstadual;
             _contexto.Fornecedores.Update(fornecedorVindoDoBanco);
+            _logService.CriarLogsDeAtualizacao(fornecedorAntigo,fornecedorVindoDoBanco,_usuarioLogado);
             _contexto.SaveChanges();
             return fornecedorVindoDoBanco; 
 
@@ -107,6 +120,7 @@ namespace ApiEstagioBicicletaria.Services
                ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor não encontrado");
             fornecedorVindoDoBanco.Ativo = false;
             _contexto.Fornecedores.Update(fornecedorVindoDoBanco);
+            _logService.CriarLogsDeExclusao(fornecedorVindoDoBanco, _usuarioLogado);
             _contexto.SaveChanges();
 
         }
