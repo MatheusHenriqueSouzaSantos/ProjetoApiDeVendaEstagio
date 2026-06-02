@@ -60,19 +60,21 @@ namespace ApiEstagioBicicletaria.Services.LogServices
         public void CriarLogsDeAtualizacaoClienteFisico(ClienteFisico clienteAntigo, ClienteFisico clienteAtualizado,
             Usuario usuarioResponsavel)
         {
-            PropertyInfo[] propriedades = typeof(Clie).GetProperties();
+            PropertyInfo[] propriedades = typeof(ClienteFisico).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
                 if (Attribute.IsDefined(propriedade, typeof(AnotacaoDeAtributoASerIgnoradoLog)))
                 {
                     continue;
                 }
-                var valorAntigoPropriedade = propriedade.GetValue(vendedorAntigo);
-                var valorAtualizadoPropriedade = propriedade.GetValue(vendedorAtualizado);
+                var valorAntigoPropriedade = propriedade.GetValue(clienteAntigo);
+                var valorAtualizadoPropriedade = propriedade.GetValue(clienteAtualizado);
 
                 if (valorAntigoPropriedade != valorAtualizadoPropriedade)
                 {
-                    VendedorLog log = new(vendedorAtualizado,
+                    ClienteLog log = 
+                    new(clienteAtualizado,
+                    TipoCliente.PessoaFisica,
                     LogAcao.Atualizacao,
                     propriedade.Name,
                     valorAntigoPropriedade?.ToString(),
@@ -85,9 +87,40 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             }
         }
 
-        public void CriarLogsDeExclusao(Vendedor vendedor, Usuario usuarioResponsavel)
+        public void CriarLogsDeAtualizacaoClienteJuridico(ClienteJuridico clienteAntigo, ClienteJuridico clienteAtualizado,
+            Usuario usuarioResponsavel)
         {
-            _repositorio.CriarLog(new VendedorLog(vendedor, LogAcao.Exclusao, "Ativo", true.ToString(), false.ToString(), usuarioResponsavel));
+            PropertyInfo[] propriedades = typeof(ClienteJuridico).GetProperties();
+            foreach (PropertyInfo propriedade in propriedades)
+            {
+                if (Attribute.IsDefined(propriedade, typeof(AnotacaoDeAtributoASerIgnoradoLog)))
+                {
+                    continue;
+                }
+                var valorAntigoPropriedade = propriedade.GetValue(clienteAntigo);
+                var valorAtualizadoPropriedade = propriedade.GetValue(clienteAtualizado);
+
+                if (valorAntigoPropriedade != valorAtualizadoPropriedade)
+                {
+                    ClienteLog log =
+                    new(clienteAtualizado,
+                    TipoCliente.PessoaJuridica,
+                    LogAcao.Atualizacao,
+                    propriedade.Name,
+                    valorAntigoPropriedade?.ToString(),
+                    valorAtualizadoPropriedade?.ToString(),
+                    usuarioResponsavel);
+
+                    _repositorio.CriarLog(log);
+                }
+
+            }
+        }
+
+        public void CriarLogsDeExclusao(Cliente cliente, Usuario usuarioResponsavel)
+        {
+            _repositorio.CriarLog(new ClienteLog(cliente,cliente.TipoCliente,
+                LogAcao.Exclusao, "Ativo", true.ToString(), false.ToString(), usuarioResponsavel));
         }
     }
 }
