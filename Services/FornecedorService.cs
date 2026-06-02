@@ -1,7 +1,9 @@
 ﻿using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Dtos.VendedorDtos;
 using ApiEstagioBicicletaria.Entities.FornedorDomain;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
+using ApiEstagioBicicletaria.Entities.VendedorDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Repository.Repositorios;
@@ -207,5 +209,22 @@ namespace ApiEstagioBicicletaria.Services
         //                )
         //        ).ToList();
 
+
+        public List<FornecedorLogDto> BuscarLogsPorId(Guid id)
+        {
+            List<FornecedorLog> logs = _contexto.FornecedorLogs
+                .Where(l => l.IdFornecedor == id).OrderByDescending(l => l.DataCriacao).ToList();
+
+            List<FornecedorLogDto> logsDto =
+                logs.Select(l => new FornecedorLogDto
+                (l.IdFornecedor,
+                l.Acao,
+                l.CampoAlterado,
+                l.ValorAntigo,
+                l.ValorNovo,
+                l.IdUsuarioResponsavel,
+                l.DataCriacao)).ToList();
+            return logsDto;
+        }
     }
 }
