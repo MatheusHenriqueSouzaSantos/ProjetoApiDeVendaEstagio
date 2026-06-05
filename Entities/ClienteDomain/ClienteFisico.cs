@@ -15,5 +15,10 @@
             Nome = nome;
             Cpf = cpf;
         }
+
+        public ClienteFisico Copia()
+        {
+            return new ClienteFisico(Endereco, Telefone, Email, Nome, Cpf);
+        }
     }
 }

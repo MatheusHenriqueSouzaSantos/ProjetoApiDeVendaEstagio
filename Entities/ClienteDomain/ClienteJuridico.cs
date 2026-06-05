@@ -22,5 +22,11 @@
             InscricaoEstadual = inscricaoEstadual;
             Cnpj = cnpj;
         }
+
+
+        public ClienteJuridico Copia()
+        {
+            return new ClienteJuridico(Endereco, Telefone, Email, RazaoSocial, NomeFantasia, InscricaoEstadual, Cnpj);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
+﻿using ApiEstagioBicicletaria.Dtos.ClienteDtos;
+using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
 using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.FornedorDomain;
@@ -183,6 +184,26 @@ namespace ApiEstagioBicicletaria.Controllers
             {
                 return StatusCode(500,ex.Message);
                 //return StatusCode(500, "Erro interno");
+            }
+        }
+
+        [Authorize]
+        [HttpGet("log/{idFornecedor}")]
+        public ActionResult<List<FornecedorLogDto>> BuscarLogsPorIdFornecedor(Guid idFornecedor)
+        {
+            try
+            {
+                return Ok(_service.BuscarLogsPorIdFornecedor(idFornecedor));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
             }
         }
 

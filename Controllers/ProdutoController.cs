@@ -1,6 +1,8 @@
-﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
+﻿using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
+using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
+using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -194,6 +196,26 @@ namespace ApiEstagioBicicletaria.Controllers
                 //não retornar a mensagem pois indica exatamente o erro e há o risco de ameaças explorarem
                 //return StatusCode(500, ex.Message);
                 return StatusCode(500, "Erro Inesperado");
+            }
+        }
+
+        [Authorize]
+        [HttpGet("log/{idProduto}")]
+        public ActionResult<List<ProdutoLogDto>> BuscarLogsPorIdProduto(Guid idProduto)
+        {
+            try
+            {
+                return Ok(_produtoService.BuscarLogsPorIdProduto(idProduto));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
             }
         }
     }

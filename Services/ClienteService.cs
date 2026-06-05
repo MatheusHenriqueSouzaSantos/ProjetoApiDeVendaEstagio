@@ -2,23 +2,34 @@
 using ApiEstagioBicicletaria.Dtos.ClienteDtos;
 using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
+using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
+using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using ApiEstagioBicicletaria.Services.LogServices;
 using ApiEstagioBicicletaria.Validacao;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiEstagioBicicletaria.Services
 {
-    //Service não retorna respostas de requisição
     public class ClienteService : IClienteService
     {
-        private ContextoDb _contextoDb;
+        private readonly ContextoDb _contextoDb;
 
-        public ClienteService(ContextoDb contextoDb)
+        private readonly ClienteLogService _logService;
+        
+        private readonly EnderecoLogService _enderecoLogService;
+
+        private readonly Usuario _usuarioLogado;
+
+        public ClienteService(ContextoDb contextoDb, ClienteLogService logService, EnderecoLogService enderecoLogService, UsuarioLogadoService usuarioLogadoService)
         {
-            this._contextoDb = contextoDb;
+            _contextoDb = contextoDb;
+            _logService = logService;
+            _enderecoLogService = enderecoLogService;
+            _usuarioLogado = usuarioLogadoService.ObterUsuario();
         }
 
         public List<ClienteDtoOutPut> BuscarClientes()
@@ -34,7 +45,6 @@ namespace ApiEstagioBicicletaria.Services
                 .Include(c => c.Endereco)
                 .Where(c => c.Ativo)
                 .ToList();
-            Console.WriteLine("Passou");
             List<ClienteDtoOutPut> todosClientesFormatoDto = new List<ClienteDtoOutPut>();
             List<ClienteFisicoDtoOutPut> clientesFisicoFormatoDtoOutput = new List<ClienteFisicoDtoOutPut>();
 
@@ -124,6 +134,8 @@ namespace ApiEstagioBicicletaria.Services
             ClienteFisico clienteFisico = new ClienteFisico(endereco, dto.Telefone, dto.Email, dto.Nome, cpfSemPontoETracos);
             _contextoDb.Enderecos.Add(endereco);
             _contextoDb.ClientesFisicos.Add(clienteFisico);
+            _enderecoLogService.CriarLogsDeCriacao(endereco,clienteFisico, _usuarioLogado);
+            _logService.CriarLogsDeCriacaoClienteFisico(clienteFisico, _usuarioLogado);
             _contextoDb.SaveChanges();
             return clienteFisico;
         }
@@ -168,6 +180,8 @@ namespace ApiEstagioBicicletaria.Services
                 dto.NomeFantasia, inscricaoEstadualSemPontosTracosEBarras, cnpjSemPontoETracos);
             _contextoDb.Enderecos.Add(endereco);
             _contextoDb.ClientesJuridicos.Add(clienteJuridico);
+            _enderecoLogService.CriarLogsDeCriacao(endereco, clienteJuridico, _usuarioLogado);
+            _logService.CriarLogsDeCriacaoClienteJuridico(clienteJuridico, _usuarioLogado);
             _contextoDb.SaveChanges();
             return clienteJuridico;
         }
@@ -197,6 +211,10 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(404,"Cliente não encontrado");
             }
+            Endereco enderecoAntigo = clienteFisicoVindoDoBanco.Endereco.Copia();
+
+            ClienteFisico clienteAntigo = clienteFisicoVindoDoBanco.Copia();
+
             clienteFisicoVindoDoBanco.Endereco.Logradouro = dto.Endereco.Logradouro;
             clienteFisicoVindoDoBanco.Endereco.Numero = dto.Endereco.Numero;
             clienteFisicoVindoDoBanco.Endereco.Cidade=dto.Endereco.Cidade;
@@ -206,6 +224,8 @@ namespace ApiEstagioBicicletaria.Services
             clienteFisicoVindoDoBanco.Nome= dto.Nome;
 
             _contextoDb.Update(clienteFisicoVindoDoBanco);
+            _enderecoLogService.CriarLogsDeAtualizacao(enderecoAntigo,clienteFisicoVindoDoBanco.Endereco, clienteFisicoVindoDoBanco, _usuarioLogado);
+            _logService.CriarLogsDeAtualizacaoClienteFisico(clienteAntigo,clienteFisicoVindoDoBanco, _usuarioLogado);
             _contextoDb.SaveChanges();
             return clienteFisicoVindoDoBanco;
             
@@ -235,16 +255,21 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O nome da cidade não deve conter numeros");
             }
-            ClienteJuridico? clienteJuridicoVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c=>c.Endereco).Where(c => c.Id == id && c.Ativo).FirstOrDefault();
-            if (clienteJuridicoVindoDoBanco == null)
-            {
-                throw new ExcecaoDeRegraDeNegocio(404, "Empresa não encontrado");
-            }
             Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.FirstOrDefault(c => c.Email == dto.Email && c.Ativo && c.Id != id);
             if (clienteExistenteComEsseEmail != null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um cliente cadastrado com esse E-mail");
             }
+            ClienteJuridico? clienteJuridicoVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c=>c.Endereco).Where(c => c.Id == id && c.Ativo).FirstOrDefault();
+            if (clienteJuridicoVindoDoBanco == null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(404, "Empresa não encontrado");
+            }
+
+            Endereco enderecoAntigo = clienteJuridicoVindoDoBanco.Endereco.Copia();
+
+            ClienteJuridico clienteAntigo = clienteJuridicoVindoDoBanco.Copia();
+
             clienteJuridicoVindoDoBanco.Endereco.Logradouro = dto.Endereco.Logradouro;
             clienteJuridicoVindoDoBanco.Endereco.Numero = dto.Endereco.Numero;
             clienteJuridicoVindoDoBanco.Endereco.Cidade = dto.Endereco.Cidade;
@@ -256,14 +281,15 @@ namespace ApiEstagioBicicletaria.Services
             clienteJuridicoVindoDoBanco.InscricaoEstadual = inscricaoEstadualSemPontosTracosEBarras;
             
             _contextoDb.Update(clienteJuridicoVindoDoBanco);
+            _enderecoLogService.CriarLogsDeAtualizacao(enderecoAntigo, clienteJuridicoVindoDoBanco.Endereco, clienteJuridicoVindoDoBanco, _usuarioLogado);
+            _logService.CriarLogsDeAtualizacaoClienteJuridico(clienteAntigo, clienteJuridicoVindoDoBanco, _usuarioLogado);
             _contextoDb.SaveChanges();
             return clienteJuridicoVindoDoBanco;
         }
 
         public void DeletarCLientePorId(Guid id)
         {
-            //is ativo
-            Cliente? clienteExistente = _contextoDb.Clientes.Where(c => c.Id == id && c.Ativo).FirstOrDefault();
+            Cliente? clienteExistente = _contextoDb.Clientes.Where(c => c.Id == id && c.Ativo).Include(c=>c.Endereco).FirstOrDefault();
 
             if(clienteExistente == null)
             {
@@ -276,6 +302,8 @@ namespace ApiEstagioBicicletaria.Services
             }
             clienteExistente.Ativo = false;
             _contextoDb.Update(clienteExistente);
+            _enderecoLogService.CriarLogsDeExclusao(clienteExistente.Endereco,clienteExistente, _usuarioLogado);
+            _logService.CriarLogsDeExclusao(clienteExistente, _usuarioLogado); 
             _contextoDb.SaveChanges();
             
         }
@@ -378,5 +406,64 @@ namespace ApiEstagioBicicletaria.Services
 
             return clienteFormatoDto;
         }
+
+        public List<ClienteLogDto> BuscarLogsClientePorIdCliente(Guid idCliente)
+        {
+            List<ClienteLog> logs=_contextoDb.ClienteLogs.Where(l=>l.IdCliente==idCliente).OrderByDescending(l=>l.DataCriacao).ToList();
+
+            List<ClienteLogDto> dtoLogs = logs.Select(l =>
+                new ClienteLogDto(
+                        l.IdCliente,
+                        l.Acao,
+                        l.CampoAlterado,
+                        l.ValorAntigo,
+                        l.ValorNovo,
+                        l.IdUsuarioResponsavel,
+                        l.DataCriacao
+                    )
+            ).ToList();
+
+            return dtoLogs;
+        }
+        public List<EnderecoLogDto> BuscarLogsEnderecoPorIdCliente(Guid idCliente)
+        {
+            List<EnderecoLog> logs = _contextoDb.EnderecoLogs.Where(l => l.IdCliente == idCliente).OrderByDescending(l => l.DataCriacao).ToList();
+
+            List<EnderecoLogDto> dtoLogs = logs.Select(l =>
+                new EnderecoLogDto(
+                        l.IdEndereco,
+                        l.IdCliente,
+                        l.Acao,
+                        l.CampoAlterado,
+                        l.ValorAntigo,
+                        l.ValorNovo,
+                        l.IdUsuarioResponsavel,
+                        l.DataCriacao
+                    )
+            ).ToList();
+
+            return dtoLogs;
+        }
+
+        public List<EnderecoLogDto> BuscarLogsEnderecoPorIdEndereco(Guid idEndereco)
+        {
+            List<EnderecoLog> logs = _contextoDb.EnderecoLogs.Where(l => l.IdEndereco == idEndereco).OrderByDescending(l => l.DataCriacao).ToList();
+
+            List<EnderecoLogDto> dtoLogs = logs.Select(l =>
+                new EnderecoLogDto(
+                        l.IdEndereco,
+                        l.IdCliente,
+                        l.Acao,
+                        l.CampoAlterado,
+                        l.ValorAntigo,
+                        l.ValorNovo,
+                        l.IdUsuarioResponsavel,
+                        l.DataCriacao
+                    )
+            ).ToList();
+
+            return dtoLogs;
+        }
+
     }
 }

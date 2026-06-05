@@ -1,4 +1,6 @@
-﻿namespace ApiEstagioBicicletaria.Dtos.ProdutoDtos
+﻿using ApiEstagioBicicletaria.Dtos.EstoqueDtos;
+
+namespace ApiEstagioBicicletaria.Dtos.ProdutoDtos
 {
     public class ProdutoDtoOutPut
     {

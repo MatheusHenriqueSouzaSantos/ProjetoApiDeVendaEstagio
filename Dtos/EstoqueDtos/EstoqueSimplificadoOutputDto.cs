@@ -1,4 +1,4 @@
-﻿namespace ApiEstagioBicicletaria.Dtos.ProdutoDtos
+﻿namespace ApiEstagioBicicletaria.Dtos.EstoqueDtos
 {
     public class EstoqueSimplificadoOutputDto
     {

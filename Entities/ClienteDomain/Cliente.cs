@@ -2,6 +2,7 @@
 {
     public abstract class Cliente : EntidadeBase
     {
+        [AnotacaoDeAtributoASerIgnoradoLog]
         public Endereco Endereco { get; set; }
         //Ter fk também ou só o objeto
         public string Telefone { get; set; } = string.Empty;

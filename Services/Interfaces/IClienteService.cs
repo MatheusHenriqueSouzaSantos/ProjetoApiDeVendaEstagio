@@ -24,5 +24,12 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         List<ClienteDtoOutPut> BuscarClientesPorNome(string nome);
 
         ClienteDtoOutPut BuscarClientePorDocumentoIndentificador (DocumentoClienteInputDto dto);
+
+        List<ClienteLogDto> BuscarLogsClientePorIdCliente(Guid idCliente);
+
+        List<EnderecoLogDto> BuscarLogsEnderecoPorIdCliente(Guid idCliente);
+
+
+        List<EnderecoLogDto> BuscarLogsEnderecoPorIdEndereco(Guid idEndereco);
     }
 }

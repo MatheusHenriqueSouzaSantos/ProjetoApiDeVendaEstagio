@@ -23,5 +23,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         byte[] GerarRelatorioDeVendedoresComMaiorFaturamentoPorPeriodo
             (DatasParaGeracaoDeRelatorioDto dto);
 
+        List<VendedorLogDto> BuscarLogsPorIdVendedor(Guid id);
+
     }
 }

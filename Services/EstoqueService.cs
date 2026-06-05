@@ -1,5 +1,7 @@
-﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
+﻿using ApiEstagioBicicletaria.Dtos.EstoqueDtos;
+using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
 using ApiEstagioBicicletaria.Entities.EstoqueDomain;
+using ApiEstagioBicicletaria.Entities.FornedorDomain;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
@@ -64,6 +66,23 @@ namespace ApiEstagioBicicletaria.Services
         private EstoqueSimplificadoOutputDto EntityToDto(Estoque estoque)
         {
             return new EstoqueSimplificadoOutputDto(estoque.Id, estoque.QuantidadeEmEstoque);
+        }
+
+        public List<EstoqueLogDto> BuscarLogsPorIdEstoque(Guid id)
+        {
+            List<EstoqueLog> logs = _contexto.EstoqueLogs
+                .Where(l => l.IdEstoque == id).OrderByDescending(l => l.DataCriacao).ToList();
+
+            List<EstoqueLogDto> logsDto =
+                logs.Select(l => new EstoqueLogDto
+                (l.IdEstoque,
+                l.Acao,
+                l.CampoAlterado,
+                l.ValorAntigo,
+                l.ValorNovo,
+                l.IdUsuarioResponsavel,
+                l.DataCriacao)).ToList();
+            return logsDto;
         }
 
     }

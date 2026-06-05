@@ -210,7 +210,7 @@ namespace ApiEstagioBicicletaria.Services
         //        ).ToList();
 
 
-        public List<FornecedorLogDto> BuscarLogsPorId(Guid id)
+        public List<FornecedorLogDto> BuscarLogsPorIdFornecedor(Guid id)
         {
             List<FornecedorLog> logs = _contexto.FornecedorLogs
                 .Where(l => l.IdFornecedor == id).OrderByDescending(l => l.DataCriacao).ToList();

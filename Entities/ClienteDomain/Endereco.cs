@@ -18,5 +18,10 @@
             Cidade = cidade;
             SiglaUf = siglaUf;
         }
+
+        public Endereco Copia()
+        {
+            return new Endereco(Logradouro, Numero, Cidade, SiglaUf);
+        }
     }
 }

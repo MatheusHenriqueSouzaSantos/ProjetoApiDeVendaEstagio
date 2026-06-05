@@ -1,7 +1,9 @@
 using ApiEstagioBicicletaria.Dtos;
 using ApiEstagioBicicletaria.Dtos.ClienteDtos;
+using ApiEstagioBicicletaria.Dtos.VendedorDtos;
 using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
+using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
@@ -232,6 +234,66 @@ namespace ApiEstagioBicicletaria.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500,"Erro Inesperado");
+            }
+        }
+
+        [Authorize]
+        [HttpGet("log/{idCliente}")]
+        public ActionResult<List<ClienteLogDto>> BuscarLogsPorIdCliente(Guid idCliente)
+        {
+            try
+            {
+                return Ok(_clienteService.BuscarLogsClientePorIdCliente(idCliente));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
+            }
+        }
+
+        [Authorize]
+        [HttpGet("log-endereco-por-id-cliente/{idCliente}")]
+        public ActionResult<List<EnderecoLogDto>> BuscarLogsEnderecoPorIdClliente(Guid idCliente)
+        {
+            try
+            {
+                return Ok(_clienteService.BuscarLogsEnderecoPorIdCliente(idCliente));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
+            }
+        }
+
+        [Authorize]
+        [HttpGet("log-endereco-por-id-endereco/{idEndereco}")]
+        public ActionResult<List<EnderecoLogDto>> BuscarLogsEnderecoPorIdEnderecoe(Guid idEndereco)
+        {
+            try
+            {
+                return Ok(_clienteService.BuscarLogsEnderecoPorIdEndereco(idEndereco));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
             }
         }
 

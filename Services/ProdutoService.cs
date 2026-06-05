@@ -1,6 +1,9 @@
-﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
+﻿using ApiEstagioBicicletaria.Dtos.EstoqueDtos;
+using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
+using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.EstoqueDomain;
+using ApiEstagioBicicletaria.Entities.FornedorDomain;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Excecoes;
@@ -287,6 +290,23 @@ namespace ApiEstagioBicicletaria.Services
             byte[] pdf = documento.GeneratePdf();
 
             return pdf;
+        }
+
+        public List<ProdutoLogDto> BuscarLogsPorIdProduto(Guid id)
+        {
+            List<ProdutoLog> logs = _contextoDb.ProdutoLogs
+                .Where(l => l.IdProduto == id).OrderByDescending(l => l.DataCriacao).ToList();
+
+            List<ProdutoLogDto> logsDto =
+                logs.Select(l => new ProdutoLogDto
+                (l.IdProduto,
+                l.Acao,
+                l.CampoAlterado,
+                l.ValorAntigo,
+                l.ValorNovo,
+                l.IdUsuarioResponsavel,
+                l.DataCriacao)).ToList();
+            return logsDto;
         }
 
     }    
