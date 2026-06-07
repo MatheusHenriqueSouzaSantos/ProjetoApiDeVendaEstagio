@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
+﻿using ApiEstagioBicicletaria.Dtos;
+using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,6 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         byte[] GerarRelatorioDeProdutosComMaiorQuantidadeVendidaPorPeriodo(DatasParaGeracaoDeRelatorioDto dto);
         byte[] GerarRelatorioDeProdutosComEstoqueAbaixoOuIgualUmaQuantidade(int quantidadePaBuscarProdutosEmFalta);
 
-        List<ProdutoLogDto> BuscarLogsPorIdProduto(Guid id);
+        List<BaseDtoLog> BuscarLogsPorIdProduto(Guid id);
     }
 }

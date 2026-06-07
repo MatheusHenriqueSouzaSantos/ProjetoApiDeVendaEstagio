@@ -24,6 +24,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
                 var valorPropriedade = propriedade.GetValue(estoque);
 
                 EstoqueLog log = new EstoqueLog(estoque,
+                    estoque.Produto,
                     Entities.LogAcao.Criacao,
                     propriedade.Name,
                     null,
@@ -35,9 +36,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
         }
         public void CriarLogsDeExclusao(Estoque estoque, Usuario usuarioResponsavel)
         {
-            _repositorio.CriarLog(new EstoqueLog(estoque, Entities.LogAcao.Exclusao, "Ativo", true.ToString(), false.ToString(), usuarioResponsavel));
-            _repositorio.CriarLog(new EstoqueLog(estoque, Entities.LogAcao.Exclusao, "QuantidadeEmEstoque", estoque.QuantidadeEmEstoque.ToString(), 
-                estoque.QuantidadeEmEstoque.ToString(), usuarioResponsavel));
+            _repositorio.CriarLog(new EstoqueLog(estoque,estoque.Produto, Entities.LogAcao.Exclusao, "Ativo", true.ToString(), false.ToString(), usuarioResponsavel));
         }
     }
 }

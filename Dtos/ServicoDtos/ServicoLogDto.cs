@@ -2,7 +2,7 @@
 
 namespace ApiEstagioBicicletaria.Dtos.ServicoDtos
 {
-    public class ServicoLogDto : BaseLogDto
+    public class ServicoLogDto : BaseDtoLog
     {
 
         public Guid IdServico { get; private set; }

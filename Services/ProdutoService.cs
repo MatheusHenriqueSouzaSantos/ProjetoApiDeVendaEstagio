@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos.EstoqueDtos;
+﻿using ApiEstagioBicicletaria.Dtos;
+using ApiEstagioBicicletaria.Dtos.EstoqueDtos;
 using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
 using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
@@ -13,6 +14,7 @@ using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Services.LogServices;
 using ApiEstagioBicicletaria.Services.ServicesLogs;
+using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using System.Globalization;
@@ -114,7 +116,7 @@ namespace ApiEstagioBicicletaria.Services
             Produto produtoAInserirNoBanco = new Produto(codigoDeBarraSomenteNumerosELetras,
                 dto.NomeProduto, dto.Descricao, dto.PrecoUnitario);
             Estoque estoque = new(produtoAInserirNoBanco,produtoAInserirNoBanco.Id);
-            Console.WriteLine(estoque.Ativo);
+            estoque.Produto = produtoAInserirNoBanco;
             _contextoDb.Add(produtoAInserirNoBanco);
             _contextoDb.Add(estoque);
             _produtoLogService.CriarLogsDeCriacao(produtoAInserirNoBanco,_usuarioLogado);
@@ -163,7 +165,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"Esse produto esta em uma venda, exclua a venda antes de exclui-lo");
             }
-            Estoque estoque = _contextoDb.Estoques.FirstOrDefault(e => e.Produto.Id == produtoVindoDoBanco.Id)
+            Estoque estoque = _contextoDb.Estoques.Include(e=>e.Produto).FirstOrDefault(e => e.Produto.Id == produtoVindoDoBanco.Id)
                   ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
             produtoVindoDoBanco.Ativo = false;
             estoque.Ativo=false;
@@ -292,13 +294,13 @@ namespace ApiEstagioBicicletaria.Services
             return pdf;
         }
 
-        public List<ProdutoLogDto> BuscarLogsPorIdProduto(Guid id)
+        public List<BaseDtoLog> BuscarLogsPorIdProduto(Guid idProdutoEnviado)
         {
-            List<ProdutoLog> logs = _contextoDb.ProdutoLogs
-                .Where(l => l.IdProduto == id).OrderByDescending(l => l.DataCriacao).ToList();
+            List<ProdutoLog> produtoLogs = _contextoDb.ProdutoLogs
+                .Where(l => l.IdProduto == idProdutoEnviado).ToList();
 
-            List<ProdutoLogDto> logsDto =
-                logs.Select(l => new ProdutoLogDto
+            List<ProdutoLogDto> produtoLogsDto =
+                produtoLogs.Select(l => new ProdutoLogDto
                 (l.IdProduto,
                 l.Acao,
                 l.CampoAlterado,
@@ -306,7 +308,28 @@ namespace ApiEstagioBicicletaria.Services
                 l.ValorNovo,
                 l.IdUsuarioResponsavel,
                 l.DataCriacao)).ToList();
-            return logsDto;
+
+            List<EstoqueLog> estoqueLogs = _contextoDb.EstoqueLogs
+               .Where(l => l.IdProduto == idProdutoEnviado).ToList();
+
+            List<EstoqueLogDto> estoqueLogsDto =
+                estoqueLogs.Select(l => new EstoqueLogDto
+                (l.IdEstoque,
+                l.Acao,
+                l.CampoAlterado,
+                l.ValorAntigo,
+                l.ValorNovo,
+                l.IdUsuarioResponsavel,
+                l.DataCriacao)).ToList();
+
+            List<BaseDtoLog> dtoLogs = new List<BaseDtoLog>();
+
+            dtoLogs.AddRange(produtoLogsDto);
+            dtoLogs.AddRange(estoqueLogsDto);
+
+            dtoLogs.OrderByDescending(l => l.DataCriacao).ToList();
+
+            return dtoLogs;
         }
 
     }    

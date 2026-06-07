@@ -2,7 +2,7 @@
 
 namespace ApiEstagioBicicletaria.Dtos.ClienteDtos
 {
-    public class ClienteLogDto : BaseLogDto
+    public class ClienteLogDto : BaseDtoLog
     {
 
         public Guid IdCliente { get; private set; }

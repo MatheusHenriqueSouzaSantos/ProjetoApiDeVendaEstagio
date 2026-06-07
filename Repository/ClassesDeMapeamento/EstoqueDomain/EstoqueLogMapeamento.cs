@@ -19,6 +19,15 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EstoqueDomain
                 .IsRequired();
             builder.Property(e => e.IdEstoque)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID_ESTOQUE")
+                .IsRequired();
+            builder.HasOne(e => e.Produto)
+               .WithMany()
+               .HasForeignKey(e => e.IdProduto)
+               .IsRequired();
+            builder.Property(e => e.IdProduto)
+                .HasColumnName("ID_PRODUTO")
+                .HasColumnType("binary(16)")
                 .IsRequired();
 
         }

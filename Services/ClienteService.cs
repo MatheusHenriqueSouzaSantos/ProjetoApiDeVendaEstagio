@@ -11,6 +11,7 @@ using ApiEstagioBicicletaria.Services.LogServices;
 using ApiEstagioBicicletaria.Validacao;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace ApiEstagioBicicletaria.Services
 {
@@ -407,11 +408,11 @@ namespace ApiEstagioBicicletaria.Services
             return clienteFormatoDto;
         }
 
-        public List<ClienteLogDto> BuscarLogsClientePorIdCliente(Guid idCliente)
+        public List<BaseDtoLog> BuscarLogsClientePorIdCliente(Guid idCliente)
         {
-            List<ClienteLog> logs=_contextoDb.ClienteLogs.Where(l=>l.IdCliente==idCliente).OrderByDescending(l=>l.DataCriacao).ToList();
+            List<ClienteLog> clienteLogs=_contextoDb.ClienteLogs.Where(l=>l.IdCliente==idCliente).ToList();
 
-            List<ClienteLogDto> dtoLogs = logs.Select(l =>
+            List<ClienteLogDto> clienteDtoLogs = clienteLogs.Select(l =>
                 new ClienteLogDto(
                         l.IdCliente,
                         l.Acao,
@@ -423,13 +424,9 @@ namespace ApiEstagioBicicletaria.Services
                     )
             ).ToList();
 
-            return dtoLogs;
-        }
-        public List<EnderecoLogDto> BuscarLogsEnderecoPorIdCliente(Guid idCliente)
-        {
-            List<EnderecoLog> logs = _contextoDb.EnderecoLogs.Where(l => l.IdCliente == idCliente).OrderByDescending(l => l.DataCriacao).ToList();
+            List<EnderecoLog> enderecoLogs = _contextoDb.EnderecoLogs.Where(l => l.IdCliente == idCliente).ToList();
 
-            List<EnderecoLogDto> dtoLogs = logs.Select(l =>
+            List<EnderecoLogDto> enderecoDtoLogs = enderecoLogs.Select(l =>
                 new EnderecoLogDto(
                         l.IdEndereco,
                         l.IdCliente,
@@ -442,27 +439,15 @@ namespace ApiEstagioBicicletaria.Services
                     )
             ).ToList();
 
-            return dtoLogs;
-        }
+            List<BaseDtoLog> logDtos= new List<BaseDtoLog>();
 
-        public List<EnderecoLogDto> BuscarLogsEnderecoPorIdEndereco(Guid idEndereco)
-        {
-            List<EnderecoLog> logs = _contextoDb.EnderecoLogs.Where(l => l.IdEndereco == idEndereco).OrderByDescending(l => l.DataCriacao).ToList();
+            logDtos.AddRange(clienteDtoLogs);
+            
+            logDtos.AddRange(enderecoDtoLogs);
 
-            List<EnderecoLogDto> dtoLogs = logs.Select(l =>
-                new EnderecoLogDto(
-                        l.IdEndereco,
-                        l.IdCliente,
-                        l.Acao,
-                        l.CampoAlterado,
-                        l.ValorAntigo,
-                        l.ValorNovo,
-                        l.IdUsuarioResponsavel,
-                        l.DataCriacao
-                    )
-            ).ToList();
+            logDtos.OrderByDescending(l => l.DataCriacao).ToList();
 
-            return dtoLogs;
+            return logDtos;
         }
 
     }

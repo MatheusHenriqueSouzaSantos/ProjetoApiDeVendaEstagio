@@ -10,6 +10,5 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         EstoqueSimplificadoOutputDto AbaterQuantidadeEmEstoque(Guid id, int quantidade);
 
-        List<EstoqueLogDto> BuscarLogsPorIdEstoque(Guid id);
     }
 }
