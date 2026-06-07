@@ -153,7 +153,6 @@ namespace ApiEstagioBicicletaria
   
             app.UseSwagger();
             app.UseSwaggerUI();
-            app.UseAuthorization();
 
             app.MapControllers();
 

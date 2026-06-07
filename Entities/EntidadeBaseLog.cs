@@ -9,9 +9,9 @@ namespace ApiEstagioBicicletaria.Entities
         public LogAcao Acao { get; private set; }
 
         public string CampoAlterado { get; private set; }
-        public string ValorAntigo { get; private set; }
+        public string? ValorAntigo { get; private set; }
 
-        public string ValorNovo { get; private set; }
+        public string? ValorNovo { get; private set; }
 
         public Usuario UsuarioResponsavel { get; private set; }
 

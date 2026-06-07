@@ -24,12 +24,10 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento
                 .IsRequired();
             builder.Property(t => t.ValorAntigo)
                 .HasColumnName("VALOR_ANTIGO")
-                .HasMaxLength(300)
-                .IsRequired();
+                .HasMaxLength(300);
             builder.Property(t => t.ValorNovo)
                 .HasColumnName("VALOR_NOVO")
-                .HasMaxLength(300)
-                .IsRequired();
+                .HasMaxLength(300);
             builder.HasOne(t => t.UsuarioResponsavel)
                 .WithMany()
                 .HasForeignKey(t => t.IdUsuarioResponsavel);

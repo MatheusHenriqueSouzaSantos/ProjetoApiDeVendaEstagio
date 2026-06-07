@@ -224,6 +224,7 @@ namespace ApiEstagioBicicletaria.Services
                 l.ValorNovo,
                 l.IdUsuarioResponsavel,
                 l.DataCriacao)).ToList();
+
             return logsDto;
         }
     }
