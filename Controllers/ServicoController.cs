@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos;
+﻿using ApiEstagioBicicletaria.Dtos.ClienteDtos;
+using ApiEstagioBicicletaria.Dtos.ServicoDtos;
 using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
@@ -160,7 +161,25 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [Authorize]
+        [HttpGet("log/{idServico}")]
+        public ActionResult<List<ServicoLogDto>> BuscarLogsPorIdServico(Guid idServico)
+        {
+            try
+            {
+                return Ok(_servicoService.BuscarLogsPorIdServico(idServico));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
 
+            }
+        }
 
     }
 }

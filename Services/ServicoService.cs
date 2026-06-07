@@ -1,10 +1,14 @@
-﻿using ApiEstagioBicicletaria.Dtos;
+﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
+using ApiEstagioBicicletaria.Dtos.ServicoDtos;
 using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
+using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
+using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using ApiEstagioBicicletaria.Services.LogServices;
 using System.Text.RegularExpressions;
 
 namespace ApiEstagioBicicletaria.Services
@@ -12,10 +16,14 @@ namespace ApiEstagioBicicletaria.Services
     public class ServicoService : IServicoService
     {
         private ContextoDb _contextoDb;
+        private Usuario _usuarioLogado;
+        private ServicoLogService _logService;
 
-        public ServicoService(ContextoDb contextoDb)
+        public ServicoService(ContextoDb contextoDb, UsuarioLogadoService usuarioLogadoService, ServicoLogService logService)
         {
-            this._contextoDb = contextoDb;
+            _contextoDb = contextoDb;
+            _usuarioLogado = usuarioLogadoService.ObterUsuario();
+            _logService = logService;
         }
 
         public List<ServicoDtoOutPut> BuscarServicos()
@@ -82,6 +90,7 @@ namespace ApiEstagioBicicletaria.Services
             Servico servicoAInserirNoBanco = new Servico(codigoDoServicoSomenteNumerosELetras,
                 dto.NomeServico, dto.Descricao, dto.PrecoServico);
             _contextoDb.Add(servicoAInserirNoBanco);
+            _logService.CriarLogsDeCriacao(servicoAInserirNoBanco,_usuarioLogado);
             _contextoDb.SaveChanges();
             return servicoAInserirNoBanco;
 
@@ -99,10 +108,13 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
             }
+            Servico servicoDesatualizado = servicoVindoDoBanco.Copia();
+
             servicoVindoDoBanco.NomeServico = dto.NomeServico;
             servicoVindoDoBanco.Descricao = dto.Descricao;
             servicoVindoDoBanco.Preco = dto.PrecoServico;
             _contextoDb.Update(servicoVindoDoBanco);
+            _logService.CriarLogsDeAtualizacao(servicoDesatualizado,servicoVindoDoBanco,_usuarioLogado);
             _contextoDb.SaveChanges();
             return servicoVindoDoBanco;
         }
@@ -122,6 +134,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             servicoVindoDoBanco.Ativo = false;
             _contextoDb.Update(servicoVindoDoBanco);
+            _logService.CriarLogsDeExclusao(servicoVindoDoBanco, _usuarioLogado);
             _contextoDb.SaveChanges();
         }
 
@@ -138,6 +151,23 @@ namespace ApiEstagioBicicletaria.Services
                 servicosFormatoOutPut.Add(servicoFormatoDto);
             }
             return servicosFormatoOutPut;
+        }
+
+        public List<ServicoLogDto> BuscarLogsPorIdServico(Guid id)
+        {
+            List<ServicoLog> logs = _contextoDb.ServicoLogs
+                .Where(l => l.IdServico == id).OrderByDescending(l => l.DataCriacao).ToList();
+
+            List<ServicoLogDto> logsDto =
+                logs.Select(l => new ServicoLogDto
+                (l.IdServico,
+                l.Acao,
+                l.CampoAlterado,
+                l.ValorAntigo,
+                l.ValorNovo,
+                l.IdUsuarioResponsavel,
+                l.DataCriacao)).ToList();
+            return logsDto;
         }
 
     }

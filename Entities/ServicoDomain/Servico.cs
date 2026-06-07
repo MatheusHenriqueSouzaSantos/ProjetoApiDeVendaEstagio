@@ -23,5 +23,10 @@
             Descricao = descricao;
             Preco = preco;
         }
+
+        public Servico Copia()
+        {
+            return new Servico(CodigoDoServico, NomeServico, Descricao, Preco);
+        }
     }
 }

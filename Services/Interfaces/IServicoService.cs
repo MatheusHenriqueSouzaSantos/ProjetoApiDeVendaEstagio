@@ -1,4 +1,4 @@
-﻿using ApiEstagioBicicletaria.Dtos;
+﻿using ApiEstagioBicicletaria.Dtos.ServicoDtos;
 using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 
@@ -18,6 +18,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         void DeletarServicoPorId(Guid id);
 
         List<ServicoDtoOutPut> BuscarServicosPorNome(string nome);
+
+        List<ServicoLogDto> BuscarLogsPorIdServico(Guid id);
 
     }
 }
