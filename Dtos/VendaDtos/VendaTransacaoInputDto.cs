@@ -1,4 +1,6 @@
-﻿namespace ApiEstagioBicicletaria.Dtos.VendaDtos
+﻿using ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos;
+
+namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 {
     public class VendaTransacaoInputDto
     {

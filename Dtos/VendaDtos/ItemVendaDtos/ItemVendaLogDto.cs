@@ -1,4 +1,4 @@
-﻿namespace ApiEstagioBicicletaria.Dtos.VendaDtos
+﻿namespace ApiEstagioBicicletaria.Dtos.VendaDtos.ItemVendaDtos
 {
     public class ItemVendaLogDto
     {

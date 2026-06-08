@@ -1,6 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
 
-namespace ApiEstagioBicicletaria.Dtos.VendaDtos
+namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
 {
     public class TransacaoOutputDto
     {

@@ -1,6 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Dtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Dtos.VendaDtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos;
 using ApiEstagioBicicletaria.Entities.VendaDomain;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces

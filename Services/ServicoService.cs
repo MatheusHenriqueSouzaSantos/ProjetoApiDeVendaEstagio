@@ -1,6 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.ServicoDtos;
-using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
@@ -70,7 +69,7 @@ namespace ApiEstagioBicicletaria.Services
             return servicoFormatoDto;
         }
 
-        public Servico CadastrarServico(ServicoDto dto)
+        public Servico CadastrarServico(ServicoInputDto dto)
         {
             //validar formato de codigo de barra? mais qual o formato vai utilizar?
 
@@ -96,7 +95,7 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
-        public Servico AtualizarServico(Guid id, ServicoDto dto)
+        public Servico AtualizarServico(Guid id, ServicoInputDto dto)
         {
             if (!(string.IsNullOrWhiteSpace(dto.CodigoDoServico)))
             {

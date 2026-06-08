@@ -1,6 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 
-namespace ApiEstagioBicicletaria.Dtos.VendaDtos
+namespace ApiEstagioBicicletaria.Dtos.VendaDtos.ItemVendaDtos
 {
     public class ItemVendaOutputDto
     {

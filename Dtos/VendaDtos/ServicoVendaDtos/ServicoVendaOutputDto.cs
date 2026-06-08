@@ -1,6 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Entities.ServicoDomain;
 
-namespace ApiEstagioBicicletaria.Dtos.VendaDtos
+namespace ApiEstagioBicicletaria.Dtos.VendaDtos.ServicoVendaDtos
 {
     public class ServicoVendaOutputDto
     {

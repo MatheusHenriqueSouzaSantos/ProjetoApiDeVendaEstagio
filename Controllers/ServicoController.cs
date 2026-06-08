@@ -1,6 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Dtos.ClienteDtos;
 using ApiEstagioBicicletaria.Dtos.ServicoDtos;
-using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Excecoes;
@@ -78,7 +77,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
         [HttpPost]
         [Authorize]
-        public ActionResult<Servico> CadastrarServico([FromBody] ServicoDto dto)
+        public ActionResult<Servico> CadastrarServico([FromBody] ServicoInputDto dto)
         {
             try
             {
@@ -103,7 +102,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
         [HttpPut("{id}")]
         [Authorize]
-        public ActionResult<Servico> AtualizarServico([FromRoute] Guid id, [FromBody] ServicoDto dto)
+        public ActionResult<Servico> AtualizarServico([FromRoute] Guid id, [FromBody] ServicoInputDto dto)
         {
             try
             {

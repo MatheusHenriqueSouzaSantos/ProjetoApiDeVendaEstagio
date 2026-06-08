@@ -1,5 +1,4 @@
 ﻿using ApiEstagioBicicletaria.Dtos.ServicoDtos;
-using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces
@@ -11,9 +10,9 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         ServicoDtoOutPut BuscarServicoPorCodigoDoServico(string codigoDoServico);
 
-        Servico CadastrarServico(ServicoDto dto);
+        Servico CadastrarServico(ServicoInputDto dto);
 
-        Servico AtualizarServico(Guid id, ServicoDto dto);
+        Servico AtualizarServico(Guid id, ServicoInputDto dto);
 
         void DeletarServicoPorId(Guid id);
 

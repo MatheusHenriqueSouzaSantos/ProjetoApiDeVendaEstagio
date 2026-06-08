@@ -1,7 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
 using System.ComponentModel.DataAnnotations;
 
-namespace ApiEstagioBicicletaria.Dtos.VendaDtos
+namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
 {
     public class TransacaoInputDto
     {

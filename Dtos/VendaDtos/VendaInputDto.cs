@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ApiEstagioBicicletaria.Dtos.VendaDtos.ItemVendaDtos.ItemVendaInputDtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos.ServicoVendaDtos;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 {
@@ -9,7 +11,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
         [Range(0,1000000, ErrorMessage ="O valor do desconto não pode ser negativo")]
         public decimal? DescontoSobreTotalVenda { get; set; } = 0.0m;
         [Required(ErrorMessage = "O campo itens Venda é obrigatório")]
-        public List<ItemVendaInputDto> ItensVenda { get; set; }
+        public List<ItemVendaCreateDto> ItensVenda { get; set; }
         [Required(ErrorMessage = "O campo servicos Venda é obrigatório")]
         public List<ServicoVendaInputDto> ServicosVenda { get; set; }
 
@@ -21,7 +23,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         }
 
-        public VendaInputDto(Guid idCliente, decimal? descontoSobreTotalVenda, List<ItemVendaInputDto> itensVenda, List<ServicoVendaInputDto> servicosVenda, Guid vendedorId)
+        public VendaInputDto(Guid idCliente, decimal? descontoSobreTotalVenda, List<ItemVendaCreateDto> itensVenda, List<ServicoVendaInputDto> servicosVenda, Guid vendedorId)
         {
             IdCliente = idCliente;
             DescontoSobreTotalVenda = descontoSobreTotalVenda;

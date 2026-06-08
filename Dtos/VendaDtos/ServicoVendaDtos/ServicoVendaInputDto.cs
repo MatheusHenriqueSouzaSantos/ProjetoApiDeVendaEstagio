@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ApiEstagioBicicletaria.Dtos.VendaDtos
+namespace ApiEstagioBicicletaria.Dtos.VendaDtos.ServicoVendaDtos
 {
     public class ServicoVendaInputDto
     {

@@ -2,7 +2,7 @@
 
 namespace ApiEstagioBicicletaria.Dtos.ServicoDtos
 {
-    public class ServicoDto
+    public class ServicoInputDto
     {
         [MaxLength(128,ErrorMessage = "O campo Codigo Serviço deve ter no máximo 128 caracteres")]
         public string CodigoDoServico { get; set;}=string.Empty;
@@ -18,12 +18,12 @@ namespace ApiEstagioBicicletaria.Dtos.ServicoDtos
         [Range(0.0, 1000000.0, ErrorMessage = "O valor de Preço deve estar no intervalo de 0.0 até 1000000.0")]
         public decimal PrecoServico { get; set; } = 0.0m;
 
-        protected ServicoDto()
+        protected ServicoInputDto()
         {
 
         }
 
-        public ServicoDto(string codigoDoServico, string nomeServico, string descricao, decimal precoServico)
+        public ServicoInputDto(string codigoDoServico, string nomeServico, string descricao, decimal precoServico)
         {
             CodigoDoServico = codigoDoServico;
             NomeServico = nomeServico;
