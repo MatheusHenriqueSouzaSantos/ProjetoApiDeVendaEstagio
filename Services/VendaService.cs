@@ -9,6 +9,7 @@ using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Entities.EstoqueDomain;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.ServicoDomain;
+using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain.ParcelaDomain;
@@ -16,8 +17,10 @@ using ApiEstagioBicicletaria.Entities.VendedorDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Repository.Repositorios;
+using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using ApiEstagioBicicletaria.Services.LogServices;
 using ApiEstagioBicicletaria.Utils;
 using ApiEstagioBicicletaria.Validacao;
 using Microsoft.AspNetCore.Mvc;
@@ -36,14 +39,24 @@ namespace ApiEstagioBicicletaria.Services
         private readonly GeradorCodigoIndentificadorMovimentacao<Venda> _geradorCodigoVenda;
         private readonly IEstoqueService _estoqueService;
         private readonly VendedorRepositorio _vendedorRepositorio;
+        private readonly VendaLogService _vendaLogService;
+        private readonly ItemVendaLogService _itemVendaLogService;
+        private readonly ServicoVendaLogService _servicoVendaLogService;
+        private readonly Usuario _usuarioLogado;
 
         public VendaService(ContextoDb contexto, GeradorCodigoIndentificadorMovimentacao<Venda> geradorCodigoVenda, 
-            IEstoqueService estoqueService, VendedorRepositorio vendedorRepositorio)
+            IEstoqueService estoqueService, VendedorRepositorio vendedorRepositorio, VendaLogService vendaLogService,
+            ServicoVendaLogService servicoVendaLogService,ItemVendaLogService itemVendaLogService,
+            UsuarioLogadoService usuarioLogadoService)
         {
             _contexto = contexto;
             _geradorCodigoVenda = geradorCodigoVenda;
             _estoqueService = estoqueService;
             _vendedorRepositorio = vendedorRepositorio;
+            _vendaLogService = vendaLogService;
+            _itemVendaLogService = itemVendaLogService;
+            _servicoVendaLogService = servicoVendaLogService;
+            _usuarioLogado = usuarioLogadoService.ObterUsuario();
         }
 
         public List<VendaTransacaoOutputDto> BuscarTodasVendas()
@@ -103,11 +116,13 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "A Quantidade De Parcelas não deve ser maior que 60");
             }
 
-            decimal valorTotalDaVendaComDescontoAplicado=Math.Round( (valorTotalDaVendaSemDescontoTotalAplicado-descontoVenda),2,MidpointRounding.AwayFromZero);
+            decimal valorTotalDaVendaComDescontoAplicado=Math.Round((valorTotalDaVendaSemDescontoTotalAplicado-descontoVenda),2,MidpointRounding.AwayFromZero);
 
             string codigoVenda = _geradorCodigoVenda.GerarCodigo();
 
             Venda vendaCriada = new Venda(clienteDaVenda,codigoVenda, clienteDaVenda.Id, descontoVenda,valorTotalDaVendaSemDescontoTotalAplicado, valorTotalDaVendaComDescontoAplicado,vendedorDaVenda);
+
+            _vendaLogService.CriarLogsDeCriacao(vendaCriada, _usuarioLogado);
 
             List<ItemVenda> listaDeItensDaVendaCriada = new List<ItemVenda>();
 
@@ -140,6 +155,7 @@ namespace ApiEstagioBicicletaria.Services
                 AbaterQuantidadeEmEstoque(estoqueDoProdutoDoItem,itemEnviado.Quantidade);
                 ItemVenda itemCriado = new ItemVenda(vendaCriada, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.Preco);
                 listaDeItensDaVendaCriada.Add(itemCriado);
+                _itemVendaLogService.CriarLogsDeCriacao(itemCriado, vendaCriada, _usuarioLogado);
                 _contexto.ItensVendas.Add(itemCriado);
                 //coloco o save changes a cada interação no for each ou no final?, no final pois os itens precisão ser salvos no mesmo tempo da venda
                 
@@ -159,6 +175,7 @@ namespace ApiEstagioBicicletaria.Services
                 }
                 ServicoVenda servicoDaVendaCriado = new ServicoVenda(vendaCriada, servicoDaVenda, descontoDoServicoNaVenda, servicoDaVenda.Preco);
                 listaDeServicosDaVendaCriada.Add(servicoDaVendaCriado);
+                _servicoVendaLogService.CriarLogsDeCriacao(servicoDaVendaCriado, vendaCriada, _usuarioLogado);
                 _contexto.ServicosVendas.Add(servicoDaVendaCriado);
             }
 

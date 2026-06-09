@@ -7,6 +7,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
     public class Venda : EntidadeBase
     {
         public string CodigoVenda { get; private set; }
+        [AnotacaoDeAtributoASerIgnoradoLog]
         public Cliente Cliente { get;  set; }
 
         public Guid IdCliente { get;  set; }
@@ -18,6 +19,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public decimal ValorTotalComDesconto { get; set; } = 0.0m;
 
+        [AnotacaoDeAtributoASerIgnoradoLog]
         public Vendedor Vendedor { get; set; }
 
         public Guid VendedorId {  get; set; }
