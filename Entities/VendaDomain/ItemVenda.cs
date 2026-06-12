@@ -6,11 +6,12 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
     {
         //todos os atributos deixo que nunca podme ser alterados? se errou crie outro item venda?
         //deixar privado pois ao enviar a venda já esta concluida
-
+        [AnotacaoDeAtributoASerIgnoradoLog]
         public Venda Venda { get; private set; }
 
         public Guid IdVenda { get; private set; }
 
+        [AnotacaoDeAtributoASerIgnoradoLog]
         public Produto Produto { get; private set; }
 
         public Guid IdProduto { get; private set; }

@@ -57,6 +57,9 @@ namespace ApiEstagioBicicletaria
             builder.Services.AddScoped<ProdutoLogService>();
             builder.Services.AddScoped<ServicoLogService>();
             builder.Services.AddScoped<VendedorLogService>();
+            builder.Services.AddScoped<VendaLogService>();
+            builder.Services.AddScoped<ItemVendaLogService>();
+            builder.Services.AddScoped<ServicoVendaLogService>();
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddCors(options =>

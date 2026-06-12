@@ -5,11 +5,12 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 {
     public class ServicoVenda : EntidadeBase
     {
-
+        [AnotacaoDeAtributoASerIgnoradoLog]
         public Venda Venda { get; private set; }
 
         public Guid IdVenda { get; private set; }
 
+        [AnotacaoDeAtributoASerIgnoradoLog]
         public Servico Servico { get; private set; }
 
         public Guid IdServico {  get; private set; }
