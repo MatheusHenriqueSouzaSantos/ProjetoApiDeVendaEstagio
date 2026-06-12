@@ -4,8 +4,6 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.ServicoVendaDtos
 {
     public class ServicoVendaInputDto
     {
-        [Required(ErrorMessage = "O campo id servico é obrigatório")]
-        public Guid IdServico { get; set; }
         [Range(0, 1000000, ErrorMessage = "O desconto do Serviço não pode ser negativo")]
         public decimal? DescontoServico { get; set; } = 0.0m;
 
@@ -17,11 +15,9 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.ServicoVendaDtos
 
         }
 
-        public ServicoVendaInputDto(Guid idServico, decimal? descontoServico)
+        public ServicoVendaInputDto(decimal? descontoServico)
         {
-            IdServico = idServico;
             DescontoServico = descontoServico;
-            //PrecoServicoNaVenda = precoServicoNaVenda;
         }
     }
     

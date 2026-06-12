@@ -33,9 +33,9 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain
                 .IsRequired();
             builder.HasOne(v=>v.Vendedor)
                 .WithMany()
-                .HasForeignKey(v=>v.VendedorId)
+                .HasForeignKey(v=>v.IdVendedor)
                 .IsRequired();
-            builder.Property(v=>v.VendedorId)
+            builder.Property(v=>v.IdVendedor)
                 .HasColumnName("ID_VENDEDOR")
                 .IsRequired();
         }

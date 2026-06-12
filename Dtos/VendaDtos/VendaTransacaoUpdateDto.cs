@@ -3,16 +3,16 @@ using ApiEstagioBicicletaria.Dtos.VendaDtos.VendaInputsDtos;
 
 namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 {
-    public class VendaTransacaoInputDto
+    public class VendaTransacaoUpdateDto
     {
-        public VendaCreateDto Venda { get; set; }
+        public VendaUpdateDto Venda { get; set; }
 
         public TransacaoInputDto Transacao { get; set; }
 
 
-        public VendaTransacaoInputDto() { }
+        public VendaTransacaoUpdateDto() { }
 
-        public VendaTransacaoInputDto(VendaCreateDto venda, TransacaoInputDto transacao)
+        public VendaTransacaoUpdateDto(VendaUpdateDto venda, TransacaoInputDto transacao)
         {
             Venda = venda;
             Transacao = transacao;

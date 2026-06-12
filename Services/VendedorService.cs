@@ -169,7 +169,7 @@ namespace ApiEstagioBicicletaria.Services
                             v.DataCriacao >= dataDeInicioDoPeriodoConvertidaDateTime &&
                             v.DataCriacao <= dataDeFinalDoPeriodoConvertidaDateTime)
                         .Join(_contexto.Vendedores,
-                            v => v.VendedorId,
+                            v => v.IdVendedor,
                             ve => ve.Id,
                             (v, ve) => new { v, ve })
                         .GroupBy(x => new

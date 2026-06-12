@@ -20,25 +20,31 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public Vendedor Vendedor { get; set; }
 
-        public Guid VendedorId {  get; set; }
+        public Guid IdVendedor {  get; set; }
 
         protected Venda()
         {
 
         }
-        //excluir esse construtor depois
 
-        public Venda(Cliente cliente, string codigoVenda, Guid idCliente, decimal descontoTotal, decimal valorTotalSemDesconto, decimal valorTotalComDesconto,Vendedor vendedor)
+        public Venda(string codigoVenda, Cliente cliente, decimal descontoTotal, decimal valorTotalSemDesconto, decimal valorTotalComDesconto, Vendedor vendedor)
         {
             CodigoVenda = codigoVenda;
             Cliente = cliente;
-            IdCliente = idCliente;
+            IdCliente=cliente.Id;
             DescontoTotal = descontoTotal;
             ValorTotalSemDesconto = valorTotalSemDesconto;
             ValorTotalComDesconto = valorTotalComDesconto;
             Vendedor = vendedor;
-            VendedorId=vendedor.Id;
+            IdVendedor = IdVendedor;
         }
+
+
+
+
+        //excluir esse construtor depois
+
+
 
 
 
