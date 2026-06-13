@@ -12,7 +12,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         VendaTransacaoOutputDto BuscarVendaPorId(Guid id);
 
-        VendaTransacaoOutputDto CadastrarVenda(VendaTransacaoInputDto dto);
+        VendaTransacaoOutputDto CadastrarVenda(VendaTransacaoCreateDto dto);
 
         VendaTransacaoOutputDto AtualizarVenda(Guid idVendaEnviado, VendaTransacaoUpdateDto dto);
 

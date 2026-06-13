@@ -83,7 +83,7 @@ namespace ApiEstagioBicicletaria.Services
             return EntityToDto(venda);
         }
 
-        public VendaTransacaoOutputDto CadastrarVenda(VendaTransacaoInputDto dto)
+        public VendaTransacaoOutputDto CadastrarVenda(VendaTransacaoCreateDto dto)
         {
             Cliente? clienteDaVenda = _contexto.Clientes.Where(c => c.Id == dto.Venda.IdCliente && c.Ativo).Include(c => c.Endereco).FirstOrDefault()
             ?? throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado!!!");

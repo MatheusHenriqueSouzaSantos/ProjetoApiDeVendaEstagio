@@ -60,7 +60,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult<VendaTransacaoOutputDto> CadastrarVenda([FromBody] VendaTransacaoInputDto dto)
+        public ActionResult<VendaTransacaoOutputDto> CadastrarVenda([FromBody] VendaTransacaoCreateDto dto)
         {
             try
             {

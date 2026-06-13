@@ -8,13 +8,14 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.ItemVendaDtos.ItemVendaInputDtos
         [Required(ErrorMessage = "O campo id item é obrigatório")]
         public Guid IdItem { get; set; }
 
-        //public decimal PrecoUnitarioNaVenda { get; set; } = 0.0m;
-        //posso pegar pelo Produto e produto pelo id ou manda o preco unitario o front, pois é editavel???
-        public ItemVendaUpdateDto(Guid idItem,int quantidade, decimal? descontoUnitario) : base(quantidade, descontoUnitario, TipoItemVendaInputDto.Atualizacao)
+        public ItemVendaUpdateDto(Guid idItem,int quantidade, decimal? descontoUnitario) : base(quantidade, descontoUnitario)
         {
             IdItem = idItem;
         }
 
-        
+        public ItemVendaUpdateDto()
+        {
+
+        }
     }
 }
