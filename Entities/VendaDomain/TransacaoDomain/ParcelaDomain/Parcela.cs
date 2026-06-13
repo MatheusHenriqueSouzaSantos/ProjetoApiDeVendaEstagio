@@ -12,17 +12,20 @@
 
         public bool Pago { get; set; } = false;
 
+        public DateOnly DataVencimento { get; set; }
+
 
         protected Parcela()
         {
 
         }
 
-        public Parcela(Transacao transacao, int numeroDaParecelaDaVenda, decimal valorParcela)
+        public Parcela(Transacao transacao, int numeroDaParecelaDaVenda, decimal valorParcela, DateOnly dataVencimento)
         {
             Transacao = transacao;
             NumeroDaParecelaDaVenda = numeroDaParecelaDaVenda;
             ValorParcela = valorParcela;
+            DataVencimento = dataVencimento;
         }
     }
 }

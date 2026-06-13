@@ -84,7 +84,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public ActionResult<VendaTransacaoOutputDto> AtualizarVenda([FromRoute]Guid id, [FromBody] VendaTransacaoInputDto dto)
+        public ActionResult<VendaTransacaoOutputDto> AtualizarVenda([FromRoute]Guid id, [FromBody] VendaTransacaoUpdateDto dto)
         {
             try
             {

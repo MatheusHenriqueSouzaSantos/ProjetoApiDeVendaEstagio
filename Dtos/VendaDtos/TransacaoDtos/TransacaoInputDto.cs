@@ -1,4 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
+using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain.ParcelaDomain;
 using System.ComponentModel.DataAnnotations;
 
 namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
@@ -19,17 +20,20 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
         //precisa ter uma opção de criar a venda já como pago????
         //o resto dass informações pego pelo valor e soma de cada item e etc...
 
+        [Required(ErrorMessage = "O campo Data De Vencinmento Primeira Parcela é obrigatório")]
+        public DateOnly DataDeVencinmentoPrimeiraParcela { get; set; }
+
         protected TransacaoInputDto()
         {
 
         }
 
-        public TransacaoInputDto(TipoPagamento tipoPagamento, MeioPagamento meioPagamento, int quantidadeDeParcelas)
+        public TransacaoInputDto(TipoPagamento tipoPagamento, MeioPagamento meioPagamento, int quantidadeDeParcelas, DateOnly dataDeVencinmentoPrimeiraParcela)
         {
             TipoPagamento = tipoPagamento;
             MeioPagamento = meioPagamento;
             QuantidadeDeParcelas = quantidadeDeParcelas;
+            DataDeVencinmentoPrimeiraParcela = dataDeVencinmentoPrimeiraParcela;
         }
-
     }
 }

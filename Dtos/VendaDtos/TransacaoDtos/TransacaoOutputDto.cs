@@ -1,4 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
+using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain.ParcelaDomain;
 
 namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
 {
@@ -23,14 +24,14 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
         public decimal ValorPago { get; set; }
 
 
-        //public List<Parcela> Parcelas { get; set; }
+        public List<Parcela> Parcelas { get; set; }
 
         protected TransacaoOutputDto()
         {
 
         }
 
-        public TransacaoOutputDto(Guid idTransacao, DateTime dataCriacao, TipoPagamento tipoPagamento, MeioPagamento meioPagamento, bool transacaoEmCurso, bool pago, int numeroDeParcelasNaoPagas, int numeroDeParcelasPagas, decimal valorPago)
+        public TransacaoOutputDto(Guid idTransacao, DateTime dataCriacao, TipoPagamento tipoPagamento, MeioPagamento meioPagamento, bool transacaoEmCurso, bool pago, int numeroDeParcelasNaoPagas, int numeroDeParcelasPagas, decimal valorPago, List<Parcela> parcelas)
         {
             IdTransacao = idTransacao;
             DataCriacao = dataCriacao;
@@ -41,6 +42,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
             NumeroDeParcelasNaoPagas = numeroDeParcelasNaoPagas;
             NumeroDeParcelasPagas = numeroDeParcelasPagas;
             ValorPago = valorPago;
+            Parcelas = parcelas;
         }
 
 

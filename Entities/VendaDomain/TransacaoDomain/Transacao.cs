@@ -1,4 +1,6 @@
-﻿namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
+﻿using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain.ParcelaDomain;
+
+namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
 {
     public class Transacao : EntidadeBase
     {
