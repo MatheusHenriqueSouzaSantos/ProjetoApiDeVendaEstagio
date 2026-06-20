@@ -311,7 +311,9 @@ namespace ApiEstagioBicicletaria.Services
                 vendaParaAtualizar.Vendedor=vendedorAtualizado;
                 vendaParaAtualizar.IdVendedor=vendedorAtualizado.Id;
             }
+
             List<ItemVenda> itensVenda = _contexto.ItensVendas.Where(i => i.IdVenda == vendaParaAtualizar.Id && i.Ativo).Include(i=>i.Produto).ToList();
+
             if (dto.Venda.IdsItensDeletados != null)
             {
                 foreach(Guid idASerDeletado in dto.Venda.IdsItensDeletados)
@@ -327,7 +329,9 @@ namespace ApiEstagioBicicletaria.Services
                     _contexto.ItensVendas.Update(itemASerExcluido);
                 }
             }
+
             List<ServicoVenda> servicosVenda = _contexto.ServicosVendas.Where(i => i.IdVenda == vendaParaAtualizar.Id && i.Ativo).Include(s=>s.Servico).ToList();
+
             if (dto.Venda.IdsServicosDeletados != null)
             {
                 foreach (Guid idASerDeletado in dto.Venda.IdsServicosDeletados)

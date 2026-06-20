@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+﻿using ApiEstagioBicicletaria.Dtos.EntradaEstoqueDtos.Input;
+using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
@@ -68,6 +69,24 @@ namespace ApiEstagioBicicletaria.Controllers
                 }
                 EntradaEstoqueOutputDto entradaCadastrada=_service.Cadastrar(dto);
                 return Created($"api/{entradaCadastrada.Id}", entradaCadastrada);
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro interno");
+            }
+        }
+
+        [HttpPut("{id}")]
+        [Authorize]
+        public ActionResult Atualizar([FromRoute] Guid id,EntradaEstoqueUpdateDto dto)
+        {
+            try
+            {
+                return Ok(_service.Atualizar(id,dto));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {

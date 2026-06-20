@@ -90,27 +90,80 @@ namespace ApiEstagioBicicletaria.Services
         //logs?
 
 
-        //public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueUpdateDto dto)
-        //{
-        //    EntradaEstoque entradaEstoque = _repositorio.BuscarPorId(id)
-        //    ?? throw new ExcecaoDeRegraDeNegocio(404, "Entrada estoque não encontrada");
+        public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueUpdateDto dto)
+        {
+            EntradaEstoque entradaEstoque = _contexto.EntradasEstoque.FirstOrDefault(e => e.Id == id && e.Ativo)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Entrada Estoque não encontrada");
 
-        //    if (entradaEstoque.Status == StatusEntradaEstoque.Cancelada)
-        //    {
-        //        throw new ExcecaoDeRegraDeNegocio(400, "A Entrada Estoque já foi cancelada não é possível altera-la");
-        //     }
+            List<ItemEntradaEstoque> itensEntrada=_contexto.ItensEntradaEstoque.Where(i=>i.IdEntradaEstoque==entradaEstoque.Id && i.Ativo).ToList();
 
-        //    Fornecedor fornecedorAtualizado = _fornecedorRepositorio.BuscarFornecedorPorId(id)
-        //    ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor não encontrado");
+            if (dto.IdFornecedor != null)
+            {
+                Fornecedor fornecedorDaEntradaAtualizado = _contexto.Fornecedores.FirstOrDefault(f => f.Id == entradaEstoque.IdFornecedor && f.Ativo)
+                    ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor não encontrado");
+                entradaEstoque.Fornecedor=fornecedorDaEntradaAtualizado;
+                entradaEstoque.IdFornecedor = fornecedorDaEntradaAtualizado.Id;
+            }
 
-        //    List<ItemEntradaEstoque> itens = CriarItensEntradaEstoque(dto.Itens, entradaEstoque);
+            if (dto.IdsItensASeremDeletados != null)
+            {
+                foreach(Guid idASerDeletado in dto.IdsItensASeremDeletados)
+                {
+                    ItemEntradaEstoque itemASerDeletado = itensEntrada.FirstOrDefault(i => i.Id == idASerDeletado && i.Ativo)
+                        ?? throw new ExcecaoDeRegraDeNegocio(404, $"nenhuma item encontrado com esse id: {idASerDeletado}");
 
-        //    //validar se já não foi cancelada?
+                    Estoque estoqueDoItem = _contexto.Estoques.First(e => e.Id == itemASerDeletado.IdEstoque && e.Ativo);
 
-        //    DeletarItensEntradaEstoque(entradaEstoque.Id)
-        //     //vou permitir excluir fisicamente os itens da entrada mais vou criar logs, para registrar, 
-        //     // uso delete lógico só quando é exclusão, para atualização uso o delete físico
-        // }
+                    estoqueDoItem.AdicionarQuantidadeEmEstoque(itemASerDeletado.Quantidade);
+                    _contexto.Estoques.Update(estoqueDoItem);
+                    itemASerDeletado.Ativo = false;
+                    itensEntrada.Remove(itemASerDeletado);
+                    _contexto.ItensEntradaEstoque.Update(itemASerDeletado);
+                    //log
+                }
+                
+            }
+            if (dto.ItensAtualizados!= null)
+            {
+                foreach(ItemEntradaEstoqueUpdateDto itemDto in dto.ItensAtualizados)
+                {
+                    ItemEntradaEstoque itemASerAtualizado = itensEntrada.FirstOrDefault(i => i.Id == itemDto.IdDoItem && i.Ativo)
+                        ?? throw new ExcecaoDeRegraDeNegocio(404, $"nenhum item encontrado com esse id: {itemDto.IdDoItem}");
+                    Estoque estoqueDoItem = _contexto.Estoques.First(e => e.Id == itemASerAtualizado.IdEstoque && e.Ativo);
+                    estoqueDoItem.AbaterQuantidadeEmEstoque(itemASerAtualizado.Quantidade);
+                    estoqueDoItem.AdicionarQuantidadeEmEstoque(itemDto.Quantidade);
+                    if (estoqueDoItem.QuantidadeEmEstoque<0)
+                    {
+                        throw new ExcecaoDeRegraDeNegocio(400, $"Estoque insufisciente para concluir a operação, " +
+                            $"pois há apenas: {estoqueDoItem.QuantidadeEmEstoque} unidades");
+                    }
+                    _contexto.Estoques.Update(estoqueDoItem);
+                    //log
+                }
+                _contexto.ItensEntradaEstoque.UpdateRange(itensEntrada);
+            }
+            if (dto.ItensNovos != null)
+            {
+                foreach(ItemEntradaEstoqueCreateDto itemDto in dto.ItensNovos)
+                {
+                    Produto produtoDoItem = _contexto.Produtos.FirstOrDefault(p => p.Id == itemDto.IdProduto && p.Ativo)
+                        ?? throw new ExcecaoDeRegraDeNegocio(404, $"Nenhum produto encontrado com o id: {itemDto.IdProduto}");
+
+                    Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.ProdutoId == produtoDoItem.Id && produtoDoItem.Ativo);
+
+                    estoqueDoProduto.AdicionarQuantidadeEmEstoque(itemDto.Quantidade);
+                    ItemEntradaEstoque itemCriado = new(entradaEstoque, estoqueDoProduto, itemDto.Quantidade);
+                    _contexto.Estoques.Update(estoqueDoProduto);
+                    itensEntrada.Add(itemCriado);   
+                    _contexto.ItensEntradaEstoque.Add(itemCriado);
+                }
+            }
+
+            _contexto.SaveChanges();
+            return EntidadeParaDto(entradaEstoque, itensEntrada);
+
+        }
+
 
         public void InativarEntradaEstoque(Guid id)
         {
@@ -171,10 +224,7 @@ namespace ApiEstagioBicicletaria.Services
             return itens;
         }
 
-        public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueUpdateDto dto)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 
         // public void DeletarItensEntradaEstoque(Guid idEntradaEstoqueDosItens)
