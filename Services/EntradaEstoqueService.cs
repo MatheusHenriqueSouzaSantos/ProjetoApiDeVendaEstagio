@@ -171,16 +171,15 @@ namespace ApiEstagioBicicletaria.Services
             return itens;
         }
 
-        public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueCreateDto dto)
+        public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueUpdateDto dto)
         {
             throw new NotImplementedException();
         }
+    }
 
         // public void DeletarItensEntradaEstoque(Guid idEntradaEstoqueDosItens)
         // {
 
         // }
 
-
-    }
 }

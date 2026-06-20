@@ -2,15 +2,21 @@
 
 namespace ApiEstagioBicicletaria.Dtos.VendaDtos.ItemVendaDtos.ItemVendaInputDtos
 {
-    public class ItemVendaCreateDto : ItemVendaInputDto
+    public class ItemVendaCreateDto
     {
+        [Required(ErrorMessage = "O campo quantidade produto é obrigatório")]
+        [Range(0, 1000000, ErrorMessage = "a quantidade de produtos não pode ser negativa")]
+        public int Quantidade { get; set; }
+        [Range(0, 1000000, ErrorMessage = "O desconto Unitário não pode ser negativo")]
+        public decimal? DescontoUnitario { get; set; } = 0.0m;
 
         [Required(ErrorMessage = "O campo id produto é obrigatório")]
         public Guid IdProduto { get; set; }
-       
 
-        public ItemVendaCreateDto(Guid idProduto,int quantidade, decimal? descontoUnitario) : base(quantidade, descontoUnitario)
+        public ItemVendaCreateDto(int quantidade, decimal? descontoUnitario, Guid idProduto)
         {
+            Quantidade = quantidade;
+            DescontoUnitario = descontoUnitario;
             IdProduto = idProduto;
         }
 

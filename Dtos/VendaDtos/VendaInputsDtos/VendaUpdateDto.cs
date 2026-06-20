@@ -4,31 +4,42 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ApiEstagioBicicletaria.Dtos.VendaDtos.VendaInputsDtos
 {
-    public class VendaUpdateDto: VendaInputDto
+    public class VendaUpdateDto
     {
-        [Required(ErrorMessage = "O campo itens Venda novos é obrigatório")]
+        public Guid? IdCliente { get; set; }
+        [Range(0, 1000000, ErrorMessage = "O valor do desconto não pode ser negativo")]
+        public decimal? DescontoSobreTotalVenda { get; set; } = 0.0m;
+
+        public Guid? IdVendedor { get; private set; }
+
+        public List<Guid> IdsItensDeletados { get; set; }
+
+        public List<Guid> IdsServicosDeletados { get; set; }
+
         public List<ItemVendaCreateDto> ItensVendaNovos { get; set; }
-        [Required(ErrorMessage = "O campo servicos Venda novos é obrigatório")]
+
         public List<ServicoVendaCreateDto> ServicosVendaNovos { get; set; }
 
-        [Required(ErrorMessage = "O campo itens Venda atualizados é obrigatório")]
         public List<ItemVendaUpdateDto> ItensVendaAtualizados { get; set; }
-        [Required(ErrorMessage = "O campo servicos Venda atualizados é obrigatório")]
         public List<ServicoVendaUpdateDto> ServicosVendaAtualizados { get; set; }
 
         public VendaUpdateDto()
         {
         }
 
-        public VendaUpdateDto(List<ItemVendaCreateDto> itensVendaNovos, List<ServicoVendaCreateDto> servicosVendaNovos, List<ItemVendaUpdateDto> itensVendaAtualizados, 
-            List<ServicoVendaUpdateDto> servicosVendaAtualizados, Guid idCliente, decimal? descontoSobreTotalVenda, Guid vendedorId) : base(idCliente, descontoSobreTotalVenda, vendedorId)
+        public VendaUpdateDto(Guid? idCliente, decimal? descontoSobreTotalVenda, Guid? idVendedor, List<Guid> idsItensDeletados, List<Guid> idsServicosDeletados, 
+            List<ItemVendaCreateDto> itensVendaNovos, List<ServicoVendaCreateDto> servicosVendaNovos, List<ItemVendaUpdateDto> itensVendaAtualizados, 
+            List<ServicoVendaUpdateDto> servicosVendaAtualizados)
         {
+            IdCliente = idCliente;
+            DescontoSobreTotalVenda = descontoSobreTotalVenda;
+            IdVendedor = idVendedor;
+            IdsItensDeletados = idsItensDeletados;
+            IdsServicosDeletados = idsServicosDeletados;
             ItensVendaNovos = itensVendaNovos;
             ServicosVendaNovos = servicosVendaNovos;
             ItensVendaAtualizados = itensVendaAtualizados;
             ServicosVendaAtualizados = servicosVendaAtualizados;
         }
-
-
     }
 }

@@ -7,12 +7,12 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
     {
         public VendaCreateDto Venda { get; set; }
 
-        public TransacaoInputDto Transacao { get; set; }
+        public TransacaoCreateDto Transacao { get; set; }
 
 
         public VendaTransacaoCreateDto() { }
 
-        public VendaTransacaoCreateDto(VendaCreateDto venda, TransacaoInputDto transacao)
+        public VendaTransacaoCreateDto(VendaCreateDto venda, TransacaoCreateDto transacao)
         {
             Venda = venda;
             Transacao = transacao;

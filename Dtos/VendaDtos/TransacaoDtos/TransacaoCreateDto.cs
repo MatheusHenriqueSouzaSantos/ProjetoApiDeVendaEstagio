@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
 {
-    public class TransacaoInputDto
+    public class TransacaoCreateDto
     {
         [Required(ErrorMessage ="O campo tipo de pagamento é obrigatório")]
         [EnumDataType(typeof(TipoPagamento),ErrorMessage ="tipo inválido")]
@@ -15,7 +15,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
         public MeioPagamento MeioPagamento { get; set; }
 
         [Required(ErrorMessage ="O campo quantidade de parcelas é obrigatório")]
-        [Range(0, 1000000, ErrorMessage = "A quantidade de parcelas não pode ser negativa")]
+        [Range(1, 1000000, ErrorMessage = "A quantidade de parcelas não pode ser negativa")]
         public int QuantidadeDeParcelas { get; set; }
         //precisa ter uma opção de criar a venda já como pago????
         //o resto dass informações pego pelo valor e soma de cada item e etc...
@@ -23,12 +23,12 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
         [Required(ErrorMessage = "O campo Data De Vencinmento Primeira Parcela é obrigatório")]
         public DateOnly DataDeVencinmentoPrimeiraParcela { get; set; }
 
-        protected TransacaoInputDto()
+        protected TransacaoCreateDto()
         {
 
         }
 
-        public TransacaoInputDto(TipoPagamento tipoPagamento, MeioPagamento meioPagamento, int quantidadeDeParcelas, DateOnly dataDeVencinmentoPrimeiraParcela)
+        public TransacaoCreateDto(TipoPagamento tipoPagamento, MeioPagamento meioPagamento, int quantidadeDeParcelas, DateOnly dataDeVencinmentoPrimeiraParcela)
         {
             TipoPagamento = tipoPagamento;
             MeioPagamento = meioPagamento;
