@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
+﻿using ApiEstagioBicicletaria.Dtos.EntradaEstoqueDtos.Input;
+using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.EntradaEstoque;
 using ApiEstagioBicicletaria.Entities.EstoqueDomain;
@@ -14,7 +15,6 @@ using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using System.Globalization;
-//code review
 namespace ApiEstagioBicicletaria.Services
 {
     public class EntradaEstoqueService : IEntradaEstoqueService
@@ -73,7 +73,7 @@ namespace ApiEstagioBicicletaria.Services
         }
 
 
-        public EntradaEstoqueOutputDto Cadastrar(EntradaEstoqueInputDto dto)
+        public EntradaEstoqueOutputDto Cadastrar(EntradaEstoqueCreateDto dto)
         {
             Fornecedor fornecedor=_fornecedorRepositorio.BuscarFornecedorPorId(dto.IdFornecedor)
             ?? throw new ExcecaoDeRegraDeNegocio(404,"Fornecedor nao encontrado");
@@ -90,24 +90,24 @@ namespace ApiEstagioBicicletaria.Services
         //logs?
 
 
-        // public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueInputDto dto)
-        // {
-        //     EntradaEstoque entradaEstoque=_repositorio.BuscarPorId(id)
-        //     ?? throw new ExcecaoDeRegraDeNegocio(404,"Entrada estoque não encontrada");
+        //public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueUpdateDto dto)
+        //{
+        //    EntradaEstoque entradaEstoque = _repositorio.BuscarPorId(id)
+        //    ?? throw new ExcecaoDeRegraDeNegocio(404, "Entrada estoque não encontrada");
 
-        //     if (entradaEstoque.Status == StatusEntradaEstoque.Cancelada)
-        //     {
-        //         throw new ExcecaoDeRegraDeNegocio(400)
+        //    if (entradaEstoque.Status == StatusEntradaEstoque.Cancelada)
+        //    {
+        //        throw new ExcecaoDeRegraDeNegocio(400, "A Entrada Estoque já foi cancelada não é possível altera-la");
         //     }
 
-        //     Fornecedor fornecedorAtualizado=_fornecedorRepositorio.BuscarFornecedorPorId(id)
-        //     ?? throw new ExcecaoDeRegraDeNegocio(404,"Fornecedor não encontrado");
+        //    Fornecedor fornecedorAtualizado = _fornecedorRepositorio.BuscarFornecedorPorId(id)
+        //    ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor não encontrado");
 
-        //     List<ItemEntradaEstoque> itens=CriarItensEntradaEstoque(dto.Itens,entradaEstoque);
+        //    List<ItemEntradaEstoque> itens = CriarItensEntradaEstoque(dto.Itens, entradaEstoque);
 
-        //     //validar se já não foi cancelada?
-            
-        //     DeletarItensEntradaEstoque(entradaEstoque.Id)
+        //    //validar se já não foi cancelada?
+
+        //    DeletarItensEntradaEstoque(entradaEstoque.Id)
         //     //vou permitir excluir fisicamente os itens da entrada mais vou criar logs, para registrar, 
         //     // uso delete lógico só quando é exclusão, para atualização uso o delete físico
         // }
@@ -151,10 +151,10 @@ namespace ApiEstagioBicicletaria.Services
             return entradaEstoqueDto;
         }
 
-        public List<ItemEntradaEstoque> CriarItensEntradaEstoque(List<ItemEntradaEstoqueInputDto> dtos,EntradaEstoque entradaEstoque)
+        public List<ItemEntradaEstoque> CriarItensEntradaEstoque(List<ItemEntradaEstoqueCreateDto> dtos,EntradaEstoque entradaEstoque)
         {
             List<ItemEntradaEstoque> itens=new List<ItemEntradaEstoque>();
-            foreach(ItemEntradaEstoqueInputDto itemDto in dtos)
+            foreach(ItemEntradaEstoqueCreateDto itemDto in dtos)
             {
                 if (!_produtoRepositorio.VerificarSeProdutoExistePorId(itemDto.IdProduto))
                 {
@@ -171,7 +171,7 @@ namespace ApiEstagioBicicletaria.Services
             return itens;
         }
 
-        public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueInputDto dto)
+        public EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueCreateDto dto)
         {
             throw new NotImplementedException();
         }

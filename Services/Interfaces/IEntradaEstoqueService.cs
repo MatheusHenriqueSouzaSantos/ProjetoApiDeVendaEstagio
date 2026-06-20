@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+﻿using ApiEstagioBicicletaria.Dtos.EntradaEstoqueDtos.Input;
+using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.EntradaEstoque;
 
 namespace ApiEstagioBicicletaria.Services.Interfaces
@@ -9,9 +10,9 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         EntradaEstoqueOutputDto BuscarPorId(Guid id);
 
-        EntradaEstoqueOutputDto Cadastrar(EntradaEstoqueInputDto dto);
+        EntradaEstoqueOutputDto Cadastrar(EntradaEstoqueCreateDto dto);
 
-        EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueInputDto dto);
+        EntradaEstoqueOutputDto Atualizar(Guid id, EntradaEstoqueUpdateDto dto);
 
         void InativarEntradaEstoque(Guid id);
 

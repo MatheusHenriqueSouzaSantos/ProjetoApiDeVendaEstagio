@@ -2,16 +2,16 @@
 
 namespace ApiEstagioBicicletaria;
 
-public class EntradaEstoqueInputDto
+public class EntradaEstoqueCreateDto
 {
 
     [Required(ErrorMessage ="O Id fornecedor deve ser informado")]
     public Guid IdFornecedor {get;private set;}
 
     [Required(ErrorMessage ="A lista de itens para ser registrado a entrada precisa ser informada")]
-    public List<ItemEntradaEstoqueInputDto> Itens {get;private set;}
+    public List<ItemEntradaEstoqueCreateDto> Itens {get;private set;}
 
-    public EntradaEstoqueInputDto(Guid idFornecedor, List<ItemEntradaEstoqueInputDto> itens)
+    public EntradaEstoqueCreateDto(Guid idFornecedor, List<ItemEntradaEstoqueCreateDto> itens)
     {
         IdFornecedor = idFornecedor;
         Itens = itens;

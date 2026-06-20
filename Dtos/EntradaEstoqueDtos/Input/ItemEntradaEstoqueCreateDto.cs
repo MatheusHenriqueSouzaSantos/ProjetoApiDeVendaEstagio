@@ -2,14 +2,14 @@
 
 namespace ApiEstagioBicicletaria;
 
-public class ItemEntradaEstoqueInputDto
+public class ItemEntradaEstoqueCreateDto
 {
     [Required(ErrorMessage ="O Id do produto a ser registrado a entrada precisa ser informado")]
     public Guid IdProduto {get;private set;}
     [Required(ErrorMessage ="A Quantidade a ser realizadoa a entrada desse item precisa ser informada")]
     [Range(1,10000,ErrorMessage ="O valor mínimo de quantidade precisa ser maior que 0 e menor ou igual 100000")]
     public int Quantidade {get; private set;}
-    public ItemEntradaEstoqueInputDto(Guid idProduto, int quantidade)
+    public ItemEntradaEstoqueCreateDto(Guid idProduto, int quantidade)
     {
         IdProduto = idProduto;
         Quantidade = quantidade;

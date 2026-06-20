@@ -316,7 +316,7 @@ namespace ApiEstagioBicicletaria.Services
 
             List<ItemVenda> itensVenda = _contexto.ItensVendas.Where(i => i.IdVenda == VendaParaAtualizar.Id && i.Ativo).ToList();
 
-            foreach(ItemVenda itemIterado in itensVenda)
+            foreach(ItemVenda itemIterado in itensVenda.ToList())
             {
                 if (!itensAtualizadosDto.Any(i => i.IdItem == itemIterado.Id))
                 {
@@ -332,7 +332,7 @@ namespace ApiEstagioBicicletaria.Services
 
             List<ServicoVenda> servicosVenda = _contexto.ServicosVendas.Where(i => i.IdVenda == VendaParaAtualizar.Id && i.Ativo).ToList();
 
-            foreach (ServicoVenda servicoVendaIterado in servicosVenda)
+            foreach (ServicoVenda servicoVendaIterado in servicosVenda.ToList())
             {
                 if (!servicosVendaAtualizadosDto.Any(s => s.IdServicoVenda == servicoVendaIterado.Id))
                 {
@@ -350,17 +350,19 @@ namespace ApiEstagioBicicletaria.Services
                 
                 Produto produtoDoItem = itemVenda.Produto;
                 Estoque estoqueDoProduto=_contexto.Estoques.First(e=>e.ProdutoId == produtoDoItem.Id);
+
+                if (itemIteradoDto.DescontoUnitario > produtoDoItem.Preco)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(400, "O valor do desconto unitario não pode ser maior o preço do produto, erro no item com id: " + itemVenda.Id);
+                }
+
+                estoqueDoProduto.AdicionarQuantidadeEmEstoque(itemVenda.Quantidade);
                 if (itemIteradoDto.Quantidade > estoqueDoProduto.QuantidadeEmEstoque)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "Quantidade insufisciente no estoque de produto com id: " + produtoDoItem.Id);
                 }
                 estoqueDoProduto.AbaterQuantidadeEmEstoque(itemIteradoDto.Quantidade);
                 itemVenda.Quantidade = itemIteradoDto.Quantidade;
-                //verificar se permite desconto igaul o valor do produto e do serviço
-                if (itemIteradoDto.DescontoUnitario > produtoDoItem.Preco)
-                {
-                    throw new ExcecaoDeRegraDeNegocio(400, "O valor do desconto unitario não pode ser maior o preço do produto, erro no item com id: " + itemVenda.Id);
-                }
                 itemVenda.DescontoUnitario = itemIteradoDto.DescontoUnitario ?? 0;
             }
             _contexto.ItensVendas.UpdateRange(itensVenda);

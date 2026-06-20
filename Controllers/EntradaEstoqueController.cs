@@ -56,7 +56,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult<EntradaEstoqueOutputDto> Cadastrar([FromBody] EntradaEstoqueInputDto dto)
+        public ActionResult<EntradaEstoqueOutputDto> Cadastrar([FromBody] EntradaEstoqueCreateDto dto)
         {
             try
             {
