@@ -49,7 +49,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         });
 
                         table.Cell().ColumnSpan(5);
-                        table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().PaddingBottom(15).AlignTop().PaddingBottom(-80).Width(120).Height(60).Image("Resources/LogoBikeCiaShopParaEstagio.jpg").FitArea();
+                        table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().AlignTop().PaddingBottom(-80).Width(120).Height(60).Image("Resources/LogoBikeCiaShopParaEstagio.jpg").FitArea();
                     });
                     col.Item().Text($"Relatório de Fornecedores Com Maior Volumen de Entrada Por Período: {_dataInicialDoPeriodo} à " +
                         $"{_dataFinalDoPeriodo}").FontSize(20).Bold();

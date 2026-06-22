@@ -169,12 +169,12 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpPost("gerar-relatorio-fornecedores-com-maior-volume-de-entrada-por-periodo")]
         [Authorize]
-        public ActionResult<byte[]> GerarRelatorioFornecedoresComMaiorVolumeDeEntradaPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        public ActionResult<byte[]> GerarRelatorioFornecedoresComMaiorVolumeDeEntradaPorPeriodo([FromBody]DatasParaGeracaoDeRelatorioDto dto)
         {
             try
             {
                 byte[] bytesPdf = _service.GerarRelatorioFornecedoresComMaiorVolumeDeEntradaPorPeriodo(dto);
-                return File(bytesPdf, "application/pdf", "relatorioFornecedoresComMaiorVolumeEntradaPorPeriodo");
+                return File(bytesPdf, "application/pdf", "relatorioFornecedoresComMaiorVolumeEntradaPorPeriodo.pdf");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {

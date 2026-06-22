@@ -272,23 +272,31 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "A Quantidade para se enquadrar em produtos em falta não deve ser maior que 150");
             }
 
-            List<ProdutoEmFaltaDto> produtosEmFaltaDto = _contextoDb.Produtos.Where(p=>p.Ativo)
+            var produtosEmFaltaDto = _contextoDb.Produtos
+                .Where(p => p.Ativo)
                 .Join(_contextoDb.Estoques,
-                produto => produto.Id,
-                estoque => estoque.Produto.Id,
-                (produto, estoque) =>
-                new ProdutoEmFaltaDto(
-                    produto.Id,
-                    produto.CodigoDeBarra,
-                    produto.NomeProduto,
-                    produto.Preco,
-                    estoque.QuantidadeEmEstoque)
-                ).OrderBy(p => p.QuantidadeEmEstoque)
+                    produto => produto.Id,
+                    estoque => estoque.ProdutoId,
+                    (produto, estoque) => new
+                    {
+                        produto.Id,
+                        produto.CodigoDeBarra,
+                        produto.NomeProduto,
+                        produto.Preco,
+                        estoque.QuantidadeEmEstoque
+                    })
+                .OrderBy(x => x.QuantidadeEmEstoque)
+                .Select(x => new ProdutoEmFaltaDto(
+                    x.Id,
+                    x.CodigoDeBarra,
+                    x.NomeProduto,
+                    x.Preco,
+                    x.QuantidadeEmEstoque
+                ))
                 .ToList();
-            QuestPDF.Settings.License = LicenseType.Community;
 
             var documento = new RelatorioDeProdutosEmFalta(produtosEmFaltaDto, quantidadeParaBuscarDosProdutosEmFalta);
-
+            QuestPDF.Settings.License = LicenseType.Community;
             byte[] pdf = documento.GeneratePdf();
 
             return pdf;

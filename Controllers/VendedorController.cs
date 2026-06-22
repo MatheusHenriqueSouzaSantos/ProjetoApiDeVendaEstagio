@@ -168,7 +168,7 @@ namespace ApiEstagioBicicletaria.Controllers
         [Authorize]
         [HttpPost("relatorio-de-vendedores-com-maior-faturamento-por-periodo")]
         public ActionResult<byte[]> GerarRelatorioDeVendedoresComMaiorFaturamentoPorPeriodo
-            (DatasParaGeracaoDeRelatorioDto dto)
+            ([FromBody]DatasParaGeracaoDeRelatorioDto dto)
         {
             try
             {
@@ -179,7 +179,7 @@ namespace ApiEstagioBicicletaria.Controllers
                     return BadRequest(mensagensDeErro);
                 }
                 byte[] bytesPdf = _service.GerarRelatorioDeVendedoresComMaiorFaturamentoPorPeriodo(dto);
-                return File(bytesPdf, "application/pdf", "RelatorioDeVendedoresQueMaisRealizaramVendasPorPeriodo");
+                return File(bytesPdf, "application/pdf", "RelatorioDeVendedoresComMaiorFaturamentoPorPeriodo.pdf");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
