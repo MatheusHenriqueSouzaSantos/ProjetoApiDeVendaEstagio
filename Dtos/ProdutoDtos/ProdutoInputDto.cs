@@ -4,6 +4,7 @@ namespace ApiEstagioBicicletaria.Dtos.ProdutoDtos
 {
     public class ProdutoInputDto
     {
+        [Required(ErrorMessage = "O campo código de barra é obrigatório")]
         [MaxLength(128,ErrorMessage = "O campo Codigo de barra deve ter no máximo 128 caracteres")]
         public string CodigoDeBarra { get; set;}=string.Empty;
 

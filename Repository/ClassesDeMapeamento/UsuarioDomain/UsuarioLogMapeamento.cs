@@ -17,6 +17,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.UsuarioDomain
                 .IsRequired();
             builder.Property(u => u.IdUsuario)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID_USUARIO")
                 .IsRequired();
         }
     }

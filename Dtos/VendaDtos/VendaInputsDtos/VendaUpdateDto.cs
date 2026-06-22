@@ -12,24 +12,24 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.VendaInputsDtos
 
         public Guid? IdVendedor { get; private set; }
 
-        public List<Guid> IdsItensDeletados { get; set; }
+        public List<Guid>? IdsItensDeletados { get; set; }
 
-        public List<Guid> IdsServicosDeletados { get; set; }
+        public List<Guid>? IdsServicosDeletados { get; set; }
 
-        public List<ItemVendaCreateDto> ItensVendaNovos { get; set; }
+        public List<ItemVendaCreateDto>? ItensVendaNovos { get; set; }
 
-        public List<ServicoVendaCreateDto> ServicosVendaNovos { get; set; }
+        public List<ServicoVendaCreateDto>? ServicosVendaNovos { get; set; }
 
-        public List<ItemVendaUpdateDto> ItensVendaAtualizados { get; set; }
-        public List<ServicoVendaUpdateDto> ServicosVendaAtualizados { get; set; }
+        public List<ItemVendaUpdateDto>? ItensVendaAtualizados { get; set; }
+        public List<ServicoVendaUpdateDto>? ServicosVendaAtualizados { get; set; }
 
         public VendaUpdateDto()
         {
         }
 
-        public VendaUpdateDto(Guid? idCliente, decimal? descontoSobreTotalVenda, Guid? idVendedor, List<Guid> idsItensDeletados, List<Guid> idsServicosDeletados, 
-            List<ItemVendaCreateDto> itensVendaNovos, List<ServicoVendaCreateDto> servicosVendaNovos, List<ItemVendaUpdateDto> itensVendaAtualizados, 
-            List<ServicoVendaUpdateDto> servicosVendaAtualizados)
+        public VendaUpdateDto(Guid? idCliente, decimal? descontoSobreTotalVenda, Guid? idVendedor, List<Guid>? idsItensDeletados, List<Guid>? idsServicosDeletados,
+            List<ItemVendaCreateDto>? itensVendaNovos, List<ServicoVendaCreateDto>? servicosVendaNovos, List<ItemVendaUpdateDto>? itensVendaAtualizados,
+            List<ServicoVendaUpdateDto>? servicosVendaAtualizados)
         {
             IdCliente = idCliente;
             DescontoSobreTotalVenda = descontoSobreTotalVenda;

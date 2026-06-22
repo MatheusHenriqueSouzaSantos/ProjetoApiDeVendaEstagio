@@ -17,6 +17,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ServicoDomain
                 .IsRequired();
             builder.Property(s => s.IdServico)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID_SERVICO")
                 .IsRequired();
         }
     }

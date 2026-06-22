@@ -6,19 +6,18 @@ namespace ApiEstagioBicicletaria.Dtos.EntradaEstoqueDtos.Input
     {
         public Guid? IdFornecedor { get;  set; }
 
-        public List<Guid> IdsItensASeremDeletados {  get;  set; }
+        public List<Guid>? IdsItensASeremDeletados {  get;  set; }
 
         
-        public List<ItemEntradaEstoqueUpdateDto> ItensAtualizados { get;  set; }
+        public List<ItemEntradaEstoqueUpdateDto>? ItensAtualizados { get;  set; }
 
         
-        public List<ItemEntradaEstoqueCreateDto> ItensNovos { get;  set; }
+        public List<ItemEntradaEstoqueCreateDto>? ItensNovos { get;  set; }
 
-        public EntradaEstoqueUpdateDto(Guid? idFornecedor, List<Guid> idsItensASeremDeletados, List<ItemEntradaEstoqueUpdateDto> itensAtualizados, 
-            List<ItemEntradaEstoqueCreateDto> itensNovos)
+        public EntradaEstoqueUpdateDto(Guid? idFornecedor, List<Guid>? idsItensASeremDeletados, List<ItemEntradaEstoqueUpdateDto>? itensAtualizados, List<ItemEntradaEstoqueCreateDto>? itensNovos)
         {
             IdFornecedor = idFornecedor;
-            this.IdsItensASeremDeletados = idsItensASeremDeletados;
+            IdsItensASeremDeletados = idsItensASeremDeletados;
             ItensAtualizados = itensAtualizados;
             ItensNovos = itensNovos;
         }

@@ -16,8 +16,10 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain
                 .IsRequired();
             builder.Property(c => c.IdCliente)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID_CLIENTE")
                 .IsRequired();
             builder.Property(c => c.TipoCliente)
+                .HasColumnName("TIPO_CLIENTE")
                 .IsRequired();
            
         }

@@ -19,6 +19,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.FornecedorDomain
                 .IsRequired();
             builder.Property(f=>f.IdFornecedor)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID_FORNECEDOR")
                 .IsRequired();
 
         }

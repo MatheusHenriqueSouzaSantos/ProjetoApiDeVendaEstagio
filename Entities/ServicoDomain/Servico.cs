@@ -3,7 +3,7 @@
     public class Servico: EntidadeBase
     {
 
-        public string CodigoDoServico { get; private set; }
+        public string CodigoDoServico { get;  set; }
 
         public string NomeServico { get; set; }
 

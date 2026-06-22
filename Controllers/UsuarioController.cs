@@ -135,7 +135,6 @@ namespace ApiEstagioBicicletaria.Controllers
             try
             {
                 string tokenJWT=_usuarioService.Login(dto);
-                Console.WriteLine(tokenJWT);
                 return Ok(new { TokenJWT = tokenJWT });
             }
             catch (ExcecaoDeRegraDeNegocio ex)

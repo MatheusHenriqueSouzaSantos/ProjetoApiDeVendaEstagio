@@ -66,7 +66,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpPost("fisico")]
         [Authorize]
-        public ActionResult<ClienteFisico> CadastrarClienteFisico([FromBody]ClienteFisicoDto dto)
+        public ActionResult<ClienteFisico> CadastrarClienteFisico([FromBody]ClienteFisicoCreateDto dto)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpPost("juridico")]
         [Authorize]
-        public ActionResult<ClienteJuridico> CadastrarClienteJuridico([FromBody]ClienteJuridicoDto dto)
+        public ActionResult<ClienteJuridico> CadastrarClienteJuridico([FromBody]ClienteJuridicoCreateDto dto)
         {
             try
             {
@@ -121,7 +121,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpPut("fisico/{id}")]
         [Authorize]
-        public ActionResult<ClienteFisico> AtualizarClienteFisico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody]ClienteFisicoDto dto)
+        public ActionResult<ClienteFisico> AtualizarClienteFisico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody]ClienteFisicoUpdateDto dto)
         {
             try
             {
@@ -140,15 +140,15 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                //return StatusCode(500, ex.Message);
-                return StatusCode(500, "Erro Inesperado");
+                return StatusCode(500, ex.Message);
+                //return StatusCode(500, "Erro Inesperado");
             }
 
         }
 
         [HttpPut("juridico/{id}")]
         [Authorize]
-        public ActionResult<ClienteJuridico> AtualizarClienteJuridico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ClienteJuridicoDto dto)
+        public ActionResult<ClienteJuridico> AtualizarClienteJuridico([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ClienteJuridicoUpdateDto dto)
         {
             try
             {

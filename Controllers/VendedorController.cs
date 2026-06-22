@@ -154,7 +154,7 @@ namespace ApiEstagioBicicletaria.Controllers
             {
                 _service.DesativarVendedor(id);
 
-                return NoContent();
+                return Ok("Operação realizada com sucesso ");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {

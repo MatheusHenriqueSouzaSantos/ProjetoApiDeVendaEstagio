@@ -36,7 +36,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
 
         public void CriarLogsDeAtualizacao(Fornecedor fornecedorAntigo, Fornecedor fornecedorAtualizado, Usuario usuarioResponsavel)
         {
-            PropertyInfo[] propriedades = typeof(Vendedor).GetProperties();
+            PropertyInfo[] propriedades = typeof(Fornecedor).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
                 if (Attribute.IsDefined(propriedade, typeof(AnotacaoDeAtributoASerIgnoradoLog)))

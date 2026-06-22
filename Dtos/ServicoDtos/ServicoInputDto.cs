@@ -4,6 +4,7 @@ namespace ApiEstagioBicicletaria.Dtos.ServicoDtos
 {
     public class ServicoInputDto
     {
+        [Required(ErrorMessage = "O campo código serviço é obrigatório")]
         [MaxLength(128,ErrorMessage = "O campo Codigo Serviço deve ter no máximo 128 caracteres")]
         public string CodigoDoServico { get; set;}=string.Empty;
 

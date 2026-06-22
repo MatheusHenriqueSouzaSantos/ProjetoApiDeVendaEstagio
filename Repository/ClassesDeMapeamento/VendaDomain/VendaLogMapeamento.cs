@@ -15,6 +15,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain
                 .HasForeignKey(v => v.IdVenda);
             builder.Property(v => v.IdVenda)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID_VENDA")
                 .IsRequired();
         }
     }

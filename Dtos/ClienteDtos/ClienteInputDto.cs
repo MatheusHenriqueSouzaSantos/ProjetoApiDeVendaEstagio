@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ApiEstagioBicicletaria.Dtos.ClienteDtos
 {
-    public abstract class ClienteDto
+    public abstract class ClienteInputDto
     {
         [Required(ErrorMessage ="O campo Endereço é obrigatório")]
         public EnderecoDto Endereco { get;  set; }
@@ -17,9 +17,9 @@ namespace ApiEstagioBicicletaria.Dtos.ClienteDtos
         [StringLength(100, ErrorMessage = "O campo Email deve ter no máximo 100 caracteres")]
         public string Email { get;  set; }
 
-        protected ClienteDto() { }
+        protected ClienteInputDto() { }
 
-        protected ClienteDto(EnderecoDto endereco, string telefone, string email)
+        protected ClienteInputDto(EnderecoDto endereco, string telefone, string email)
         {
             Endereco = endereco;
             Telefone = telefone;

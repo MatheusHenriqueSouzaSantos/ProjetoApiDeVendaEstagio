@@ -18,6 +18,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ProdutoDomain
 
             builder.Property(p => p.IdProduto)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID_PRODUTO")
                 .IsRequired();
         }
     }

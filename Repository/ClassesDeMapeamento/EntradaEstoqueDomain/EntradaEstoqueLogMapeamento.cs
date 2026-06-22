@@ -15,6 +15,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoqueDo
                 .HasForeignKey(e=>e.IdEntradaEstoque);
             builder.Property(e=>e.IdEntradaEstoque)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID_ENTRADA_ESTOQUE")
                 .IsRequired();
         }
     }

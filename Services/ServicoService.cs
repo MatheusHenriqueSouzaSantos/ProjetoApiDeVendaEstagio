@@ -97,18 +97,20 @@ namespace ApiEstagioBicicletaria.Services
 
         public Servico AtualizarServico(Guid id, ServicoInputDto dto)
         {
-            if (!(string.IsNullOrWhiteSpace(dto.CodigoDoServico)))
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "O código do Serviço deve vir vazio, não é possível atualizar um código do Serviço");
-            }
-            Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.Id == id && s.Ativo).FirstOrDefault();
+            Servico servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.Id == id && s.Ativo).FirstOrDefault()
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
 
-            if (servicoVindoDoBanco == null)
+            Servico? servicoVindoDoBancoComMesmoCodigoDeBarras = _contextoDb.Servicos.Where(s => s.CodigoDoServico == dto.CodigoDoServico && s.Id != id && s.Ativo)
+                .FirstOrDefault();
+
+
+            if (servicoVindoDoBancoComMesmoCodigoDeBarras != null)
             {
-                throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
+                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um servico com esse código de barras");
             }
+
             Servico servicoDesatualizado = servicoVindoDoBanco.Copia();
-
+            servicoVindoDoBanco.CodigoDoServico = dto.CodigoDoServico;
             servicoVindoDoBanco.NomeServico = dto.NomeServico;
             servicoVindoDoBanco.Descricao = dto.Descricao;
             servicoVindoDoBanco.Preco = dto.PrecoServico;

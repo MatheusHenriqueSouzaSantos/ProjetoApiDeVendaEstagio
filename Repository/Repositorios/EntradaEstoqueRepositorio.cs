@@ -1,5 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Entities.EntradaEstoque;
 using ApiEstagioBicicletaria.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiEstagioBicicletaria.Repository.Repositorios
 {
@@ -16,12 +17,13 @@ namespace ApiEstagioBicicletaria.Repository.Repositorios
         {
             return _contexto.EntradasEstoque.
             OrderBy(e=>e.Status== StatusEntradaEstoque.Criada? 1 : e.Status==StatusEntradaEstoque.Atualizada? 2 : 3)
+            .Include(e=>e.Fornecedor)
             .ToList();
         }
 
         public EntradaEstoque? BuscarPorId(Guid id)
         {
-            return _contexto.EntradasEstoque.FirstOrDefault(e => e.Id == id);
+            return _contexto.EntradasEstoque.Include(e => e.Fornecedor).FirstOrDefault(e => e.Id == id);
         }
 
         public EntradaEstoque Cadastrar(EntradaEstoque entidade)
@@ -42,7 +44,6 @@ namespace ApiEstagioBicicletaria.Repository.Repositorios
             entradaEstoque.Ativo = false;
             entradaEstoque.Status=StatusEntradaEstoque.Cancelada;
             _contexto.EntradasEstoque.Update(entradaEstoque);
-            _contexto.SaveChanges();
         }
 
     }

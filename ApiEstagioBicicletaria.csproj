@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Dtos\ClienteDtos\ClienteInputDto\" />
     <Folder Include="Resources\" />
   </ItemGroup>
 

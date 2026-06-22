@@ -97,12 +97,8 @@ namespace ApiEstagioBicicletaria.Services
             return clienteFormatoDto;
         }
 
-        public ClienteFisico CadastrarClienteFisico(ClienteFisicoDto dto)
+        public ClienteFisico CadastrarClienteFisico(ClienteFisicoCreateDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Cpf))
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "Cpf não pode ser sem valor");
-            }
             string cpfSemPontoETracos= DocumentoUtil.RemoverPontosTracosEBarras(dto.Cpf);
             if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cpfSemPontoETracos))
             {
@@ -141,14 +137,19 @@ namespace ApiEstagioBicicletaria.Services
             return clienteFisico;
         }
 
-        public ClienteJuridico CadastrarClienteJuridico(ClienteJuridicoDto dto)
+        public ClienteJuridico CadastrarClienteJuridico(ClienteJuridicoCreateDto dto)
         {
             //sem validação pois pode ser que seja cadastrado uma inscrição estadual de outro estado
-            string inscricaoEstadualSemPontosTracosEBarras = DocumentoUtil.RemoverPontosTracosEBarras(dto.InscricaoEstadual);
             //if (!string.IsNullOrEmpty(inscricaoEstadualSemPontosTracosEBarras) || !ClienteUtil.VerificarSeAStringContemSomenteNumeros(inscricaoEstadualSemPontosTracosEBarras))
             //{
             //    throw new ExcecaoDeRegraDeNegocio(400, "A Incrição Estadual deve Conter apenas números");
             //}
+            string inscricaoEstadual=dto.InscricaoEstadual;
+            if (dto.InscricaoEstadual != null)
+            {
+                inscricaoEstadual = DocumentoUtil.RemoverPontosTracosEBarras(dto.InscricaoEstadual);
+            }
+            
             string cnpjSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(dto.Cnpj);
             if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cnpjSemPontoETracos))
             {
@@ -178,7 +179,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             Endereco endereco = new Endereco(dto.Endereco.Logradouro, dto.Endereco.Numero, dto.Endereco.Cidade, dto.Endereco.SiglaUf);
             ClienteJuridico clienteJuridico = new ClienteJuridico(endereco, dto.Telefone, dto.Email, dto.RazaoSocial, 
-                dto.NomeFantasia, inscricaoEstadualSemPontosTracosEBarras, cnpjSemPontoETracos);
+                dto.NomeFantasia, inscricaoEstadual, cnpjSemPontoETracos);
             _contextoDb.Enderecos.Add(endereco);
             _contextoDb.ClientesJuridicos.Add(clienteJuridico);
             _enderecoLogService.CriarLogsDeCriacao(endereco, clienteJuridico, _usuarioLogado);
@@ -187,13 +188,9 @@ namespace ApiEstagioBicicletaria.Services
             return clienteJuridico;
         }
 
-        public ClienteFisico AtualizarClienteFisico(Guid id, ClienteFisicoDto dto)
+        public ClienteFisico AtualizarClienteFisico(Guid id, ClienteFisicoUpdateDto dto)
         {
             //revisar
-            if (!(string.IsNullOrWhiteSpace(dto.Cpf)))
-            {
-                throw new ExcecaoDeRegraDeNegocio(400,"O Cpf deve vir vazio ou nulo, não é possivel atualizar um cpf");
-            }
             if (dto.Endereco.SiglaUf.Any(char.IsDigit))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "A sigla UF não deve conter números");
@@ -232,22 +229,23 @@ namespace ApiEstagioBicicletaria.Services
             
         }
 
-        public ClienteJuridico AtualizarClienteJuridico(Guid id, ClienteJuridicoDto dto)
+        public ClienteJuridico AtualizarClienteJuridico(Guid id, ClienteJuridicoUpdateDto dto)
         {
 
             //if (!ClienteValidacao.validarInscricaoEstadual(dto.InscricaoEstadual))
             //{
             //    throw new ExcecaoDeRegraDeNegocio(400, "Inscrição estadual inválida");
             //}
-            string inscricaoEstadualSemPontosTracosEBarras = DocumentoUtil.RemoverPontosTracosEBarras(dto.InscricaoEstadual);
             //if (!string.IsNullOrEmpty(inscricaoEstadualSemPontosTracosEBarras) || !ClienteUtil.VerificarSeAStringContemSomenteNumeros(inscricaoEstadualSemPontosTracosEBarras))
             //{
             //    throw new ExcecaoDeRegraDeNegocio(400, "A Incrição Estadual deve Conter apenas números");
             //}
-            if (!(string.IsNullOrWhiteSpace(dto.Cnpj)))
+            string inscricaoEstadual = dto.InscricaoEstadual;
+            if (dto.InscricaoEstadual != null)
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve vir vazio ou nulo, não é possivel atualizar um cpf");
+                inscricaoEstadual = DocumentoUtil.RemoverPontosTracosEBarras(dto.InscricaoEstadual);
             }
+   
             if (dto.Endereco.SiglaUf.Any(char.IsDigit))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "A sigla UF não deve conter números");
@@ -279,7 +277,7 @@ namespace ApiEstagioBicicletaria.Services
             clienteJuridicoVindoDoBanco.Email = dto.Email;
             clienteJuridicoVindoDoBanco.RazaoSocial=dto.RazaoSocial;
             clienteJuridicoVindoDoBanco.NomeFantasia = dto.NomeFantasia;
-            clienteJuridicoVindoDoBanco.InscricaoEstadual = inscricaoEstadualSemPontosTracosEBarras;
+            clienteJuridicoVindoDoBanco.InscricaoEstadual = inscricaoEstadual;
             
             _contextoDb.Update(clienteJuridicoVindoDoBanco);
             _enderecoLogService.CriarLogsDeAtualizacao(enderecoAntigo, clienteJuridicoVindoDoBanco.Endereco, clienteJuridicoVindoDoBanco, _usuarioLogado);
@@ -445,9 +443,9 @@ namespace ApiEstagioBicicletaria.Services
             
             logDtos.AddRange(enderecoDtoLogs);
 
-            logDtos.OrderByDescending(l => l.DataCriacao).ToList();
+            return logDtos.OrderByDescending(l => l.DataCriacao).ToList();
 
-            return logDtos;
+            
         }
 
     }

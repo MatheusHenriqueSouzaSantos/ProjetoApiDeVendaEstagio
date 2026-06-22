@@ -17,12 +17,14 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.Fina
                 .IsRequired();
             builder.Property(t => t.IdTransacao)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID_TRANSACAO")
                 .IsRequired();
             builder.HasOne(t => t.Venda)
                 .WithMany()
                 .HasForeignKey(t => t.IdVenda);
             builder.Property(t => t.IdVenda)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID_VENDA")
                 .IsRequired();
         }
     }

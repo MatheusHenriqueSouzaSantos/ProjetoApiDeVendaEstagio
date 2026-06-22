@@ -13,7 +13,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.VendaInputsDtos
         public decimal? DescontoSobreTotalVenda { get; set; } = 0.0m;
 
         [Required(ErrorMessage = "O campo Vendedor Id é obrigatório")]
-        public Guid VendedorId { get; private set; }
+        public Guid VendedorId { get;  set; }
 
         [Required(ErrorMessage = "O campo itens Venda é obrigatório")]
         public List<ItemVendaCreateDto> ItensVenda { get; set; }

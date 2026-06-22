@@ -15,6 +15,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.Serv
                 .HasForeignKey(i => i.IdServicoVenda);
             builder.Property(i => i.IdServicoVenda)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID_SERVICO_VENDA")
                 .IsRequired();
             builder.HasOne(i => i.Venda)
                 .WithMany()
@@ -22,6 +23,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.Serv
                 .IsRequired();
             builder.Property(i => i.IdVenda)
                 .HasColumnType("binary(16)")
+                .HasColumnName("ID_VENDA")
                 .IsRequired();
         }
     }

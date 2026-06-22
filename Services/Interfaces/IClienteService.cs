@@ -11,13 +11,13 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         //ActionResult<Cliente> BuscarClientePorId(Guid id);
         ClienteDtoOutPut BuscarClientePorId(Guid id);
 
-        ClienteFisico CadastrarClienteFisico(ClienteFisicoDto dto);
+        ClienteFisico CadastrarClienteFisico(ClienteFisicoCreateDto dto);
 
-        ClienteJuridico CadastrarClienteJuridico(ClienteJuridicoDto dto);
+        ClienteJuridico CadastrarClienteJuridico(ClienteJuridicoCreateDto dto);
 
-        ClienteFisico AtualizarClienteFisico(Guid id, ClienteFisicoDto dto);
+        ClienteFisico AtualizarClienteFisico(Guid id, ClienteFisicoUpdateDto dto);
 
-        ClienteJuridico AtualizarClienteJuridico(Guid id, ClienteJuridicoDto dto);
+        ClienteJuridico AtualizarClienteJuridico(Guid id, ClienteJuridicoUpdateDto dto);
 
         void DeletarCLientePorId(Guid id);
 

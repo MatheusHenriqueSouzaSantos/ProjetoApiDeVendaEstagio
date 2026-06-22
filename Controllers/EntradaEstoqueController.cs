@@ -105,7 +105,7 @@ namespace ApiEstagioBicicletaria.Controllers
             try
             {
                 _service.InativarEntradaEstoque(id);
-                return NoContent();
+                return Ok("Operação Realizada Com Sucesso");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
