@@ -6,7 +6,7 @@
 
         public Guid IdTransacao { get; private set; }
 
-        public int NumeroDaParecelaDaVenda { get; set; }
+        public int NumeroDaParcelaDaVenda { get; set; }
 
         public decimal ValorParcela { get; set; } = 0.0m;
 
@@ -23,7 +23,7 @@
         public Parcela(Transacao transacao, int numeroDaParecelaDaVenda, decimal valorParcela, DateOnly dataVencimento)
         {
             Transacao = transacao;
-            NumeroDaParecelaDaVenda = numeroDaParecelaDaVenda;
+            NumeroDaParcelaDaVenda = numeroDaParecelaDaVenda;
             ValorParcela = valorParcela;
             DataVencimento = dataVencimento;
         }

@@ -36,7 +36,8 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, "Erro Inesperado");
+                return StatusCode(500, ex.ToString());
             }
         }
 

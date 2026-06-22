@@ -517,7 +517,7 @@ namespace ApiEstagioBicicletaria.Services
 
             List<decimal> valoresDasParcelas = CalcularValorDasParcelas(valorTotalDaVendaComDescontoAplicado, quantidadeDeParcelasAtualizado);
 
-            DateOnly dataVencimentoPrimeiraParcelaAntigo = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.NumeroDaParecelaDaVenda == 1
+            DateOnly dataVencimentoPrimeiraParcelaAntigo = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.NumeroDaParcelaDaVenda == 1
             && p.Ativo).First().DataVencimento;
 
             DateOnly dataVencimentoPrimeiraParcelaAtualizado = dataVencimentoPrimeiraParcelaAntigo;
@@ -531,7 +531,7 @@ namespace ApiEstagioBicicletaria.Services
             }
 
 
-            List<Parcela> parcelasDaVenda=_contexto.Parcelas.Where(p=>p.IdTransacao==transacaoDaVendaASerAtualizada.Id&& p.Ativo).OrderBy(p => p.NumeroDaParecelaDaVenda).ToList();
+            List<Parcela> parcelasDaVenda=_contexto.Parcelas.Where(p=>p.IdTransacao==transacaoDaVendaASerAtualizada.Id&& p.Ativo).OrderBy(p => p.NumeroDaParcelaDaVenda).ToList();
 
             if (quantidadeDeParcelasExistentesAtualmente != quantidadeDeParcelasAtualizado || vendaParaAtualizar.ValorTotalComDesconto != valorTotalDaVendaComDescontoAplicado 
                 || dataVencimentoPrimeiraParcelaAntigo != dataVencimentoPrimeiraParcelaAtualizado)
@@ -549,7 +549,7 @@ namespace ApiEstagioBicicletaria.Services
 
                     for (int i = 0; i < parcelasDaVenda.Count; i++)
                     {
-                        parcelasDaVenda[i].NumeroDaParecelaDaVenda = i + 1;
+                        parcelasDaVenda[i].NumeroDaParcelaDaVenda = i + 1;
                         parcelasDaVenda[i].DataVencimento = dataVencimentoPrimeiraParcelaAtualizado.AddMonths(i);
                         parcelasDaVenda[i].ValorParcela = valoresDasParcelas[i];
                     }
@@ -563,7 +563,7 @@ namespace ApiEstagioBicicletaria.Services
                     int indiceDaParcela = 0;
                     for (int i = 0; i < parcelasDaVenda.Count; i++)
                     {
-                        parcelasDaVenda[i].NumeroDaParecelaDaVenda = (indiceDaParcela + 1);
+                        parcelasDaVenda[i].NumeroDaParcelaDaVenda = (indiceDaParcela + 1);
                         parcelasDaVenda[i].DataVencimento = dataDeVencimentoProximaParcela;
                         parcelasDaVenda[i].ValorParcela = valoresDasParcelas[indiceDaParcela];
                         indiceDaParcela++;
@@ -585,7 +585,7 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     for (int i = 0; i < parcelasDaVenda.Count; i++)
                     {
-                        parcelasDaVenda[i].NumeroDaParecelaDaVenda = i + 1;
+                        parcelasDaVenda[i].NumeroDaParcelaDaVenda = i + 1;
                         parcelasDaVenda[i].DataVencimento = dataVencimentoPrimeiraParcelaAtualizado.AddMonths(i);
                         parcelasDaVenda[i].ValorParcela = valoresDasParcelas[i];
                     }
@@ -679,7 +679,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"O numero de parcelas pagas não pode ser menor ou igual a 0");
             }
-            List<Parcela> parcelasDessaTransacao = _contexto.Parcelas.Where(p => p.IdTransacao == idTransacaoEnviado && p.Ativo).OrderBy(p=>p.NumeroDaParecelaDaVenda).ToList();
+            List<Parcela> parcelasDessaTransacao = _contexto.Parcelas.Where(p => p.IdTransacao == idTransacaoEnviado && p.Ativo).OrderBy(p=>p.NumeroDaParcelaDaVenda).ToList();
             List<Parcela> parcelasNaoPagasDessaTransacao = parcelasDessaTransacao.Where(p => p.Pago == false).ToList();
             int quantidadeDeParcelasNaoPagasNessaTransacao = parcelasNaoPagasDessaTransacao.Count();
 
@@ -713,10 +713,12 @@ namespace ApiEstagioBicicletaria.Services
                 transacaoReferente.Pago = true;
                 _contexto.Transacoes.Update(transacaoReferente);
             }
+            List<ParcelaOutPutDto> parcelasDto = parcelasDessaTransacao.Select(p =>
+            new ParcelaOutPutDto(p.Id, p.DataCriacao, p.Ativo, p.IdTransacao, p.NumeroDaParcelaDaVenda, p.ValorParcela, p.Pago, p.DataVencimento)).ToList();
             _contexto.SaveChanges();
             return new TransacaoOutputDto(transacaoReferente.Id, transacaoReferente.DataCriacao, transacaoReferente.TipoPagamento,
                 transacaoReferente.MeioPagamento, transacaoReferente.TransacaoEmCurso, transacaoReferente.Pago, quantidadeDeParcelasNaoPagasNessaTransacao,
-                quantidadeDeParcelasPagasDessaTransacao,valorPago,parcelasDessaTransacao);
+                quantidadeDeParcelasPagasDessaTransacao,valorPago, parcelasDto);
         }
 
 
@@ -909,7 +911,8 @@ namespace ApiEstagioBicicletaria.Services
 
             List<ItemVenda> itensDaVenda = _contexto.ItensVendas.Include(i => i.Produto).Where(i => i.IdVenda == venda.Id && i.Ativo).ToList();
             List<ServicoVenda> servicosDaVenda = _contexto.ServicosVendas.Include(s => s.Servico).Where(s => s.IdVenda == venda.Id && s.Ativo).ToList();
-            Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == venda.Id && t.Ativo).FirstOrDefault();
+            Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == venda.Id && t.Ativo).FirstOrDefault()
+                ?? throw new ExcecaoDeRegraDeNegocio(500,"transacao não encontrada, erro!!");
             List<Parcela> parcelasDaTranscao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Ativo).ToList();
 
             int QuantidadeDeParcelasNaoPagasDaVenda = parcelasDaTranscao.Where(p => p.Pago == false).Count();
@@ -934,12 +937,14 @@ namespace ApiEstagioBicicletaria.Services
                 servicosVendaFormatoDtoOutput.Add(servicoVendaOutputDto);
             }
 
+            List<ParcelaOutPutDto> parcelasDto = parcelasDaTranscao.Select(p =>
+            new ParcelaOutPutDto(p.Id, p.DataCriacao, p.Ativo, p.IdTransacao, p.NumeroDaParcelaDaVenda, p.ValorParcela, p.Pago, p.DataVencimento)).ToList();
 
             VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id, venda.CodigoVenda, venda.DataCriacao, venda.DescontoTotal, venda.ValorTotalSemDesconto, venda.ValorTotalComDesconto, venda.Cliente,
                 itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput, venda.Vendedor);
             TransacaoOutputDto transacaoOutputDto = new TransacaoOutputDto(transacaoDaVenda.Id, transacaoDaVenda.DataCriacao, transacaoDaVenda.TipoPagamento,
                 transacaoDaVenda.MeioPagamento, transacaoDaVenda.TransacaoEmCurso, transacaoDaVenda.Pago, QuantidadeDeParcelasNaoPagasDaVenda, QuantidadeDeParcelasPagasVenda,
-                valorPago,parcelasDaTranscao);
+                valorPago, parcelasDto);
 
             return new VendaTransacaoOutputDto(vendaOutputDto, transacaoOutputDto);
 

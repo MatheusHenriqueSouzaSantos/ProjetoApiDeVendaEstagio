@@ -24,14 +24,15 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
         public decimal ValorPago { get; set; }
 
 
-        public List<Parcela> Parcelas { get; set; }
+        public List<ParcelaOutPutDto> Parcelas { get; set; }
 
         protected TransacaoOutputDto()
         {
 
         }
 
-        public TransacaoOutputDto(Guid idTransacao, DateTime dataCriacao, TipoPagamento tipoPagamento, MeioPagamento meioPagamento, bool transacaoEmCurso, bool pago, int numeroDeParcelasNaoPagas, int numeroDeParcelasPagas, decimal valorPago, List<Parcela> parcelas)
+        public TransacaoOutputDto(Guid idTransacao, DateTime dataCriacao, TipoPagamento tipoPagamento, MeioPagamento meioPagamento, bool transacaoEmCurso, bool pago, int numeroDeParcelasNaoPagas,
+            int numeroDeParcelasPagas, decimal valorPago, List<ParcelaOutPutDto> parcelas)
         {
             IdTransacao = idTransacao;
             DataCriacao = dataCriacao;

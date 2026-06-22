@@ -20,7 +20,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.Fina
                 .HasColumnType("binary(16)")
                 .HasColumnName("ID_TRANSACAO")
                 .IsRequired();
-            builder.Property(p => p.NumeroDaParecelaDaVenda)
+            builder.Property(p => p.NumeroDaParcelaDaVenda)
                 .HasColumnName("NUMERO_DA_PARCELA_DA_VENDA")
                 .IsRequired();
             builder.Property(p=>p.ValorParcela)
@@ -29,9 +29,13 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.Fina
             builder.Property(p=>p.Pago)
                 .HasColumnName("PAGO")
                 .IsRequired();
-            builder.Property(p=>p.DataVencimento)
-                .HasColumnName("DATA_VENCIMENTO")
-                .IsRequired();
+            builder.Property(p => p.DataVencimento)
+             .HasColumnName("DATA_VENCIMENTO")
+             .HasConversion(
+                 v => v.ToDateTime(TimeOnly.MinValue),
+                 v => DateOnly.FromDateTime(v)
+             )
+             .IsRequired();
         }
     }
 }

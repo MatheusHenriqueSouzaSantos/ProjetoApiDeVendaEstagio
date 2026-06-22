@@ -174,7 +174,7 @@ namespace ApiEstagioBicicletaria.Controllers
             try
             {
                 byte[] bytesPdf = _service.GerarRelatorioFornecedoresComMaiorVolumeDeEntradaPorPeriodo(dto);
-                return File(bytesPdf, "application/pdf", "relatorioEntradaEstoquePorPeriodo");
+                return File(bytesPdf, "application/pdf", "relatorioFornecedoresComMaiorVolumeEntradaPorPeriodo");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
