@@ -38,7 +38,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
             ValorTotalSemDesconto = valorTotalSemDesconto;
             ValorTotalComDesconto = valorTotalComDesconto;
             Vendedor = vendedor;
-            IdVendedor = IdVendedor;
+            IdVendedor = vendedor.Id;
         }
 
 

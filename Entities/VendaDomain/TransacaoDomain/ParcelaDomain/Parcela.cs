@@ -23,6 +23,7 @@
         public Parcela(Transacao transacao, int numeroDaParecelaDaVenda, decimal valorParcela, DateOnly dataVencimento)
         {
             Transacao = transacao;
+            IdTransacao = transacao.Id;
             NumeroDaParcelaDaVenda = numeroDaParecelaDaVenda;
             ValorParcela = valorParcela;
             DataVencimento = dataVencimento;

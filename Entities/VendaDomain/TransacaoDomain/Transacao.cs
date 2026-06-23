@@ -26,8 +26,9 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
         public Transacao(Venda venda, TipoPagamento tipoPagamento, MeioPagamento meioPagamaneto)
         {
             Venda = venda;
-            this.TipoPagamento = tipoPagamento;
-            this.MeioPagamento = meioPagamaneto;
+            IdVenda = venda.Id;
+            TipoPagamento = tipoPagamento;
+            MeioPagamento = meioPagamaneto;
         }
     }
 }

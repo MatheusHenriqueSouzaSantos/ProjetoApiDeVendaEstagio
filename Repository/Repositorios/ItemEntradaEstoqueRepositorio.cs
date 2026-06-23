@@ -24,7 +24,6 @@ namespace ApiEstagioBicicletaria.Repository.Repositorios
         }
         public void InativarItem(ItemEntradaEstoque item)
         {
-            item.Ativo = false;
             _contexto.ItensEntradaEstoque.Update(item);
         }
         

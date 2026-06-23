@@ -15,7 +15,6 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public Guid IdServico {  get; private set; }
 
-
         public decimal DescontoServico { get; set; }
 
         public decimal PrecoServicoNaVendaSemDesconto { get;  set; }
@@ -29,7 +28,9 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
         public ServicoVenda(Venda venda, Servico servico, decimal descontoServico, decimal precoServicoNaVendaSemDesconto)
         {
             Venda = venda;
+            IdVenda = venda.Id;
             Servico = servico;
+            IdServico = servico.Id;
             DescontoServico = descontoServico;
             PrecoServicoNaVendaSemDesconto = precoServicoNaVendaSemDesconto;
         }

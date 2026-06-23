@@ -32,17 +32,8 @@ namespace ApiEstagioBicicletaria.Repository.Repositorios
             return entidade;    
         }
 
-        // public EntradaEstoque Atualizar(EntradaEstoque entidade)
-        // {
-        //     entidade.Status=StatusEntradaEstoque.Atualizada;
-        //     _contexto.EntradasEstoque.Update(entidade);
-        //     _contexto.SaveChanges();
-        //     return entidade;
-        // }
         public void Inativar(EntradaEstoque entradaEstoque)
         {
-            entradaEstoque.Ativo = false;
-            entradaEstoque.Status=StatusEntradaEstoque.Cancelada;
             _contexto.EntradasEstoque.Update(entradaEstoque);
         }
 

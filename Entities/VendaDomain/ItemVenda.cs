@@ -4,8 +4,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 {
     public class ItemVenda : EntidadeBase
     {
-        //todos os atributos deixo que nunca podme ser alterados? se errou crie outro item venda?
-        //deixar privado pois ao enviar a venda já esta concluida
+
         [AnotacaoDeAtributoASerIgnoradoLog]
         public Venda Venda { get; private set; }
 
@@ -15,7 +14,6 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
         public Produto Produto { get; private set; }
 
         public Guid IdProduto { get; private set; }
-
 
         public int Quantidade { get; set; }
 
@@ -32,7 +30,9 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
         public ItemVenda(Venda venda, Produto produto, int quantidade, decimal descontoPorUnidade, decimal precoUnitarioDoProdutoNaVendaSemDesconto)
         {
             Venda = venda;
+            IdVenda = venda.Id;
             Produto = produto;
+            IdProduto=produto.Id;
             Quantidade = quantidade;
             DescontoUnitario = descontoPorUnidade;
             PrecoUnitarioDoProdutoNaVendaSemDesconto = precoUnitarioDoProdutoNaVendaSemDesconto;

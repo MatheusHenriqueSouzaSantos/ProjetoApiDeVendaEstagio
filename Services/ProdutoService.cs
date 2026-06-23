@@ -115,7 +115,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             Produto produtoAInserirNoBanco = new Produto(codigoDeBarraSomenteNumerosELetras,
                 dto.NomeProduto, dto.Descricao, dto.PrecoUnitario);
-            Estoque estoque = new(produtoAInserirNoBanco,produtoAInserirNoBanco.Id);
+            Estoque estoque = new(produtoAInserirNoBanco);
             estoque.Produto = produtoAInserirNoBanco;
             _contextoDb.Add(produtoAInserirNoBanco);
             _contextoDb.Add(estoque);

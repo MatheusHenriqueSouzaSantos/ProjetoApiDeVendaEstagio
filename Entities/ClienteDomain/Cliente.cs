@@ -4,14 +4,15 @@
     {
         [AnotacaoDeAtributoASerIgnoradoLog]
         public Endereco Endereco { get; set; }
-        //Ter fk também ou só o objeto
+        
+        public Guid IdEndereco { get; set; }
+        
         public string Telefone { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        //deixo tipo cliente na entidade ou só no DTO?
 
-        //campo tipo cliente desnecessário com rota para pessoa física e jurídica separada?
+        public string Email { get; set; } = string.Empty;
+
         public TipoCliente TipoCliente { get; private set; }
-        //colocar no dto?
+
 
         protected Cliente()
         {
@@ -20,6 +21,7 @@
         protected Cliente(Endereco endereco, string telefone, string email, TipoCliente tipoCliente)
         {
             Endereco = endereco;
+            IdEndereco=endereco.Id;
             Telefone = telefone;
             Email = email;
             TipoCliente = tipoCliente;

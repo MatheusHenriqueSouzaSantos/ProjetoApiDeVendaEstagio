@@ -38,7 +38,6 @@ namespace ApiEstagioBicicletaria.Services
         //private readonly int _numeroDeLinhasPorPagina = 42;
         private ContextoDb _contexto;
         private readonly GeradorCodigoIndentificadorMovimentacao<Venda> _geradorCodigoVenda;
-        private readonly IEstoqueService _estoqueService;
         private readonly VendedorRepositorio _vendedorRepositorio;
         private readonly VendaLogService _vendaLogService;
         private readonly ItemVendaLogService _itemVendaLogService;
@@ -46,13 +45,12 @@ namespace ApiEstagioBicicletaria.Services
         private readonly Usuario _usuarioLogado;
 
         public VendaService(ContextoDb contexto, GeradorCodigoIndentificadorMovimentacao<Venda> geradorCodigoVenda, 
-            IEstoqueService estoqueService, VendedorRepositorio vendedorRepositorio, VendaLogService vendaLogService,
+            VendedorRepositorio vendedorRepositorio, VendaLogService vendaLogService,
             ServicoVendaLogService servicoVendaLogService,ItemVendaLogService itemVendaLogService,
             UsuarioLogadoService usuarioLogadoService)
         {
             _contexto = contexto;
             _geradorCodigoVenda = geradorCodigoVenda;
-            _estoqueService = estoqueService;
             _vendedorRepositorio = vendedorRepositorio;
             _vendaLogService = vendaLogService;
             _itemVendaLogService = itemVendaLogService;
@@ -125,6 +123,8 @@ namespace ApiEstagioBicicletaria.Services
 
             _vendaLogService.CriarLogsDeCriacao(vendaCriada, _usuarioLogado);
 
+            _contexto.Vendas.Add(vendaCriada);
+
             List<ItemVenda> listaDeItensDaVendaCriada = new List<ItemVenda>();
 
             List<ServicoVenda> listaDeServicosDaVendaCriada =new List<ServicoVenda>();
@@ -143,7 +143,7 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(400,"Não é possível adicionar um produto com 0 unidades");
                 }
-                if(estoqueDoProdutoDoItem.QuantidadeEmEstoque< itemEnviado.Quantidade)
+                if(itemEnviado.Quantidade > estoqueDoProdutoDoItem.QuantidadeEmEstoque)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "Estoque do produto: " + produtoDoItem.NomeProduto + " insuficiente, pois tem apenas: " +
                         estoqueDoProdutoDoItem.QuantidadeEmEstoque + " unidades em estoque");
@@ -153,12 +153,13 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto unitário não dever ser maior do que o valor do produto");
                 }
-                AbaterQuantidadeEmEstoque(estoqueDoProdutoDoItem,itemEnviado.Quantidade);
+                estoqueDoProdutoDoItem.AbaterQuantidadeEmEstoque(itemEnviado.Quantidade);
                 ItemVenda itemCriado = new ItemVenda(vendaCriada, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.Preco);
                 listaDeItensDaVendaCriada.Add(itemCriado);
+                _contexto.Estoques.Update(estoqueDoProdutoDoItem);
                 _itemVendaLogService.CriarLogsDeCriacao(itemCriado, vendaCriada, _usuarioLogado);
                 _contexto.ItensVendas.Add(itemCriado);
-                //coloco o save changes a cada interação no for each ou no final?, no final pois os itens precisão ser salvos no mesmo tempo da venda
+                
                 
             }
 
@@ -272,17 +273,6 @@ namespace ApiEstagioBicicletaria.Services
             return valorDeCadaParcela;
         }
 
-        public void AbaterQuantidadeEmEstoque(Estoque estoque, int quantidade)
-        {
-            //mudar para chamar o servive de estoque
-            _estoqueService.AbaterQuantidadeEmEstoque(estoque.Id, quantidade);
-        }
-
-        public void AdicionarQuantidaEmEstoque(Estoque estoque, int quantidade)
-        {
-            _estoqueService.AdicionarQuantidadeEmEstoque(estoque.Id, quantidade);
-        }
-        //revisar lógica do service pois fiz com sono 
         public VendaTransacaoOutputDto AtualizarVenda(Guid idVendaEnviado, VendaTransacaoUpdateDto dto)
         {
             Venda vendaParaAtualizar = _contexto.Vendas.Where(v => v.Id == idVendaEnviado && v.Ativo).FirstOrDefault()
@@ -635,7 +625,8 @@ namespace ApiEstagioBicicletaria.Services
             {
                 Produto produtoDoItem = itemIterado.Produto;
                 Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.Produto.Id == produtoDoItem.Id);
-                AdicionarQuantidaEmEstoque(estoqueDoProduto, itemIterado.Quantidade);
+                estoqueDoProduto.AdicionarQuantidadeEmEstoque(itemIterado.Quantidade);
+                _contexto.Estoques.Update(estoqueDoProduto);
                 itemIterado.Ativo = false;
                 _contexto.Update(itemIterado);
             }
@@ -913,7 +904,7 @@ namespace ApiEstagioBicicletaria.Services
             List<ServicoVenda> servicosDaVenda = _contexto.ServicosVendas.Include(s => s.Servico).Where(s => s.IdVenda == venda.Id && s.Ativo).ToList();
             Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == venda.Id && t.Ativo).FirstOrDefault()
                 ?? throw new ExcecaoDeRegraDeNegocio(500,"transacao não encontrada, erro!!");
-            List<Parcela> parcelasDaTranscao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Ativo).ToList();
+            List<Parcela> parcelasDaTranscao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Ativo).OrderBy(p=>p.DataVencimento).ToList();
 
             int QuantidadeDeParcelasNaoPagasDaVenda = parcelasDaTranscao.Where(p => p.Pago == false).Count();
             int QuantidadeDeParcelasPagasVenda = parcelasDaTranscao.Where(p => p.Pago).Count();

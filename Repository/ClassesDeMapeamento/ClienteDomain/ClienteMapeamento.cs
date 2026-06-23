@@ -11,16 +11,17 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain
             base.Configure(builder);
             builder.ToTable("CLIENTE");
 
-            //duvidaEnderecoTemMaisDeUmCliente
             builder.HasOne(c => c.Endereco)
                 .WithMany()
-                .HasForeignKey("ID_ENDERECO")
+                .HasForeignKey(c=>c.IdEndereco)
+                .IsRequired();
+            builder.Property(c => c.IdEndereco)
+                .HasColumnName("ID_ENDERECO")
                 .IsRequired();
             builder.Property(c => c.Telefone)
                 .HasMaxLength(2)
                 .HasColumnName("TELEFONE")
                 .IsRequired();
-            //email até 254
             builder.Property(c=>c.Email)
                 .HasMaxLength(100)
                 .HasColumnName("EMAIL")
@@ -30,7 +31,6 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain
                 .HasMaxLength(25)
                 .HasColumnName("TIPO_CLIENTE")
                 .IsRequired();
-
 
         }
     }

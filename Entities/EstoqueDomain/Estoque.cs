@@ -12,10 +12,10 @@ namespace ApiEstagioBicicletaria.Entities.EstoqueDomain
         public int QuantidadeEmEstoque { get; set; } = 0;
 
 
-        public Estoque(Produto produto, Guid produtoId)
+        public Estoque(Produto produto)
         {
             Produto = produto;
-            ProdutoId = produtoId;
+            ProdutoId = produto.Id;
         }
 
         protected Estoque()

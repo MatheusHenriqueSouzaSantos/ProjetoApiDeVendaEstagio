@@ -177,11 +177,16 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "Não é possível cancelar essa entrada, pois o estoque é insufisciente");
                 }
+                Estoque estoqueDoItem = _contexto.Estoques.FirstOrDefault(e => e.Id == item.IdEstoque && e.Ativo)
+                    ?? throw new ExcecaoDeRegraDeNegocio(500,"estoque não encontrado");
+                item.Ativo = false;
                 _itemEntradaRepositorio.InativarItem(item);
-                item.Estoque.AbaterQuantidadeEmEstoque(item.Quantidade);
-                _estoqueRepositorio.AtualizarEstoque(item.Estoque);
+                estoqueDoItem.AbaterQuantidadeEmEstoque(item.Quantidade);
+                _estoqueRepositorio.AtualizarEstoque(estoqueDoItem);
                 
             }
+            entrada.Ativo = false;
+            entrada.Status = StatusEntradaEstoque.Cancelada;
             _repositorio.Inativar(entrada);
             _contexto.SaveChanges();
         }
