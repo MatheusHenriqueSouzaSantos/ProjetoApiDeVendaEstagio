@@ -287,311 +287,323 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400,"Não é possível atualizar essa venda pois ela já esta com o pagamento em andamento");
             }
 
-            if (dto.Venda.IdCliente != null)
-            {
-                Cliente clienteAtualizadoDaVenda = _contexto.Clientes.Where(c => c.Id == dto.Venda.IdCliente && c.Ativo).Include(c => c.Endereco).FirstOrDefault()
-                ?? throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado!!!");
-                vendaParaAtualizar.Cliente = clienteAtualizadoDaVenda;
-                vendaParaAtualizar.IdCliente = clienteAtualizadoDaVenda.Id;
-            }
-            if (dto.Venda.IdVendedor != null)
-            {
-                Vendedor vendedorAtualizado = _vendedorRepositorio.BuscarPorId(dto.Venda.IdVendedor.Value)
-                ?? throw new ExcecaoDeRegraDeNegocio(404, "Vendedor não encontrado");
-                vendaParaAtualizar.Vendedor=vendedorAtualizado;
-                vendaParaAtualizar.IdVendedor=vendedorAtualizado.Id;
-            }
+            decimal valorTotalDaVendaSemDescontoTotalAplicado = vendaParaAtualizar.ValorTotalSemDesconto;
+            decimal valorTotalDaVendaComDescontoAplicado = vendaParaAtualizar.ValorTotalComDesconto;
 
-            List<ItemVenda> itensVenda = _contexto.ItensVendas.Where(i => i.IdVenda == vendaParaAtualizar.Id && i.Ativo).Include(i=>i.Produto).ToList();
-
-            if (dto.Venda.IdsItensDeletados != null)
+            if (dto.Venda != null)
             {
-                foreach(Guid idASerDeletado in dto.Venda.IdsItensDeletados)
+
+                if (dto.Venda.IdCliente != null)
                 {
-                    ItemVenda itemASerExcluido = itensVenda.FirstOrDefault(i => i.Id == idASerDeletado && i.Ativo)
-                        ?? throw new ExcecaoDeRegraDeNegocio(400, $"nenhum item encontrado para ser excluído com o id: {idASerDeletado}");
-                    Estoque estoqueDoItem = _contexto.Estoques.Where(e => e.ProdutoId == itemASerExcluido.IdProduto).First();
-                    estoqueDoItem.AdicionarQuantidadeEmEstoque(itemASerExcluido.Quantidade);
-                    _contexto.Estoques.Update(estoqueDoItem);
-                    //log
-                    itemASerExcluido.Ativo = false;
-                    itensVenda.Remove(itemASerExcluido);
-                    _contexto.ItensVendas.Update(itemASerExcluido);
+                    Cliente clienteAtualizadoDaVenda = _contexto.Clientes.Where(c => c.Id == dto.Venda.IdCliente && c.Ativo).Include(c => c.Endereco).FirstOrDefault()
+                    ?? throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado!!!");
+                    vendaParaAtualizar.Cliente = clienteAtualizadoDaVenda;
+                    vendaParaAtualizar.IdCliente = clienteAtualizadoDaVenda.Id;
                 }
-            }
-
-            List<ServicoVenda> servicosVenda = _contexto.ServicosVendas.Where(i => i.IdVenda == vendaParaAtualizar.Id && i.Ativo).Include(s=>s.Servico).ToList();
-
-            if (dto.Venda.IdsServicosDeletados != null)
-            {
-                foreach (Guid idASerDeletado in dto.Venda.IdsServicosDeletados)
+                if (dto.Venda.IdVendedor != null)
                 {
-                    ServicoVenda servicoVendaASerExcluido = servicosVenda.FirstOrDefault(i => i.Id == idASerDeletado && i.Ativo)
-                        ?? throw new ExcecaoDeRegraDeNegocio(400, $"nenhum servico venda encontrado para ser excluído com o id: {idASerDeletado}");
-                    //log
-                    servicoVendaASerExcluido.Ativo = false;
-                    servicosVenda.Remove(servicoVendaASerExcluido);
-                    _contexto.ServicosVendas.Update(servicoVendaASerExcluido);
+                    Vendedor vendedorAtualizado = _vendedorRepositorio.BuscarPorId(dto.Venda.IdVendedor.Value)
+                    ?? throw new ExcecaoDeRegraDeNegocio(404, "Vendedor não encontrado");
+                    vendaParaAtualizar.Vendedor=vendedorAtualizado;
+                    vendaParaAtualizar.IdVendedor=vendedorAtualizado.Id;
                 }
-            }
 
-            List<ItemVendaCreateDto> itensNovosDto = dto.Venda.ItensVendaNovos;
-            List<ServicoVendaCreateDto> servicosVendaNovosDto = dto.Venda.ServicosVendaNovos;
+                List<ItemVenda> itensVenda = _contexto.ItensVendas.Where(i => i.IdVenda == vendaParaAtualizar.Id && i.Ativo).Include(i=>i.Produto).ToList();
 
-            List<ItemVendaUpdateDto> itensAtualizadosDto = dto.Venda.ItensVendaAtualizados;
-            List<ServicoVendaUpdateDto> servicosVendaAtualizadosDto = dto.Venda.ServicosVendaAtualizados;
-            if (itensAtualizadosDto != null)
-            {
-                foreach (ItemVendaUpdateDto itemIteradoDto in itensAtualizadosDto)
+                if (dto.Venda.IdsItensDeletados != null)
                 {
-                    ItemVenda itemVenda = itensVenda.FirstOrDefault(iv => iv.Id == itemIteradoDto.IdItem)
-                        ?? throw new ExcecaoDeRegraDeNegocio(400, $"Não foi possível encontrar nenhum item venda para atualizar com esse id: {itemIteradoDto.IdItem}");
-
-
-                    Produto produtoDoItem = itemVenda.Produto;
-                    Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.ProdutoId == produtoDoItem.Id);
-                    if (itemIteradoDto.Quantidade != null)
+                    foreach(Guid idASerDeletado in dto.Venda.IdsItensDeletados)
                     {
-                        estoqueDoProduto.AdicionarQuantidadeEmEstoque(itemVenda.Quantidade);
+                        ItemVenda itemASerExcluido = itensVenda.FirstOrDefault(i => i.Id == idASerDeletado && i.Ativo)
+                            ?? throw new ExcecaoDeRegraDeNegocio(400, $"nenhum item encontrado para ser excluído com o id: {idASerDeletado}");
+                        Estoque estoqueDoItem = _contexto.Estoques.Where(e => e.ProdutoId == itemASerExcluido.IdProduto).First();
+                        estoqueDoItem.AdicionarQuantidadeEmEstoque(itemASerExcluido.Quantidade);
+                        _contexto.Estoques.Update(estoqueDoItem);
+                        //log
+                        itemASerExcluido.Ativo = false;
+                        itensVenda.Remove(itemASerExcluido);
+                        _contexto.ItensVendas.Update(itemASerExcluido);
+                    }
+                }
+
+                List<ServicoVenda> servicosVenda = _contexto.ServicosVendas.Where(i => i.IdVenda == vendaParaAtualizar.Id && i.Ativo).Include(s=>s.Servico).ToList();
+
+                if (dto.Venda.IdsServicosDeletados != null)
+                {
+                    foreach (Guid idASerDeletado in dto.Venda.IdsServicosDeletados)
+                    {
+                        ServicoVenda servicoVendaASerExcluido = servicosVenda.FirstOrDefault(i => i.Id == idASerDeletado && i.Ativo)
+                            ?? throw new ExcecaoDeRegraDeNegocio(400, $"nenhum servico venda encontrado para ser excluído com o id: {idASerDeletado}");
+                        //log
+                        servicoVendaASerExcluido.Ativo = false;
+                        servicosVenda.Remove(servicoVendaASerExcluido);
+                        _contexto.ServicosVendas.Update(servicoVendaASerExcluido);
+                    }
+                }
+
+                List<ItemVendaCreateDto> itensNovosDto = dto.Venda.ItensVendaNovos;
+                List<ServicoVendaCreateDto> servicosVendaNovosDto = dto.Venda.ServicosVendaNovos;
+
+                List<ItemVendaUpdateDto> itensAtualizadosDto = dto.Venda.ItensVendaAtualizados;
+                List<ServicoVendaUpdateDto> servicosVendaAtualizadosDto = dto.Venda.ServicosVendaAtualizados;
+                if (itensAtualizadosDto != null)
+                {
+                    foreach (ItemVendaUpdateDto itemIteradoDto in itensAtualizadosDto)
+                    {
+                        ItemVenda itemVenda = itensVenda.FirstOrDefault(iv => iv.Id == itemIteradoDto.IdItem)
+                            ?? throw new ExcecaoDeRegraDeNegocio(400, $"Não foi possível encontrar nenhum item venda para atualizar com esse id: {itemIteradoDto.IdItem}");
+
+
+                        Produto produtoDoItem = itemVenda.Produto;
+                        Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.ProdutoId == produtoDoItem.Id);
+                        if (itemIteradoDto.Quantidade != null)
+                        {
+                            estoqueDoProduto.AdicionarQuantidadeEmEstoque(itemVenda.Quantidade);
+                            if (itemIteradoDto.Quantidade > estoqueDoProduto.QuantidadeEmEstoque)
+                            {
+                                throw new ExcecaoDeRegraDeNegocio(400, "Quantidade insufisciente no estoque de produto com id: " + produtoDoItem.Id);
+                            }
+                            estoqueDoProduto.AbaterQuantidadeEmEstoque(itemIteradoDto.Quantidade.Value);
+                            _contexto.Estoques.Update(estoqueDoProduto);
+                            itemVenda.Quantidade = itemIteradoDto.Quantidade.Value;
+                            //log
+                        }
+                        if (itemIteradoDto.DescontoUnitario != null)
+                        {
+                            if (itemIteradoDto.DescontoUnitario.Value > itemVenda.PrecoUnitarioDoProdutoNaVendaSemDesconto)
+                            {
+                                throw new ExcecaoDeRegraDeNegocio(400, "O valor do desconto unitario não pode ser maior o preço do produto, erro no item com id: " + itemVenda.Id);
+                            }
+                            itemVenda.DescontoUnitario = itemIteradoDto.DescontoUnitario.Value;
+                            //log
+                        }
+                  
+                    }
+                    _contexto.ItensVendas.UpdateRange(itensVenda);
+                }
+
+                if (servicosVendaAtualizadosDto != null)
+                {
+                    foreach (ServicoVendaUpdateDto servicoVendaIteradoDto in servicosVendaAtualizadosDto)
+                    {
+                        ServicoVenda servicoVenda = servicosVenda.FirstOrDefault(sv => sv.Id == servicoVendaIteradoDto.IdServicoVenda)
+                        ?? throw new ExcecaoDeRegraDeNegocio(400, $"Não foi possível encontrar nenhum serviço venda para atualizar com esse id: {servicoVendaIteradoDto.IdServicoVenda}");
+
+
+                        if (servicoVendaIteradoDto.DescontoServico != null)
+                        {
+                            if (servicoVendaIteradoDto.DescontoServico.Value > servicoVenda.PrecoServicoNaVendaSemDesconto)
+                            {
+                                throw new ExcecaoDeRegraDeNegocio(400, "O valor do desconto do serviço não pode ser maior o preço do serviço, erro no serviço da venda com id: "
+                                    + servicoVenda.Id);
+                            }
+                            servicoVenda.DescontoServico = servicoVendaIteradoDto.DescontoServico ?? 0;
+                        }
+                   
+                    }
+                    _contexto.ServicosVendas.UpdateRange(servicosVenda);
+                }
+
+                if (itensNovosDto != null)
+                {
+                    foreach (ItemVendaCreateDto itemIteradoDto in itensNovosDto)
+                    {
+                        Produto produto = _contexto.Produtos.FirstOrDefault(p => p.Id == itemIteradoDto.IdProduto)
+                            ?? throw new ExcecaoDeRegraDeNegocio(404, "produto não encontrado para o id: " + itemIteradoDto.IdProduto);
+
+                        Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.ProdutoId == produto.Id);
                         if (itemIteradoDto.Quantidade > estoqueDoProduto.QuantidadeEmEstoque)
                         {
-                            throw new ExcecaoDeRegraDeNegocio(400, "Quantidade insufisciente no estoque de produto com id: " + produtoDoItem.Id);
+                            throw new ExcecaoDeRegraDeNegocio(400, "Quantidade insufisciente no estoque de produto com id: " + produto.Id);
                         }
-                        estoqueDoProduto.AbaterQuantidadeEmEstoque(itemIteradoDto.Quantidade.Value);
+                        if (itemIteradoDto.DescontoUnitario > produto.Preco)
+                        {
+                            throw new ExcecaoDeRegraDeNegocio(400, "O valor do desconto unitario não pode ser maior o preço do produto");
+                        }
+                        estoqueDoProduto.AbaterQuantidadeEmEstoque(itemIteradoDto.Quantidade);
                         _contexto.Estoques.Update(estoqueDoProduto);
-                        itemVenda.Quantidade = itemIteradoDto.Quantidade.Value;
+                        ItemVenda itemVenda = new(vendaParaAtualizar, produto, itemIteradoDto.Quantidade, itemIteradoDto.DescontoUnitario ?? 0, produto.Preco);
+                        itensVenda.Add(itemVenda);
+                        _contexto.ItensVendas.Add(itemVenda);
+                    }
+                }
+
+                if (servicosVendaNovosDto != null)
+                {
+                    foreach (ServicoVendaCreateDto servicoVendaIteradoDto in servicosVendaNovosDto)
+                    {
+                        Servico servico = _contexto.Servicos.FirstOrDefault(s => s.Id == servicoVendaIteradoDto.IdServico)
+                            ?? throw new ExcecaoDeRegraDeNegocio(404, "serviço não encontrado para o id: " + servicoVendaIteradoDto.IdServico);
+
+                        if (servicoVendaIteradoDto.DescontoServico > servico.Preco)
+                        {
+                            throw new ExcecaoDeRegraDeNegocio(400, "O valor do desconto do serviço não pode ser maior o preço do serviço");
+                        }
+                        ServicoVenda servicoVenda = new(vendaParaAtualizar, servico, servicoVendaIteradoDto.DescontoServico ?? 0, servico.Preco);
+                        servicosVenda.Add(servicoVenda);
+                        _contexto.ServicosVendas.Add(servicoVenda);
+                    }
+                }
+                if(!(itensVenda.Any() || servicosVenda.Any()))
+                {
+                    throw new ExcecaoDeRegraDeNegocio(400, "A Venda precisa ter pelo menos um item, se não exclua a venda");
+                }
+
+                valorTotalDaVendaSemDescontoTotalAplicado = CalcularTotalVendaSemDescontoTotalAplicadoParaVendaAtualizada(itensVenda, servicosVenda);
+                decimal descontoVenda;
+
+                if (dto.Venda.DescontoSobreTotalVenda != null)
+                {
+                    if (dto.Venda.DescontoSobreTotalVenda > valorTotalDaVendaSemDescontoTotalAplicado)
+                    {
+                        throw new ExcecaoDeRegraDeNegocio(400, "O desconto não pode ser maior que o total da venda");
+                    }
+                    descontoVenda = dto.Venda.DescontoSobreTotalVenda.Value;
+                    //log
+                    vendaParaAtualizar.DescontoTotal = descontoVenda;
+                }
+                else
+                {
+                    descontoVenda = vendaParaAtualizar.DescontoTotal;
+                }
+
+                valorTotalDaVendaComDescontoAplicado = Math.Round((valorTotalDaVendaSemDescontoTotalAplicado - descontoVenda), 2, MidpointRounding.AwayFromZero);
+                if (!Equals(valorTotalDaVendaSemDescontoTotalAplicado, vendaParaAtualizar.ValorTotalSemDesconto))
+                {
+                    vendaParaAtualizar.ValorTotalSemDesconto = valorTotalDaVendaSemDescontoTotalAplicado;
+                }
+                if (!Equals(valorTotalDaVendaComDescontoAplicado,vendaParaAtualizar.ValorTotalComDesconto))
+                {
+                    vendaParaAtualizar.ValorTotalComDesconto = valorTotalDaVendaComDescontoAplicado;
+                }
+                _contexto.Vendas.Update(vendaParaAtualizar);
+               
+            }
+            if (dto.Transacao != null)
+            {
+                if (dto.Transacao.MeioPagamento != null)
+                {
+                    transacaoDaVendaASerAtualizada.MeioPagamento = dto.Transacao.MeioPagamento.Value;
+                    //log
+                }
+                int quantidadeDeParcelasExistentesAtualmente = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo).Count();
+
+                //mais não permite mais d euma parcela se o tipo é avista, mais ver se esta sendo mandado a quantidade de parcela que daí da certo.., fazr um if dentro de outro
+                if (dto.Transacao.TipoPagamento != null)
+                {
+                    if (dto.Transacao.QuantidadeDeParcelas != null)
+                    {
+                        if (dto.Transacao.TipoPagamento == TipoPagamento.AVista && dto.Transacao.QuantidadeDeParcelas != 1)
+                        {
+                            throw new ExcecaoDeRegraDeNegocio(400, "a quantidade de parclea deve ser igual a 1 se o tipo do pagamento é avista");
+                        }
+                        transacaoDaVendaASerAtualizada.TipoPagamento = dto.Transacao.TipoPagamento.Value;
                         //log
                     }
-                    if (itemIteradoDto.DescontoUnitario != null)
+                    else
                     {
-                        if (itemIteradoDto.DescontoUnitario.Value > itemVenda.PrecoUnitarioDoProdutoNaVendaSemDesconto)
+
+                        if (dto.Transacao.TipoPagamento == TipoPagamento.AVista && quantidadeDeParcelasExistentesAtualmente != 1)
                         {
-                            throw new ExcecaoDeRegraDeNegocio(400, "O valor do desconto unitario não pode ser maior o preço do produto, erro no item com id: " + itemVenda.Id);
+                            throw new ExcecaoDeRegraDeNegocio(400, "a quantidade de parclea deve ser igual a 1 se o tipo do pagamento é avista");
                         }
-                        itemVenda.DescontoUnitario = itemIteradoDto.DescontoUnitario.Value;
+                        transacaoDaVendaASerAtualizada.TipoPagamento = dto.Transacao.TipoPagamento.Value;
                         //log
                     }
-                  
                 }
-                _contexto.ItensVendas.UpdateRange(itensVenda);
-            }
+                int quantidadeDeParcelasAtualizado = quantidadeDeParcelasExistentesAtualmente;
 
-            if (servicosVendaAtualizadosDto != null)
-            {
-                foreach (ServicoVendaUpdateDto servicoVendaIteradoDto in servicosVendaAtualizadosDto)
-                {
-                    ServicoVenda servicoVenda = servicosVenda.FirstOrDefault(sv => sv.Id == servicoVendaIteradoDto.IdServicoVenda)
-                    ?? throw new ExcecaoDeRegraDeNegocio(400, $"Não foi possível encontrar nenhum serviço venda para atualizar com esse id: {servicoVendaIteradoDto.IdServicoVenda}");
-
-
-                    if (servicoVendaIteradoDto.DescontoServico != null)
-                    {
-                        if (servicoVendaIteradoDto.DescontoServico.Value > servicoVenda.PrecoServicoNaVendaSemDesconto)
-                        {
-                            throw new ExcecaoDeRegraDeNegocio(400, "O valor do desconto do serviço não pode ser maior o preço do serviço, erro no serviço da venda com id: "
-                                + servicoVenda.Id);
-                        }
-                        servicoVenda.DescontoServico = servicoVendaIteradoDto.DescontoServico ?? 0;
-                    }
-                   
-                }
-                _contexto.ServicosVendas.UpdateRange(servicosVenda);
-            }
-
-            if (itensNovosDto != null)
-            {
-                foreach (ItemVendaCreateDto itemIteradoDto in itensNovosDto)
-                {
-                    Produto produto = _contexto.Produtos.FirstOrDefault(p => p.Id == itemIteradoDto.IdProduto)
-                        ?? throw new ExcecaoDeRegraDeNegocio(404, "produto não encontrado para o id: " + itemIteradoDto.IdProduto);
-
-                    Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.ProdutoId == produto.Id);
-                    if (itemIteradoDto.Quantidade > estoqueDoProduto.QuantidadeEmEstoque)
-                    {
-                        throw new ExcecaoDeRegraDeNegocio(400, "Quantidade insufisciente no estoque de produto com id: " + produto.Id);
-                    }
-                    if (itemIteradoDto.DescontoUnitario > produto.Preco)
-                    {
-                        throw new ExcecaoDeRegraDeNegocio(400, "O valor do desconto unitario não pode ser maior o preço do produto");
-                    }
-                    estoqueDoProduto.AbaterQuantidadeEmEstoque(itemIteradoDto.Quantidade);
-                    _contexto.Estoques.Update(estoqueDoProduto);
-                    ItemVenda itemVenda = new(vendaParaAtualizar, produto, itemIteradoDto.Quantidade, itemIteradoDto.DescontoUnitario ?? 0, produto.Preco);
-                    itensVenda.Add(itemVenda);
-                    _contexto.ItensVendas.Add(itemVenda);
-                }
-            }
-
-            if (servicosVendaNovosDto != null)
-            {
-                foreach (ServicoVendaCreateDto servicoVendaIteradoDto in servicosVendaNovosDto)
-                {
-                    Servico servico = _contexto.Servicos.FirstOrDefault(s => s.Id == servicoVendaIteradoDto.IdServico)
-                        ?? throw new ExcecaoDeRegraDeNegocio(404, "serviço não encontrado para o id: " + servicoVendaIteradoDto.IdServico);
-
-                    if (servicoVendaIteradoDto.DescontoServico > servico.Preco)
-                    {
-                        throw new ExcecaoDeRegraDeNegocio(400, "O valor do desconto do serviço não pode ser maior o preço do serviço");
-                    }
-                    ServicoVenda servicoVenda = new(vendaParaAtualizar, servico, servicoVendaIteradoDto.DescontoServico ?? 0, servico.Preco);
-                    servicosVenda.Add(servicoVenda);
-                    _contexto.ServicosVendas.Add(servicoVenda);
-                }
-            }
-            if(!(itensVenda.Any() || servicosVenda.Any()))
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "A Venda precisa ter pelo menos um item, se não exclua a venda");
-            }
-
-            decimal valorTotalDaVendaSemDescontoTotalAplicado = CalcularTotalVendaSemDescontoTotalAplicadoParaVendaAtualizada(itensVenda, servicosVenda);
-            decimal descontoVenda;
-
-            if (dto.Venda.DescontoSobreTotalVenda != null)
-            {
-                if (dto.Venda.DescontoSobreTotalVenda > valorTotalDaVendaSemDescontoTotalAplicado)
-                {
-                    throw new ExcecaoDeRegraDeNegocio(400, "O desconto não pode ser maior que o total da venda");
-                }
-                descontoVenda = dto.Venda.DescontoSobreTotalVenda.Value;
-                //log
-                vendaParaAtualizar.DescontoTotal = descontoVenda;
-            }
-            else
-            {
-                descontoVenda = vendaParaAtualizar.DescontoTotal;
-            }
-
-            decimal valorTotalDaVendaComDescontoAplicado = Math.Round((valorTotalDaVendaSemDescontoTotalAplicado - descontoVenda), 2, MidpointRounding.AwayFromZero);
-
-            if (dto.Transacao.MeioPagamento != null)
-            {
-                transacaoDaVendaASerAtualizada.MeioPagamento = dto.Transacao.MeioPagamento.Value;
-                //log
-            }
-            int quantidadeDeParcelasExistentesAtualmente = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo).Count();
-
-            //mais não permite mais d euma parcela se o tipo é avista, mais ver se esta sendo mandado a quantidade de parcela que daí da certo.., fazr um if dentro de outro
-            if (dto.Transacao.TipoPagamento != null)
-            {
                 if (dto.Transacao.QuantidadeDeParcelas != null)
                 {
-                    if(dto.Transacao.TipoPagamento==TipoPagamento.AVista && dto.Transacao.QuantidadeDeParcelas != 1)
+                    if (dto.Transacao.QuantidadeDeParcelas.Value > 60)
                     {
-                        throw new ExcecaoDeRegraDeNegocio(400, "a quantidade de parclea deve ser igual a 1 se o tipo do pagamento é avista"); 
+                        throw new ExcecaoDeRegraDeNegocio(400, "A Quantidade De Parcelas não deve ser maior que 60");
                     }
-                    transacaoDaVendaASerAtualizada.TipoPagamento = dto.Transacao.TipoPagamento.Value;
-                    //log
+                    quantidadeDeParcelasAtualizado = dto.Transacao.QuantidadeDeParcelas.Value;
                 }
-                else
+
+
+                List<decimal> valoresDasParcelas = CalcularValorDasParcelas(valorTotalDaVendaComDescontoAplicado, quantidadeDeParcelasAtualizado);
+
+                DateOnly dataVencimentoPrimeiraParcelaAntigo = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.NumeroDaParcelaDaVenda == 1
+                && p.Ativo).First().DataVencimento;
+
+                DateOnly dataVencimentoPrimeiraParcelaAtualizado = dataVencimentoPrimeiraParcelaAntigo;
+                if (dto.Transacao.DataDeVencinmentoPrimeiraParcela != null)
                 {
-                    
-                    if (dto.Transacao.TipoPagamento==TipoPagamento.AVista && quantidadeDeParcelasExistentesAtualmente != 1)
+                    if (!(dto.Transacao.DataDeVencinmentoPrimeiraParcela >= DateOnly.FromDateTime(DateTime.Today)))
                     {
-                        throw new ExcecaoDeRegraDeNegocio(400, "a quantidade de parclea deve ser igual a 1 se o tipo do pagamento é avista");
+                        throw new ExcecaoDeRegraDeNegocio(400, "A data de vencimento da primeira parcela deve ser maior ou igaual a data atual");
                     }
-                    transacaoDaVendaASerAtualizada.TipoPagamento = dto.Transacao.TipoPagamento.Value;
-                    //log
+                    dataVencimentoPrimeiraParcelaAtualizado = dto.Transacao.DataDeVencinmentoPrimeiraParcela.Value;
                 }
+
+
+                List<Parcela> parcelasDaVenda = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo).OrderBy(p => p.NumeroDaParcelaDaVenda).ToList();
+
+                if (quantidadeDeParcelasExistentesAtualmente != quantidadeDeParcelasAtualizado || vendaParaAtualizar.ValorTotalComDesconto != valorTotalDaVendaComDescontoAplicado
+                    || dataVencimentoPrimeiraParcelaAntigo != dataVencimentoPrimeiraParcelaAtualizado)
+                {
+                    if (quantidadeDeParcelasExistentesAtualmente > quantidadeDeParcelasAtualizado)
+                    {
+                        int quantidaDeParcelasASeremDeletadas = quantidadeDeParcelasExistentesAtualmente - quantidadeDeParcelasAtualizado;
+                        List<Parcela> parcelasDeletadas = parcelasDaVenda.TakeLast(quantidaDeParcelasASeremDeletadas).ToList();
+                        foreach (Parcela parcelaIterada in parcelasDeletadas)
+                        {
+                            parcelaIterada.Ativo = false;
+                            parcelasDaVenda.RemoveAll(p => p.Id == parcelaIterada.Id);
+                            _contexto.Parcelas.Update(parcelaIterada);
+                        }
+
+                        for (int i = 0; i < parcelasDaVenda.Count; i++)
+                        {
+                            parcelasDaVenda[i].NumeroDaParcelaDaVenda = i + 1;
+                            parcelasDaVenda[i].DataVencimento = dataVencimentoPrimeiraParcelaAtualizado.AddMonths(i);
+                            parcelasDaVenda[i].ValorParcela = valoresDasParcelas[i];
+                        }
+                        _contexto.Parcelas.UpdateRange(parcelasDaVenda);
+
+                    }
+                    else if (quantidadeDeParcelasAtualizado > quantidadeDeParcelasExistentesAtualmente)
+                    {
+                        int quantidadeDeParcelasASerCriada = quantidadeDeParcelasAtualizado - quantidadeDeParcelasExistentesAtualmente;
+                        DateOnly dataDeVencimentoProximaParcela = dataVencimentoPrimeiraParcelaAtualizado;
+                        int indiceDaParcela = 0;
+                        for (int i = 0; i < parcelasDaVenda.Count; i++)
+                        {
+                            parcelasDaVenda[i].NumeroDaParcelaDaVenda = (indiceDaParcela + 1);
+                            parcelasDaVenda[i].DataVencimento = dataDeVencimentoProximaParcela;
+                            parcelasDaVenda[i].ValorParcela = valoresDasParcelas[indiceDaParcela];
+                            indiceDaParcela++;
+                            dataDeVencimentoProximaParcela = dataDeVencimentoProximaParcela.AddMonths(1);
+                        }
+                        _contexto.Parcelas.UpdateRange(parcelasDaVenda);
+
+                        for (int i = 0; i < quantidadeDeParcelasASerCriada; i++)
+                        {
+                            Parcela parcela = new(transacaoDaVendaASerAtualizada, indiceDaParcela + 1, valoresDasParcelas[indiceDaParcela], dataDeVencimentoProximaParcela);
+                            indiceDaParcela++;
+                            dataDeVencimentoProximaParcela = dataDeVencimentoProximaParcela.AddMonths(1);
+                            parcelasDaVenda.Add(parcela);
+                            _contexto.Parcelas.Add(parcela);
+                        }
+
+                    }
+                    else
+                    {
+                        for (int i = 0; i < parcelasDaVenda.Count; i++)
+                        {
+                            parcelasDaVenda[i].NumeroDaParcelaDaVenda = i + 1;
+                            parcelasDaVenda[i].DataVencimento = dataVencimentoPrimeiraParcelaAtualizado.AddMonths(i);
+                            parcelasDaVenda[i].ValorParcela = valoresDasParcelas[i];
+                        }
+                        _contexto.Parcelas.UpdateRange(parcelasDaVenda);
+
+
+                    }
+                }
+                _contexto.Transacoes.Update(transacaoDaVendaASerAtualizada);
             }
-            int quantidadeDeParcelasAtualizado = quantidadeDeParcelasExistentesAtualmente;
-             
-            if (dto.Transacao.QuantidadeDeParcelas != null)
-            {
-                if (dto.Transacao.QuantidadeDeParcelas.Value > 60)
-                {
-                    throw new ExcecaoDeRegraDeNegocio(400, "A Quantidade De Parcelas não deve ser maior que 60");
-                }
-                quantidadeDeParcelasAtualizado = dto.Transacao.QuantidadeDeParcelas.Value;
-            }
-
-
-            List<decimal> valoresDasParcelas = CalcularValorDasParcelas(valorTotalDaVendaComDescontoAplicado, quantidadeDeParcelasAtualizado);
-
-            DateOnly dataVencimentoPrimeiraParcelaAntigo = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.NumeroDaParcelaDaVenda == 1
-            && p.Ativo).First().DataVencimento;
-
-            DateOnly dataVencimentoPrimeiraParcelaAtualizado = dataVencimentoPrimeiraParcelaAntigo;
-            if (dto.Transacao.DataDeVencinmentoPrimeiraParcela != null)
-            {
-                if (!(dto.Transacao.DataDeVencinmentoPrimeiraParcela >= DateOnly.FromDateTime(DateTime.Today)))
-                {
-                    throw new ExcecaoDeRegraDeNegocio(400, "A data de vencimento da primeira parcela deve ser maior ou igaual a data atual");
-                }
-                dataVencimentoPrimeiraParcelaAtualizado = dto.Transacao.DataDeVencinmentoPrimeiraParcela.Value;
-            }
-
-
-            List<Parcela> parcelasDaVenda=_contexto.Parcelas.Where(p=>p.IdTransacao==transacaoDaVendaASerAtualizada.Id&& p.Ativo).OrderBy(p => p.NumeroDaParcelaDaVenda).ToList();
-
-            if (quantidadeDeParcelasExistentesAtualmente != quantidadeDeParcelasAtualizado || vendaParaAtualizar.ValorTotalComDesconto != valorTotalDaVendaComDescontoAplicado 
-                || dataVencimentoPrimeiraParcelaAntigo != dataVencimentoPrimeiraParcelaAtualizado)
-            {
-                if (quantidadeDeParcelasExistentesAtualmente > quantidadeDeParcelasAtualizado)
-                {
-                    int quantidaDeParcelasASeremDeletadas = quantidadeDeParcelasExistentesAtualmente - quantidadeDeParcelasAtualizado;
-                    List<Parcela> parcelasDeletadas = parcelasDaVenda.TakeLast(quantidaDeParcelasASeremDeletadas).ToList();
-                    foreach (Parcela parcelaIterada in parcelasDeletadas)
-                    {
-                        parcelaIterada.Ativo = false;
-                        parcelasDaVenda.RemoveAll(p => p.Id == parcelaIterada.Id);
-                        _contexto.Parcelas.Update(parcelaIterada);
-                    }
-
-                    for (int i = 0; i < parcelasDaVenda.Count; i++)
-                    {
-                        parcelasDaVenda[i].NumeroDaParcelaDaVenda = i + 1;
-                        parcelasDaVenda[i].DataVencimento = dataVencimentoPrimeiraParcelaAtualizado.AddMonths(i);
-                        parcelasDaVenda[i].ValorParcela = valoresDasParcelas[i];
-                    }
-                    _contexto.Parcelas.UpdateRange(parcelasDaVenda);
-
-                }
-                else if (quantidadeDeParcelasAtualizado > quantidadeDeParcelasExistentesAtualmente)
-                {
-                    int quantidadeDeParcelasASerCriada = quantidadeDeParcelasAtualizado - quantidadeDeParcelasExistentesAtualmente;
-                    DateOnly dataDeVencimentoProximaParcela = dataVencimentoPrimeiraParcelaAtualizado;
-                    int indiceDaParcela = 0;
-                    for (int i = 0; i < parcelasDaVenda.Count; i++)
-                    {
-                        parcelasDaVenda[i].NumeroDaParcelaDaVenda = (indiceDaParcela + 1);
-                        parcelasDaVenda[i].DataVencimento = dataDeVencimentoProximaParcela;
-                        parcelasDaVenda[i].ValorParcela = valoresDasParcelas[indiceDaParcela];
-                        indiceDaParcela++;
-                        dataDeVencimentoProximaParcela = dataDeVencimentoProximaParcela.AddMonths(1);
-                    }
-                    _contexto.Parcelas.UpdateRange(parcelasDaVenda);
-
-                    for (int i = 0; i < quantidadeDeParcelasASerCriada; i++)
-                    {
-                        Parcela parcela = new(transacaoDaVendaASerAtualizada, indiceDaParcela + 1, valoresDasParcelas[indiceDaParcela], dataDeVencimentoProximaParcela);
-                        indiceDaParcela++;
-                        dataDeVencimentoProximaParcela = dataDeVencimentoProximaParcela.AddMonths(1);
-                        parcelasDaVenda.Add(parcela);
-                        _contexto.Parcelas.Add(parcela);
-                    }
-
-                }
-                else
-                {
-                    for (int i = 0; i < parcelasDaVenda.Count; i++)
-                    {
-                        parcelasDaVenda[i].NumeroDaParcelaDaVenda = i + 1;
-                        parcelasDaVenda[i].DataVencimento = dataVencimentoPrimeiraParcelaAtualizado.AddMonths(i);
-                        parcelasDaVenda[i].ValorParcela = valoresDasParcelas[i];
-                    }
-                    _contexto.Parcelas.UpdateRange(parcelasDaVenda);
-
-
-                }
-            }
-            
-            vendaParaAtualizar.ValorTotalSemDesconto = valorTotalDaVendaSemDescontoTotalAplicado;
-            vendaParaAtualizar.ValorTotalComDesconto = valorTotalDaVendaComDescontoAplicado;
-            //log
-
-           
-            _contexto.Vendas.Update(vendaParaAtualizar);
-            _contexto.Transacoes.Update(transacaoDaVendaASerAtualizada);
             _contexto.SaveChanges();
 
             return EntityToDto(vendaParaAtualizar);

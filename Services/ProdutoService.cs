@@ -52,9 +52,8 @@ namespace ApiEstagioBicicletaria.Services
                 Estoque estoque = _contextoDb.Estoques.FirstOrDefault(e => e.Produto.Id == produtoIterado.Id) 
                     ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
                 EstoqueSimplificadoOutputDto estoqueDto = new(estoque.Id,estoque.QuantidadeEmEstoque);
-                ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoIterado.Id, produtoIterado.CodigoDeBarra,
-                    produtoIterado.DataCriacao, produtoIterado.NomeProduto, produtoIterado.Descricao,estoque.QuantidadeEmEstoque, 
-                    produtoIterado.Ativo, podeExcluir,estoqueDto);
+                ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoIterado.Id,produtoIterado.CodigoDeBarra,produtoIterado.DataCriacao,produtoIterado.NomeProduto,produtoIterado.Descricao,
+                    produtoIterado.Preco,produtoIterado.Ativo,podeExcluir,estoqueDto);
                 produtosFomartoDto.Add(produtoFormatoDto);
             }
             return produtosFomartoDto;

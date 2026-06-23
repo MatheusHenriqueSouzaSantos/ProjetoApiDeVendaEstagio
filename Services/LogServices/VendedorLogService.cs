@@ -47,7 +47,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
                 var valorAntigoPropriedade = propriedade.GetValue(vendedorAntigo);
                 var valorAtualizadoPropriedade = propriedade.GetValue(vendedorAtualizado);
 
-                if (valorAntigoPropriedade != valorAtualizadoPropriedade)
+                if (!Equals(valorAntigoPropriedade, valorAtualizadoPropriedade)
                 {
                     VendedorLog log = new(vendedorAtualizado,
                     LogAcao.Atualizacao,

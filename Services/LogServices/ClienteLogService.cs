@@ -70,7 +70,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
                 var valorAntigoPropriedade = propriedade.GetValue(clienteAntigo);
                 var valorAtualizadoPropriedade = propriedade.GetValue(clienteAtualizado);
 
-                if (valorAntigoPropriedade != valorAtualizadoPropriedade)
+                if (!Equals(valorAntigoPropriedade, valorAtualizadoPropriedade))
                 {
                     ClienteLog log = 
                     new(clienteAtualizado,
@@ -100,7 +100,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
                 var valorAntigoPropriedade = propriedade.GetValue(clienteAntigo);
                 var valorAtualizadoPropriedade = propriedade.GetValue(clienteAtualizado);
 
-                if (valorAntigoPropriedade != valorAtualizadoPropriedade)
+                if (!Equals(valorAntigoPropriedade, valorAtualizadoPropriedade))
                 {
                     ClienteLog log =
                     new(clienteAtualizado,

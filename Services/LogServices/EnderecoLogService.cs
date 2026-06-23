@@ -48,7 +48,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
                 var valorAntigoPropriedade = propriedade.GetValue(enderecoAntigo);
                 var valorAtualizadoPropriedade = propriedade.GetValue(enderecoAtualizado);
 
-                if (valorAntigoPropriedade != valorAtualizadoPropriedade)
+                if (!Equals(valorAntigoPropriedade, valorAtualizadoPropriedade))
                 {
                     EnderecoLog log = 
                     new(enderecoAtualizado,

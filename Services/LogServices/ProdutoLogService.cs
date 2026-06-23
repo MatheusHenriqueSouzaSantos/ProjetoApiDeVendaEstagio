@@ -45,16 +45,17 @@ namespace ApiEstagioBicicletaria.Services.ServicesLogs
                 var valorAntigoPropriedade = propriedade.GetValue(produtoAntigo);
                 var valorAtualizadoPropriedade = propriedade.GetValue(produtoAtualizado);
 
-                if (valorAntigoPropriedade != valorAtualizadoPropriedade)
+                if (!Equals(valorAntigoPropriedade, valorAtualizadoPropriedade))
                 {
-                   ProdutoLog log = new(produtoAtualizado,
-                   LogAcao.Atualizacao,
-                   propriedade.Name,
-                   valorAntigoPropriedade?.ToString(),
-                   valorAtualizadoPropriedade?.ToString(),
-                   usuarioResponsavel);
+                    ProdutoLog log = new(
+                        produtoAtualizado,
+                        LogAcao.Atualizacao,
+                        propriedade.Name,
+                        valorAntigoPropriedade?.ToString(),
+                        valorAtualizadoPropriedade?.ToString(),
+                        usuarioResponsavel);
 
-                   _repositorio.CriarLog(log);
+                    _repositorio.CriarLog(log);
                 }
 
             }

@@ -21,7 +21,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
 
         }
 
-        public TransacaoUpdateDto(TipoPagamento tipoPagamento, MeioPagamento meioPagamento, int? quantidadeDeParcelas, DateOnly? dataDeVencinmentoPrimeiraParcela)
+        public TransacaoUpdateDto(TipoPagamento? tipoPagamento, MeioPagamento? meioPagamento, int? quantidadeDeParcelas, DateOnly? dataDeVencinmentoPrimeiraParcela)
         {
             TipoPagamento = tipoPagamento;
             MeioPagamento = meioPagamento;

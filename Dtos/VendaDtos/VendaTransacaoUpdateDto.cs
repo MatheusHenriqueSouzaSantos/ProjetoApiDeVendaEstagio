@@ -5,14 +5,14 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 {
     public class VendaTransacaoUpdateDto
     {
-        public VendaUpdateDto Venda { get; set; }
+        public VendaUpdateDto? Venda { get; set; }
 
-        public TransacaoUpdateDto Transacao { get; set; }
+        public TransacaoUpdateDto? Transacao { get; set; }
 
 
         public VendaTransacaoUpdateDto() { }
 
-        public VendaTransacaoUpdateDto(VendaUpdateDto venda, TransacaoUpdateDto transacao)
+        public VendaTransacaoUpdateDto(VendaUpdateDto? venda, TransacaoUpdateDto? transacao)
         {
             Venda = venda;
             Transacao = transacao;
