@@ -28,5 +28,10 @@
             ValorParcela = valorParcela;
             DataVencimento = dataVencimento;
         }
+
+        public Parcela Copia()
+        {
+            return new Parcela(Transacao,NumeroDaParcelaDaVenda,ValorParcela,DataVencimento);
+        }
     }
 }

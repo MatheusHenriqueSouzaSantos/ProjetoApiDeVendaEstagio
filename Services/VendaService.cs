@@ -44,11 +44,12 @@ namespace ApiEstagioBicicletaria.Services
         private readonly ServicoVendaLogService _servicoVendaLogService;
         private readonly Usuario _usuarioLogado;
         private readonly TransacaoLogService _transacaoLogService;
+        private readonly ParcelaLogService _parcelaLogService;
 
         public VendaService(ContextoDb contexto, GeradorCodigoIndentificadorMovimentacao<Venda> geradorCodigoVenda, 
             VendedorRepositorio vendedorRepositorio, VendaLogService vendaLogService,
             ServicoVendaLogService servicoVendaLogService,ItemVendaLogService itemVendaLogService,
-            UsuarioLogadoService usuarioLogadoService,TransacaoLogService transacaoLogService)
+            UsuarioLogadoService usuarioLogadoService,TransacaoLogService transacaoLogService,ParcelaLogService parcelaLogService)
         {
             _contexto = contexto;
             _geradorCodigoVenda = geradorCodigoVenda;
@@ -58,6 +59,7 @@ namespace ApiEstagioBicicletaria.Services
             _servicoVendaLogService = servicoVendaLogService;
             _usuarioLogado = usuarioLogadoService.ObterUsuario();
             _transacaoLogService = transacaoLogService;
+            _parcelaLogService = parcelaLogService;
         }
 
         public List<VendaTransacaoOutputDto> BuscarTodasVendas()
@@ -207,6 +209,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 Parcela parcelaCriada = new Parcela(transacaoCriada, (i + 1), valoresDasParcelas[i],dataDeVencimentoDaPrimeiraParcela.AddMonths(i));
                 _contexto.Parcelas.Add(parcelaCriada);
+                _parcelaLogService.CriarLogsDeCriacao(parcelaCriada, transacaoCriada, _usuarioLogado);
             }
             _contexto.SaveChanges();
 
@@ -555,7 +558,8 @@ namespace ApiEstagioBicicletaria.Services
                 }
 
 
-                List<Parcela> parcelasDaVenda = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo).OrderBy(p => p.NumeroDaParcelaDaVenda).ToList();
+                List<Parcela> parcelasDaVenda = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo).Include(p=>p.Transacao)
+                    .OrderBy(p => p.NumeroDaParcelaDaVenda).ToList();
 
                 if (quantidadeDeParcelasExistentesAtualmente != quantidadeDeParcelasAtualizado || vendaParaAtualizar.ValorTotalComDesconto != valorTotalDaVendaComDescontoAplicado
                     || dataVencimentoPrimeiraParcelaAntigo != dataVencimentoPrimeiraParcelaAtualizado)
@@ -568,14 +572,17 @@ namespace ApiEstagioBicicletaria.Services
                         {
                             parcelaIterada.Ativo = false;
                             parcelasDaVenda.RemoveAll(p => p.Id == parcelaIterada.Id);
+                            _parcelaLogService.CriarLogsDeExclusao(parcelaIterada, transacaoDaVendaASerAtualizada, _usuarioLogado);
                             _contexto.Parcelas.Update(parcelaIterada);
                         }
 
                         for (int i = 0; i < parcelasDaVenda.Count; i++)
                         {
+                            Parcela parcelaCopia = parcelasDaVenda[i].Copia();
                             parcelasDaVenda[i].NumeroDaParcelaDaVenda = i + 1;
                             parcelasDaVenda[i].DataVencimento = dataVencimentoPrimeiraParcelaAtualizado.AddMonths(i);
                             parcelasDaVenda[i].ValorParcela = valoresDasParcelas[i];
+                            _parcelaLogService.CriarLogsDeAtualizacao(parcelaCopia, parcelasDaVenda[i],transacaoDaVendaASerAtualizada, _usuarioLogado);
                         }
                         _contexto.Parcelas.UpdateRange(parcelasDaVenda);
 
@@ -587,9 +594,11 @@ namespace ApiEstagioBicicletaria.Services
                         int indiceDaParcela = 0;
                         for (int i = 0; i < parcelasDaVenda.Count; i++)
                         {
+                            Parcela parcelaCopia = parcelasDaVenda[i].Copia();
                             parcelasDaVenda[i].NumeroDaParcelaDaVenda = (indiceDaParcela + 1);
                             parcelasDaVenda[i].DataVencimento = dataDeVencimentoProximaParcela;
                             parcelasDaVenda[i].ValorParcela = valoresDasParcelas[indiceDaParcela];
+                            _parcelaLogService.CriarLogsDeAtualizacao(parcelaCopia, parcelasDaVenda[i], transacaoDaVendaASerAtualizada, _usuarioLogado);
                             indiceDaParcela++;
                             dataDeVencimentoProximaParcela = dataDeVencimentoProximaParcela.AddMonths(1);
                         }
@@ -601,6 +610,7 @@ namespace ApiEstagioBicicletaria.Services
                             indiceDaParcela++;
                             dataDeVencimentoProximaParcela = dataDeVencimentoProximaParcela.AddMonths(1);
                             parcelasDaVenda.Add(parcela);
+                            _parcelaLogService.CriarLogsDeCriacao(parcela, transacaoDaVendaASerAtualizada, _usuarioLogado);
                             _contexto.Parcelas.Add(parcela);
                         }
 
@@ -609,9 +619,11 @@ namespace ApiEstagioBicicletaria.Services
                     {
                         for (int i = 0; i < parcelasDaVenda.Count; i++)
                         {
+                            Parcela parcelaCopia = parcelasDaVenda[i].Copia();
                             parcelasDaVenda[i].NumeroDaParcelaDaVenda = i + 1;
                             parcelasDaVenda[i].DataVencimento = dataVencimentoPrimeiraParcelaAtualizado.AddMonths(i);
                             parcelasDaVenda[i].ValorParcela = valoresDasParcelas[i];
+                            _parcelaLogService.CriarLogsDeAtualizacao(parcelaCopia, parcelasDaVenda[i], transacaoDaVendaASerAtualizada, _usuarioLogado);
                         }
                         _contexto.Parcelas.UpdateRange(parcelasDaVenda);
 
@@ -672,6 +684,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 parcelaIterada.Ativo = false;
                 _contexto.Parcelas.Update(parcelaIterada);
+                _parcelaLogService.CriarLogsDeExclusao(parcelaIterada, transacaoDaVendaASerDeletada, _usuarioLogado);
             }
 
             transacaoDaVendaASerDeletada.Ativo = false;
