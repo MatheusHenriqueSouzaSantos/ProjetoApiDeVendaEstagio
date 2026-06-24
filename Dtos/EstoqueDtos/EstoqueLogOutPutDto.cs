@@ -1,4 +1,5 @@
 ﻿using ApiEstagioBicicletaria.Entities;
+using ApiEstagioBicicletaria.Entities.EstoqueDomain;
 
 namespace ApiEstagioBicicletaria.Dtos.EstoqueDtos
 {
@@ -6,16 +7,18 @@ namespace ApiEstagioBicicletaria.Dtos.EstoqueDtos
     {
         public Guid IdEstoque { get; private set; }
         public Guid IdProdutoDoEstoque { get; private set; }
-
         public string NomeDoProdutoDoEstoque { get; private set; }
 
-        public EstoqueLogOutPutDto(Guid idEstoque,Guid idProdutoDoEstoque,string nomeDoProdutoDoEstoque, LogAcao acao, string campoAlterado, string valorAntigo
+        public AcaoQueAlterouEstoque AcaoQueAlterouEstoque { get; private set; }
+
+        public EstoqueLogOutPutDto(Guid idEstoque,Guid idProdutoDoEstoque,string nomeDoProdutoDoEstoque,AcaoQueAlterouEstoque acaoQueAlterouEstoque, LogAcao acao, string campoAlterado, string valorAntigo
             , string valorNovo, Guid idUsuarioResponsavel, DateTime dataCriacao)
             : base(TipoDtoLog.Estoque, acao, campoAlterado, valorAntigo, valorNovo, idUsuarioResponsavel, dataCriacao)
         {
             IdEstoque = idEstoque;
             IdProdutoDoEstoque = idProdutoDoEstoque;
             NomeDoProdutoDoEstoque=nomeDoProdutoDoEstoque;
+            AcaoQueAlterouEstoque=acaoQueAlterouEstoque;
         }
     }
 }

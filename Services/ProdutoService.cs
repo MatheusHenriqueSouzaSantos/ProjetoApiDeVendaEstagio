@@ -324,6 +324,7 @@ namespace ApiEstagioBicicletaria.Services
                 (l.IdEstoque,
                 l.IdProduto,
                 l.Produto.NomeProduto,
+                l.AcaoQueAlterouEstoque,
                 l.Acao,
                 l.CampoAlterado,
                 l.ValorAntigo,

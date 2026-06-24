@@ -28,7 +28,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
                 }
                 var valorPropriedade = propriedade.GetValue(estoque);
 
-                EstoqueLog log = new EstoqueLog(estoque,
+                EstoqueLog log = new EstoqueLog(AcaoQueAlterouEstoque.CriacaoProduto,estoque,
                     estoque.Produto,
                     Entities.LogAcao.Criacao,
                     propriedade.Name,
@@ -39,14 +39,16 @@ namespace ApiEstagioBicicletaria.Services.LogServices
                 _repositorio.CriarLog(log);
             }
         }
-        public void CriarLogDeAtualizacaoQuantidadeEmEstoque(Estoque estoqueModificado,Produto produtoDoEstoque,int quantidadeAnterior,int quantidadeAtual,Usuario usuarioResponsavel)
+        public void CriarLogDeAtualizacaoQuantidadeEmEstoque(Estoque estoqueModificado,Produto produtoDoEstoque,int quantidadeAnterior,int quantidadeAtual,
+            AcaoQueAlterouEstoque acaoQueAlterouEstoque,Usuario usuarioResponsavel)
         {
-            _repositorio.CriarLog(new EstoqueLog(estoqueModificado,produtoDoEstoque , Entities.LogAcao.Atualizacao, "QuantidadeEmEstoque",
+            _repositorio.CriarLog(new EstoqueLog(acaoQueAlterouEstoque,estoqueModificado,produtoDoEstoque , Entities.LogAcao.Atualizacao, "QuantidadeEmEstoque",
                 quantidadeAnterior.ToString(), quantidadeAtual.ToString(), usuarioResponsavel));
         }
         public void CriarLogsDeExclusao(Estoque estoque, Usuario usuarioResponsavel)
         {
-            _repositorio.CriarLog(new EstoqueLog(estoque,estoque.Produto, Entities.LogAcao.Exclusao, "Ativo", true.ToString(), false.ToString(), usuarioResponsavel));
+            _repositorio.CriarLog(new EstoqueLog(AcaoQueAlterouEstoque.ExclusaoEntradaEstoque,estoque,estoque.Produto, Entities.LogAcao.Exclusao, "Ativo", true.ToString(),
+                false.ToString(), usuarioResponsavel));
         }
     }
 }

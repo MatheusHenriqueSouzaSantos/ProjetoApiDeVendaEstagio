@@ -167,7 +167,7 @@ namespace ApiEstagioBicicletaria.Services
                 listaDeItensDaVendaCriada.Add(itemCriado);
                 _contexto.Estoques.Update(estoqueDoProdutoDoItem);
                 _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoProdutoDoItem, estoqueDoProdutoDoItem.Produto,
-                    valorAntigoDeQuantidadeEmEstoque, estoqueDoProdutoDoItem.QuantidadeEmEstoque, _usuarioLogado);
+                    valorAntigoDeQuantidadeEmEstoque, estoqueDoProdutoDoItem.QuantidadeEmEstoque,AcaoQueAlterouEstoque.CriacaoVenda, _usuarioLogado);
                 _itemVendaLogService.CriarLogsDeCriacao(itemCriado, vendaCriada, _usuarioLogado);
                 _contexto.ItensVendas.Add(itemCriado);
                 
@@ -340,7 +340,7 @@ namespace ApiEstagioBicicletaria.Services
                         estoqueDoItem.AdicionarQuantidadeEmEstoque(itemASerExcluido.Quantidade);
                         _contexto.Estoques.Update(estoqueDoItem);
                         _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoItem, estoqueDoItem.Produto, valorAntigoQuantidadeEmEstoque,
-                        estoqueDoItem.QuantidadeEmEstoque, _usuarioLogado);
+                        estoqueDoItem.QuantidadeEmEstoque,AcaoQueAlterouEstoque.AtualizacaoVenda, _usuarioLogado);
                         itemASerExcluido.Ativo = false;
                         _itemVendaLogService.CriarLogsDeExclusao(itemASerExcluido, vendaParaAtualizar, _usuarioLogado);
                         itensVenda.Remove(itemASerExcluido);
@@ -391,7 +391,7 @@ namespace ApiEstagioBicicletaria.Services
                             estoqueDoProduto.AbaterQuantidadeEmEstoque(itemIteradoDto.Quantidade.Value);
                             _contexto.Estoques.Update(estoqueDoProduto);
                             _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoProduto, produtoDoItem, valorAntigoQuantidadeEmEstoque,
-                                estoqueDoProduto.QuantidadeEmEstoque, _usuarioLogado);
+                                estoqueDoProduto.QuantidadeEmEstoque,AcaoQueAlterouEstoque.AtualizacaoVenda, _usuarioLogado);
                             itemVenda.Quantidade = itemIteradoDto.Quantidade.Value;
                             //log
                         }
@@ -452,7 +452,7 @@ namespace ApiEstagioBicicletaria.Services
                         estoqueDoProduto.AbaterQuantidadeEmEstoque(itemIteradoDto.Quantidade);
                         _contexto.Estoques.Update(estoqueDoProduto);
                         _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoProduto, produto, valorAntigoEmEstoque, estoqueDoProduto.QuantidadeEmEstoque,
-                            _usuarioLogado);
+                            AcaoQueAlterouEstoque.AtualizacaoVenda,_usuarioLogado);
                         ItemVenda itemVenda = new(vendaParaAtualizar, produto, itemIteradoDto.Quantidade, itemIteradoDto.DescontoUnitario ?? 0, produto.Preco);
                         _itemVendaLogService.CriarLogsDeCriacao(itemVenda, vendaParaAtualizar, _usuarioLogado);
                         itensVenda.Add(itemVenda);
@@ -685,7 +685,7 @@ namespace ApiEstagioBicicletaria.Services
                 estoqueDoProduto.AdicionarQuantidadeEmEstoque(itemIterado.Quantidade);
                 _contexto.Estoques.Update(estoqueDoProduto);
                 _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoProduto, estoqueDoProduto.Produto, valorAntigoQuantidadeEmEstoque,
-                    estoqueDoProduto.QuantidadeEmEstoque, _usuarioLogado);
+                    estoqueDoProduto.QuantidadeEmEstoque, AcaoQueAlterouEstoque.ExclusaoVenda, _usuarioLogado);
                 //colocar o meio por onde o estoque foi alterado, por uma venda, entrada de estoque, cancelamento d euma venda?? em entrada estoque também
                 itemIterado.Ativo = false;
                 _itemVendaLogService.CriarLogsDeExclusao(itemIterado, vendaASerDeletada, _usuarioLogado);

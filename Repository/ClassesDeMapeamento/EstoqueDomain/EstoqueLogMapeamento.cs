@@ -29,6 +29,9 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EstoqueDomain
                 .HasColumnName("ID_PRODUTO")
                 .HasColumnType("binary(16)")
                 .IsRequired();
+            builder.Property(e => e.AcaoQueAlterouEstoque)
+                .HasColumnName("ACAO_QUE_ALTEROU_ESTOQUE")
+                .IsRequired();
 
         }
     }
