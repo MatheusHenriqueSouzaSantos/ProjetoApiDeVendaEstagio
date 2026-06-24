@@ -1,30 +1,31 @@
 ﻿using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
-using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain;
+using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
 using ApiEstagioBicicletaria.Repository.Repositorios;
 using System.Reflection;
 
 namespace ApiEstagioBicicletaria.Services.LogServices
 {
-    public class VendaLogService
+    public class TransacaoLogService
     {
-        private readonly LogRepositorio<VendaLog> _repositorio;
+        private readonly LogRepositorio<TransacaoLog> _repositorio;
 
-        public VendaLogService(LogRepositorio<VendaLog> repositorio)
+        public TransacaoLogService(LogRepositorio<TransacaoLog> repositorio)
         {
             _repositorio = repositorio;
         }
 
-        public void CriarLogsDeCriacao(Venda venda, Usuario usuarioResponsavel)
+        public void CriarLogsDeCriacao(Transacao transacao, Venda venda, Usuario usuarioResponsavel)
         {
-            PropertyInfo[] propriedades = typeof(Venda).GetProperties();
+            PropertyInfo[] propriedades = typeof(Transacao).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
-                var valorPropriedade = propriedade.GetValue(venda);
+                var valorPropriedade = propriedade.GetValue(transacao);
 
-                VendaLog log = new(venda,
+                TransacaoLog log = new(transacao,
+                    venda,
                     LogAcao.Criacao,
                     propriedade.Name,
                     null,
@@ -35,22 +36,23 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             }
         }
 
-        public void CriarLogsDeAtualizacao(Venda vendaAntiga, Venda vendaAtualizada, Usuario usuarioResponsavel)
+        public void CriarLogsDeAtualizacao(Transacao transacaoAntiga, Transacao transacaoAtualizada,Venda vendaDaTransacao, Usuario usuarioResponsavel)
         {
-            PropertyInfo[] propriedades = typeof(Venda).GetProperties();
+            PropertyInfo[] propriedades = typeof(Transacao).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
                 if (Attribute.IsDefined(propriedade, typeof(AnotacaoDeAtributoASerIgnoradoLog)))
                 {
                     continue;
                 }
-                var valorAntigoPropriedade = propriedade.GetValue(vendaAntiga);
-                var valorAtualizadoPropriedade = propriedade.GetValue(vendaAtualizada);
+                var valorAntigoPropriedade = propriedade.GetValue(transacaoAntiga);
+                var valorAtualizadoPropriedade = propriedade.GetValue(transacaoAtualizada);
 
                 if (!Equals(valorAntigoPropriedade, valorAtualizadoPropriedade))
                 {
-                    VendaLog log = new(
-                        vendaAtualizada,
+                    TransacaoLog log = new(
+                        transacaoAtualizada,
+                        vendaDaTransacao,
                         LogAcao.Atualizacao,
                         propriedade.Name,
                         valorAntigoPropriedade?.ToString(),
@@ -63,9 +65,10 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             }
         }
 
-        public void CriarLogsDeExclusao(Venda venda, Usuario usuarioResponsavel)
+        public void CriarLogsDeExclusao(Transacao transacao,Venda vendaDaTransacao, Usuario usuarioResponsavel)
         {
-            VendaLog log = new(venda,
+            TransacaoLog log = new(transacao,
+                vendaDaTransacao,
                 LogAcao.Exclusao,
                 "Ativo",
                 "true",

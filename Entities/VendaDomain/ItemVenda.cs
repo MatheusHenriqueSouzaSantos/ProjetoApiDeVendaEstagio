@@ -37,5 +37,10 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
             DescontoUnitario = descontoPorUnidade;
             PrecoUnitarioDoProdutoNaVendaSemDesconto = precoUnitarioDoProdutoNaVendaSemDesconto;
         }
+
+        public ItemVenda Copia()
+        {
+            return new ItemVenda(Venda, Produto, Quantidade, DescontoUnitario, PrecoUnitarioDoProdutoNaVendaSemDesconto);
+        }
     }
 }

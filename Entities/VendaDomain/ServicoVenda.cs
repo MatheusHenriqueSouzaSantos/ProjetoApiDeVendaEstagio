@@ -34,5 +34,10 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
             DescontoServico = descontoServico;
             PrecoServicoNaVendaSemDesconto = precoServicoNaVendaSemDesconto;
         }
+
+        public ServicoVenda Copia()
+        {
+            return new ServicoVenda(Venda, Servico, DescontoServico, PrecoServicoNaVendaSemDesconto);
+        }
     }
 }

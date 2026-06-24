@@ -4,7 +4,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
 {
     public class Transacao : EntidadeBase
     {
-
+        [AnotacaoDeAtributoASerIgnoradoLog]
         public Venda Venda { get; private set; }
 
         public Guid IdVenda { get; private set; }
@@ -29,6 +29,11 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
             IdVenda = venda.Id;
             TipoPagamento = tipoPagamento;
             MeioPagamento = meioPagamaneto;
+        }
+
+        public Transacao Copia()
+        {
+            return new Transacao(Venda, TipoPagamento, MeioPagamento);
         }
     }
 }

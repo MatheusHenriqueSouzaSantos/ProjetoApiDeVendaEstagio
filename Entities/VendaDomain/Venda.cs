@@ -7,6 +7,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
     public class Venda : EntidadeBase
     {
         public string CodigoVenda { get; private set; }
+
         [AnotacaoDeAtributoASerIgnoradoLog]
         public Cliente Cliente { get;  set; }
 
@@ -33,7 +34,7 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
         {
             CodigoVenda = codigoVenda;
             Cliente = cliente;
-            IdCliente=cliente.Id;
+            IdCliente = cliente.Id;
             DescontoTotal = descontoTotal;
             ValorTotalSemDesconto = valorTotalSemDesconto;
             ValorTotalComDesconto = valorTotalComDesconto;
@@ -41,6 +42,11 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
             IdVendedor = vendedor.Id;
         }
 
+
+        public Venda Copia()
+        {
+            return new Venda(CodigoVenda, Cliente, DescontoTotal, ValorTotalSemDesconto, ValorTotalComDesconto, Vendedor);
+        }
 
 
 
