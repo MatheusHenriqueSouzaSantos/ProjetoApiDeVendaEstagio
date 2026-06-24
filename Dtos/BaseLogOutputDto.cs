@@ -4,6 +4,7 @@ namespace ApiEstagioBicicletaria.Dtos
 {
     public class BaseLogOutputDto
     {
+        public TipoDtoLog TipoLog { get; private set; }
         public LogAcao Acao { get; private set; }
 
         public string CampoAlterado { get; private set; }
@@ -16,9 +17,9 @@ namespace ApiEstagioBicicletaria.Dtos
 
         public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
-        public BaseLogOutputDto(LogAcao acao, string campoAlterado, string valorAntigo, string valorNovo
-            , Guid idUsuarioResponsavel, DateTime dataCriacao)
+        public BaseLogOutputDto(TipoDtoLog tipoLog, LogAcao acao, string campoAlterado, string valorAntigo, string valorNovo, Guid idUsuarioResponsavel, DateTime dataCriacao)
         {
+            TipoLog = tipoLog;
             Acao = acao;
             CampoAlterado = campoAlterado;
             ValorAntigo = valorAntigo;

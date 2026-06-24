@@ -202,7 +202,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [Authorize]
         [HttpGet("log/{idProduto}")]
-        public ActionResult<List<BaseLogOutputDto>> BuscarLogsPorIdProduto(Guid idProduto)
+        public ActionResult<List<Object>> BuscarLogsPorIdProduto(Guid idProduto)
         {
             try
             {

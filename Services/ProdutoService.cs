@@ -301,7 +301,7 @@ namespace ApiEstagioBicicletaria.Services
             return pdf;
         }
 
-        public List<BaseLogOutputDto> BuscarLogsPorIdProduto(Guid idProdutoEnviado)
+        public List<Object> BuscarLogsPorIdProduto(Guid idProdutoEnviado)
         {
             List<ProdutoLog> produtoLogs = _contextoDb.ProdutoLogs
                 .Where(l => l.IdProduto == idProdutoEnviado).ToList();
@@ -336,7 +336,10 @@ namespace ApiEstagioBicicletaria.Services
             dtoLogs.AddRange(produtoLogsDto);
             dtoLogs.AddRange(estoqueLogsDto);
 
-            return dtoLogs.OrderByDescending(l => l.DataCriacao).ToList();
+            return dtoLogs.
+                OrderByDescending(l => l.DataCriacao)
+                .Cast<Object>()
+                .ToList();
 
         }
 

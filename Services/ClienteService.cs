@@ -410,8 +410,8 @@ namespace ApiEstagioBicicletaria.Services
         {
             List<ClienteLog> clienteLogs=_contextoDb.ClienteLogs.Where(l=>l.IdCliente==idCliente).ToList();
 
-            List<ClienteLogDto> clienteDtoLogs = clienteLogs.Select(l =>
-                new ClienteLogDto(
+            List<ClienteLogOutputDto> clienteDtoLogs = clienteLogs.Select(l =>
+                new ClienteLogOutputDto(
                         l.IdCliente,
                         l.Acao,
                         l.CampoAlterado,
@@ -424,8 +424,8 @@ namespace ApiEstagioBicicletaria.Services
 
             List<EnderecoLog> enderecoLogs = _contextoDb.EnderecoLogs.Where(l => l.IdCliente == idCliente).ToList();
 
-            List<EnderecoLogDto> enderecoDtoLogs = enderecoLogs.Select(l =>
-                new EnderecoLogDto(
+            List<EnderecoLogOutputDto> enderecoDtoLogs = enderecoLogs.Select(l =>
+                new EnderecoLogOutputDto(
                         l.IdEndereco,
                         l.Acao,
                         l.CampoAlterado,

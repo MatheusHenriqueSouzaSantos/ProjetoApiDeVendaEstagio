@@ -955,7 +955,7 @@ namespace ApiEstagioBicicletaria.Services
             return vendaTransacaoFormatoOutput;
         }
 
-        public List<BaseLogOutputDto> buscarLogsPorIdVenda(Guid idVenda)
+        public List<Object> buscarLogsPorIdVenda(Guid idVenda)
         {
             Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == idVenda && t.Ativo).FirstOrDefault()
                 ?? throw new ExcecaoDeRegraDeNegocio(500, "não foi possível encontrar a transacao da venda");
@@ -993,7 +993,12 @@ namespace ApiEstagioBicicletaria.Services
             logsGeralDto.AddRange(logsServicoVendaDto);
             logsGeralDto.AddRange(logsTransacaoDto);
             logsGeralDto.AddRange(logsParcelaDto);
-            return logsGeralDto.OrderByDescending(l=>l.DataCriacao).ToList();
+
+
+            return logsGeralDto
+                .OrderByDescending(l => l.DataCriacao)
+                .Cast<Object>()
+                .ToList();
 
 
         }

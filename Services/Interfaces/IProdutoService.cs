@@ -23,7 +23,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         byte[] GerarRelatorioDeProdutosComMaiorQuantidadeVendidaPorPeriodo(DatasParaGeracaoDeRelatorioDto dto);
         byte[] GerarRelatorioDeProdutosComEstoqueAbaixoOuIgualUmaQuantidade(int quantidadePaBuscarProdutosEmFalta);
 
-        List<BaseLogOutputDto> BuscarLogsPorIdProduto(Guid id);
+        List<Object> BuscarLogsPorIdProduto(Guid idProdutoEnviado);
 
         //List<BaseDtoLog> BuscarLogsGeraisPorPaginacao(int paginaASerBuscada,int quantidadeDeRegistrosPorPagina);
     }

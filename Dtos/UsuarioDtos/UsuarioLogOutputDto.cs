@@ -6,7 +6,7 @@ namespace ApiEstagioBicicletaria.Dtos.UsuarioDtos
     {
         public Guid IdUsuario { get; set; }
         public UsuarioLogOutputDto(Guid idUsuario,LogAcao acao, string campoAlterado, string valorAntigo, string valorNovo, Guid idUsuarioResponsavel, DateTime dataCriacao) 
-            : base(acao, campoAlterado, valorAntigo, valorNovo, idUsuarioResponsavel, dataCriacao)
+            : base(TipoDtoLog.Usuario, acao, campoAlterado, valorAntigo, valorNovo, idUsuarioResponsavel, dataCriacao)
         {
             IdUsuario = idUsuario;
         }

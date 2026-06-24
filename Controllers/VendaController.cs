@@ -225,7 +225,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [Authorize]
         [HttpGet("log/{idVenda}")]
-        public ActionResult<List<BaseLogOutputDto>> BuscarLogsPorIdVenda(Guid idVenda)
+        public ActionResult<List<Object>> BuscarLogsPorIdVenda(Guid idVenda)
         {
             try
             {
