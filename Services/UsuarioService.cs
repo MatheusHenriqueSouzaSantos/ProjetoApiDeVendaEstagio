@@ -1,11 +1,14 @@
 ﻿using ApiEstagioBicicletaria.Dtos.Usuario;
 using ApiEstagioBicicletaria.Dtos.UsuarioDtos;
+using ApiEstagioBicicletaria.Dtos.VendedorDtos;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
+using ApiEstagioBicicletaria.Entities.VendedorDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Repository.Repositorios;
 using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using ApiEstagioBicicletaria.Services.LogServices;
 
 namespace ApiEstagioBicicletaria.Services
 {
@@ -19,12 +22,19 @@ namespace ApiEstagioBicicletaria.Services
 
         private readonly ContextoDb _contexto;
 
-        public UsuarioService(UsuarioRepositorio repositorio, ServicoJwt servicoJwt, SenhaService senhaService, ContextoDb contexto)
+        private readonly UsuarioLogService _usuarioLogService;
+
+        private readonly UsuarioLogadoService _usuarioLogadoService;
+
+        public UsuarioService(UsuarioRepositorio repositorio, ServicoJwt servicoJwt, SenhaService senhaService, ContextoDb contexto,
+            UsuarioLogService usuarioLogService,UsuarioLogadoService usuarioLogadoService)
         {
             _repositorio = repositorio;
             _servicoJwt = servicoJwt;
             _senhaService = senhaService;
             _contexto = contexto;
+            _usuarioLogService = usuarioLogService;
+            _usuarioLogadoService = usuarioLogadoService;
         }
 
         public List<UsuarioOutputDto> BuscarTodos()
@@ -49,6 +59,7 @@ namespace ApiEstagioBicicletaria.Services
             string hashSenha=_senhaService.GerarHashDaSenha(dto.Senha);
             Usuario usuario = new(dto.Nome, dto.Email, hashSenha);
             _repositorio.Cadastrar(usuario);
+            _usuarioLogService.CriarLogDeCriacao(usuario, _usuarioLogadoService.ObterUsuario());
             _contexto.SaveChanges();
             return EntidadeParaDto(usuario);
         }
@@ -64,11 +75,13 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"Já existe um usuário com esse email cadastrado");
             }
+            Usuario usuarioCopia = usuarioVindoDoBanco.Copia();
             usuarioVindoDoBanco.Nome = dto.Nome;
             usuarioVindoDoBanco.Email=dto.Email;
             usuarioVindoDoBanco.Senha = _senhaService.GerarHashDaSenha(dto.Senha);
 
             _repositorio.Atualizar(usuarioVindoDoBanco);
+            _usuarioLogService.CriarLogsDeAtualizacao(usuarioCopia, usuarioVindoDoBanco, _usuarioLogadoService.ObterUsuario());
             _contexto.SaveChanges();
             return EntidadeParaDto(usuarioVindoDoBanco);
         }
@@ -80,6 +93,7 @@ namespace ApiEstagioBicicletaria.Services
 
             usuarioVindoDoBanco.Ativo = false;
             _repositorio.Atualizar(usuarioVindoDoBanco);
+            _usuarioLogService.CriarLogsDeExclusao(usuarioVindoDoBanco, _usuarioLogadoService.ObterUsuario());
             _contexto.SaveChanges();
         }
 
@@ -96,6 +110,24 @@ namespace ApiEstagioBicicletaria.Services
             }
             var jwt= _servicoJwt.GerarJWT(usuarioVindoDoBanco);
             return jwt;
+        }
+
+        public List<UsuarioLogOutputDto> BuscarLogsPorIdUsuario(Guid id)
+        {
+            List<UsuarioLog> logs = _contexto.UsuarioLogs
+                .Where(l => l.IdUsuario == id).ToList();
+
+            List<UsuarioLogOutputDto> logsDto =
+                logs.Select(l => new UsuarioLogOutputDto
+                (l.IdUsuario,
+                l.Acao,
+                l.CampoAlterado,
+                l.ValorAntigo,
+                l.ValorNovo,
+                l.IdUsuarioResponsavel,
+                l.DataCriacao)).ToList();
+
+            return logsDto.OrderByDescending(l => l.DataCriacao).ToList();
         }
 
         private UsuarioOutputDto EntidadeParaDto(Usuario usuario)

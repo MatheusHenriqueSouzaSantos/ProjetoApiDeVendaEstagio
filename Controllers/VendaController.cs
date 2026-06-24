@@ -2,6 +2,9 @@
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Dtos.VendaDtos;
 using ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos.ParcelaDtos;
+using ApiEstagioBicicletaria.Dtos.VendedorDtos;
+using ApiEstagioBicicletaria.Entities.ServicoDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
@@ -217,6 +220,26 @@ namespace ApiEstagioBicicletaria.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, "Erro no Servidor");
+            }
+        }
+
+        [Authorize]
+        [HttpGet("log/{idVenda}")]
+        public ActionResult<List<BaseLogOutputDto>> BuscarLogsPorIdVenda(Guid idVenda)
+        {
+            try
+            {
+                return Ok(_vendaService.buscarLogsPorIdVenda(idVenda));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
             }
         }
     }

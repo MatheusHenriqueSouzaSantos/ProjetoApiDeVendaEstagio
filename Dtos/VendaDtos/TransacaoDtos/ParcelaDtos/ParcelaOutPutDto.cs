@@ -1,6 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
 
-namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
+namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos.ParcelaDtos
 {
     public class ParcelaOutPutDto
     {

@@ -1,7 +1,7 @@
 ﻿namespace ApiEstagioBicicletaria.Entities
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class AnotacaoDeAtributoASerIgnoradoLog: Attribute
+    public class AtributoASerIgnoradoLogCriacao: Attribute
     {
     }
 }

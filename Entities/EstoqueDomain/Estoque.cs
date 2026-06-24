@@ -4,9 +4,12 @@ namespace ApiEstagioBicicletaria.Entities.EstoqueDomain
 {
     public class Estoque : EntidadeBase
     {
-
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Produto Produto { get; set; }
 
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Guid ProdutoId { get; set; }
 
         public int QuantidadeEmEstoque { get; set; } = 0;

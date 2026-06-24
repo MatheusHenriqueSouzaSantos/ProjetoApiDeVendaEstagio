@@ -21,6 +21,10 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             PropertyInfo[] propriedades = typeof(ClienteFisico).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
+                if (Attribute.IsDefined(propriedade, typeof(AtributoASerIgnoradoLogCriacao)))
+                {
+                    continue;
+                }
                 var valorPropriedade = propriedade.GetValue(cliente);
 
                 ClienteLog log = new(
@@ -41,6 +45,10 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             PropertyInfo[] propriedades = typeof(ClienteJuridico).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
+                if (Attribute.IsDefined(propriedade, typeof(AtributoASerIgnoradoLogAtualizacao)))
+                {
+                    continue;
+                }
                 var valorPropriedade = propriedade.GetValue(cliente);
 
                 ClienteLog log = new(
@@ -63,7 +71,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             PropertyInfo[] propriedades = typeof(ClienteFisico).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
-                if (Attribute.IsDefined(propriedade, typeof(AnotacaoDeAtributoASerIgnoradoLog)))
+                if (Attribute.IsDefined(propriedade, typeof(AtributoASerIgnoradoLogCriacao)))
                 {
                     continue;
                 }
@@ -93,7 +101,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             PropertyInfo[] propriedades = typeof(ClienteJuridico).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
-                if (Attribute.IsDefined(propriedade, typeof(AnotacaoDeAtributoASerIgnoradoLog)))
+                if (Attribute.IsDefined(propriedade, typeof(AtributoASerIgnoradoLogAtualizacao)))
                 {
                     continue;
                 }

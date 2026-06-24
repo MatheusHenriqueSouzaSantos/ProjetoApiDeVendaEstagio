@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos.Usuario;
+﻿using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
+using ApiEstagioBicicletaria.Dtos.Usuario;
 using ApiEstagioBicicletaria.Dtos.UsuarioDtos;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
@@ -111,7 +112,7 @@ namespace ApiEstagioBicicletaria.Controllers
             try
             {
                 _usuarioService.Desativar(id);
-                return NoContent();
+                return Ok("Operação Realizada Com Sucesso");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -145,6 +146,26 @@ namespace ApiEstagioBicicletaria.Controllers
             {
                 //return StatusCode(500, ex.Message);
                 return StatusCode(500, "Erro Inesperado");
+            }
+        }
+
+        [Authorize]
+        [HttpGet("log/{idUsuario}")]
+        public ActionResult<List<UsuarioLogOutputDto>> BuscarLogsPorIdUsuario(Guid idProduto)
+        {
+            try
+            {
+                return Ok(_usuarioService.BuscarLogsPorIdUsuario(idProduto));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
             }
         }
     }

@@ -16,5 +16,10 @@
             Email = email;
             Senha = senha;
         }
+
+        public Usuario Copia()
+        {
+            return new Usuario(Nome, Email, Senha);
+        }
     }
 }

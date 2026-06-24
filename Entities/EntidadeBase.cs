@@ -2,13 +2,16 @@
 {
     public abstract class EntidadeBase
     {
-        [AnotacaoDeAtributoASerIgnoradoLog]
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Guid Id { get; private set; }= Guid.NewGuid();
 
-        [AnotacaoDeAtributoASerIgnoradoLog]
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public DateTime DataCriacao {  get; private set; }= DateTime.Now;
 
-        [AnotacaoDeAtributoASerIgnoradoLog]
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public bool Ativo { get; set; } = true;
 
         protected EntidadeBase() { }

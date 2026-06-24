@@ -22,6 +22,10 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             PropertyInfo[] propriedades = typeof(Transacao).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
+                if (Attribute.IsDefined(propriedade, typeof(AtributoASerIgnoradoLogCriacao)))
+                {
+                    continue;
+                }
                 var valorPropriedade = propriedade.GetValue(transacao);
 
                 TransacaoLog log = new(transacao,
@@ -41,7 +45,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             PropertyInfo[] propriedades = typeof(Transacao).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
-                if (Attribute.IsDefined(propriedade, typeof(AnotacaoDeAtributoASerIgnoradoLog)))
+                if (Attribute.IsDefined(propriedade, typeof(AtributoASerIgnoradoLogAtualizacao)))
                 {
                     continue;
                 }
@@ -63,6 +67,33 @@ namespace ApiEstagioBicicletaria.Services.LogServices
                 }
 
             }
+        }
+        public void CriarLogDeTransacaoEmCurso(Transacao transacao, Venda vendaDaTransacao, Usuario usuarioResponsavel)
+        {
+            TransacaoLog log = new(transacao,
+                vendaDaTransacao,
+                LogAcao.Exclusao,
+                "TransacaoEmCurso",
+                "false",
+                "true",
+                usuarioResponsavel);
+
+            _repositorio.CriarLog(log);
+
+        }
+
+        public void CriarLogDeTransacaoPaga(Transacao transacao, Venda vendaDaTransacao, Usuario usuarioResponsavel)
+        {
+            TransacaoLog log = new(transacao,
+                vendaDaTransacao,
+                LogAcao.Exclusao,
+                "Pago",
+                "false",
+                "true",
+                usuarioResponsavel);
+
+            _repositorio.CriarLog(log);
+
         }
 
         public void CriarLogsDeExclusao(Transacao transacao,Venda vendaDaTransacao, Usuario usuarioResponsavel)

@@ -4,17 +4,24 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain
 {
     public class Transacao : EntidadeBase
     {
-        [AnotacaoDeAtributoASerIgnoradoLog]
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Venda Venda { get; private set; }
 
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Guid IdVenda { get; private set; }
 
         public TipoPagamento TipoPagamento { get; set; }
 
         public MeioPagamento MeioPagamento { get; set; }
 
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public bool TransacaoEmCurso { get; set; } = false;
 
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public bool Pago { get; set; } = false;
 
 

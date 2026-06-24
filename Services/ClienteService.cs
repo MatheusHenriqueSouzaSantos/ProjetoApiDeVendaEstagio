@@ -406,7 +406,7 @@ namespace ApiEstagioBicicletaria.Services
             return clienteFormatoDto;
         }
 
-        public List<BaseDtoLog> BuscarLogsClientePorIdCliente(Guid idCliente)
+        public List<BaseLogOutputDto> BuscarLogsClientePorIdCliente(Guid idCliente)
         {
             List<ClienteLog> clienteLogs=_contextoDb.ClienteLogs.Where(l=>l.IdCliente==idCliente).ToList();
 
@@ -427,7 +427,6 @@ namespace ApiEstagioBicicletaria.Services
             List<EnderecoLogDto> enderecoDtoLogs = enderecoLogs.Select(l =>
                 new EnderecoLogDto(
                         l.IdEndereco,
-                        l.IdCliente,
                         l.Acao,
                         l.CampoAlterado,
                         l.ValorAntigo,
@@ -437,7 +436,7 @@ namespace ApiEstagioBicicletaria.Services
                     )
             ).ToList();
 
-            List<BaseDtoLog> logDtos= new List<BaseDtoLog>();
+            List<BaseLogOutputDto> logDtos= new List<BaseLogOutputDto>();
 
             logDtos.AddRange(clienteDtoLogs);
             

@@ -5,14 +5,20 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
     public class ItemVenda : EntidadeBase
     {
 
-        [AnotacaoDeAtributoASerIgnoradoLog]
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Venda Venda { get; private set; }
 
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Guid IdVenda { get; private set; }
 
-        [AnotacaoDeAtributoASerIgnoradoLog]
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Produto Produto { get; private set; }
 
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Guid IdProduto { get; private set; }
 
         public int Quantidade { get; set; }

@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
+﻿using ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos.ParcelaDtos;
+using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain;
 using ApiEstagioBicicletaria.Entities.VendaDomain.TransacaoDomain.ParcelaDomain;
 
 namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos

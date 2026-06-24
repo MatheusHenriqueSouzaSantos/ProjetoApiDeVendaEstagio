@@ -2,15 +2,19 @@
 {
     public abstract class Cliente : EntidadeBase
     {
-        [AnotacaoDeAtributoASerIgnoradoLog]
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Endereco Endereco { get; set; }
-        
+
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Guid IdEndereco { get; set; }
         
         public string Telefone { get; set; } = string.Empty;
 
         public string Email { get; set; } = string.Empty;
 
+        [AtributoASerIgnoradoLogAtualizacao]
         public TipoCliente TipoCliente { get; private set; }
 
 

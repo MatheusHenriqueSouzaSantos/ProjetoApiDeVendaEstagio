@@ -2,14 +2,20 @@
 {
     public class Parcela : EntidadeBase
     {
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Transacao Transacao { get; private set; }
 
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Guid IdTransacao { get; private set; }
 
         public int NumeroDaParcelaDaVenda { get; set; }
 
         public decimal ValorParcela { get; set; } = 0.0m;
 
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public bool Pago { get; set; } = false;
 
         public DateOnly DataVencimento { get; set; }

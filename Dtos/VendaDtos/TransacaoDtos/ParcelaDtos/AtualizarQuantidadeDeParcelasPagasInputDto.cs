@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
+namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos.ParcelaDtos
 {
     public class AtualizarQuantidadeDeParcelasPagasInputDto
     {

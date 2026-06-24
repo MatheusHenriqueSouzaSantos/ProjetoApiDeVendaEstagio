@@ -18,5 +18,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         void Desativar(Guid id);
 
         string Login(UsuarioLoginDto dto);
+
+        List<UsuarioLogOutputDto> BuscarLogsPorIdUsuario(Guid id);
     }
 }

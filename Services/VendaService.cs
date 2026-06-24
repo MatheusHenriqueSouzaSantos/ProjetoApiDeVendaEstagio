@@ -5,6 +5,7 @@ using ApiEstagioBicicletaria.Dtos.VendaDtos.ItemVendaDtos;
 using ApiEstagioBicicletaria.Dtos.VendaDtos.ItemVendaDtos.ItemVendaInputDtos;
 using ApiEstagioBicicletaria.Dtos.VendaDtos.ServicoVendaDtos;
 using ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos;
+using ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos.ParcelaDtos;
 using ApiEstagioBicicletaria.Entities.ClienteDomain;
 using ApiEstagioBicicletaria.Entities.EntradaEstoque;
 using ApiEstagioBicicletaria.Entities.EstoqueDomain;
@@ -45,11 +46,13 @@ namespace ApiEstagioBicicletaria.Services
         private readonly Usuario _usuarioLogado;
         private readonly TransacaoLogService _transacaoLogService;
         private readonly ParcelaLogService _parcelaLogService;
+        private readonly EstoqueLogService _estoqueLogService;
 
         public VendaService(ContextoDb contexto, GeradorCodigoIndentificadorMovimentacao<Venda> geradorCodigoVenda, 
             VendedorRepositorio vendedorRepositorio, VendaLogService vendaLogService,
             ServicoVendaLogService servicoVendaLogService,ItemVendaLogService itemVendaLogService,
-            UsuarioLogadoService usuarioLogadoService,TransacaoLogService transacaoLogService,ParcelaLogService parcelaLogService)
+            UsuarioLogadoService usuarioLogadoService,TransacaoLogService transacaoLogService,
+            ParcelaLogService parcelaLogService,EstoqueLogService estoqueLogService)
         {
             _contexto = contexto;
             _geradorCodigoVenda = geradorCodigoVenda;
@@ -60,6 +63,7 @@ namespace ApiEstagioBicicletaria.Services
             _usuarioLogado = usuarioLogadoService.ObterUsuario();
             _transacaoLogService = transacaoLogService;
             _parcelaLogService = parcelaLogService;
+            _estoqueLogService = estoqueLogService;
         }
 
         public List<VendaTransacaoOutputDto> BuscarTodasVendas()
@@ -141,7 +145,7 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado!!!");
                 }
-                Estoque estoqueDoProdutoDoItem = _contexto.Estoques.FirstOrDefault(e => e.Produto.Id == produtoDoItem.Id && e.Ativo)
+                Estoque estoqueDoProdutoDoItem = _contexto.Estoques.Include(p=>p.Produto).FirstOrDefault(e => e.Produto.Id == produtoDoItem.Id && e.Ativo)
                     ?? throw new ExcecaoDeRegraDeNegocio(500, "Estoque não encontrado"); 
                 if (itemEnviado.Quantidade == 0)
                 {
@@ -157,10 +161,13 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "O desconto unitário não dever ser maior do que o valor do produto");
                 }
+                int valorAntigoDeQuantidadeEmEstoque = estoqueDoProdutoDoItem.QuantidadeEmEstoque;
                 estoqueDoProdutoDoItem.AbaterQuantidadeEmEstoque(itemEnviado.Quantidade);
                 ItemVenda itemCriado = new ItemVenda(vendaCriada, produtoDoItem, itemEnviado.Quantidade, descontoPorUnidade, produtoDoItem.Preco);
                 listaDeItensDaVendaCriada.Add(itemCriado);
                 _contexto.Estoques.Update(estoqueDoProdutoDoItem);
+                _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoProdutoDoItem, estoqueDoProdutoDoItem.Produto,
+                    valorAntigoDeQuantidadeEmEstoque, estoqueDoProdutoDoItem.QuantidadeEmEstoque, _usuarioLogado);
                 _itemVendaLogService.CriarLogsDeCriacao(itemCriado, vendaCriada, _usuarioLogado);
                 _contexto.ItensVendas.Add(itemCriado);
                 
@@ -328,10 +335,12 @@ namespace ApiEstagioBicicletaria.Services
                     {
                         ItemVenda itemASerExcluido = itensVenda.FirstOrDefault(i => i.Id == idASerDeletado && i.Ativo)
                             ?? throw new ExcecaoDeRegraDeNegocio(400, $"nenhum item encontrado para ser excluído com o id: {idASerDeletado}");
-                        Estoque estoqueDoItem = _contexto.Estoques.Where(e => e.ProdutoId == itemASerExcluido.IdProduto).First();
+                        Estoque estoqueDoItem = _contexto.Estoques.Include(e=>e.Produto).Where(e => e.ProdutoId == itemASerExcluido.IdProduto).First();
+                        int valorAntigoQuantidadeEmEstoque = estoqueDoItem.QuantidadeEmEstoque;
                         estoqueDoItem.AdicionarQuantidadeEmEstoque(itemASerExcluido.Quantidade);
                         _contexto.Estoques.Update(estoqueDoItem);
-                        //log
+                        _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoItem, estoqueDoItem.Produto, valorAntigoQuantidadeEmEstoque,
+                        estoqueDoItem.QuantidadeEmEstoque, _usuarioLogado);
                         itemASerExcluido.Ativo = false;
                         _itemVendaLogService.CriarLogsDeExclusao(itemASerExcluido, vendaParaAtualizar, _usuarioLogado);
                         itensVenda.Remove(itemASerExcluido);
@@ -348,7 +357,7 @@ namespace ApiEstagioBicicletaria.Services
                     {
                         ServicoVenda servicoVendaASerExcluido = servicosVenda.FirstOrDefault(i => i.Id == idASerDeletado && i.Ativo)
                             ?? throw new ExcecaoDeRegraDeNegocio(400, $"nenhum servico venda encontrado para ser excluído com o id: {idASerDeletado}");
-                        //log
+                        
                         servicoVendaASerExcluido.Ativo = false;
                         _servicoVendaLogService.CriarLogsDeExclusao(servicoVendaASerExcluido, vendaParaAtualizar, _usuarioLogado);
                         servicosVenda.Remove(servicoVendaASerExcluido);
@@ -373,6 +382,7 @@ namespace ApiEstagioBicicletaria.Services
                         Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.ProdutoId == produtoDoItem.Id);
                         if (itemIteradoDto.Quantidade != null)
                         {
+                            int valorAntigoQuantidadeEmEstoque = estoqueDoProduto.QuantidadeEmEstoque;
                             estoqueDoProduto.AdicionarQuantidadeEmEstoque(itemVenda.Quantidade);
                             if (itemIteradoDto.Quantidade > estoqueDoProduto.QuantidadeEmEstoque)
                             {
@@ -380,6 +390,8 @@ namespace ApiEstagioBicicletaria.Services
                             }
                             estoqueDoProduto.AbaterQuantidadeEmEstoque(itemIteradoDto.Quantidade.Value);
                             _contexto.Estoques.Update(estoqueDoProduto);
+                            _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoProduto, produtoDoItem, valorAntigoQuantidadeEmEstoque,
+                                estoqueDoProduto.QuantidadeEmEstoque, _usuarioLogado);
                             itemVenda.Quantidade = itemIteradoDto.Quantidade.Value;
                             //log
                         }
@@ -436,8 +448,11 @@ namespace ApiEstagioBicicletaria.Services
                         {
                             throw new ExcecaoDeRegraDeNegocio(400, "O valor do desconto unitario não pode ser maior o preço do produto");
                         }
+                        int valorAntigoEmEstoque = estoqueDoProduto.QuantidadeEmEstoque;
                         estoqueDoProduto.AbaterQuantidadeEmEstoque(itemIteradoDto.Quantidade);
                         _contexto.Estoques.Update(estoqueDoProduto);
+                        _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoProduto, produto, valorAntigoEmEstoque, estoqueDoProduto.QuantidadeEmEstoque,
+                            _usuarioLogado);
                         ItemVenda itemVenda = new(vendaParaAtualizar, produto, itemIteradoDto.Quantidade, itemIteradoDto.DescontoUnitario ?? 0, produto.Preco);
                         _itemVendaLogService.CriarLogsDeCriacao(itemVenda, vendaParaAtualizar, _usuarioLogado);
                         itensVenda.Add(itemVenda);
@@ -477,7 +492,7 @@ namespace ApiEstagioBicicletaria.Services
                         throw new ExcecaoDeRegraDeNegocio(400, "O desconto não pode ser maior que o total da venda");
                     }
                     descontoVenda = dto.Venda.DescontoSobreTotalVenda.Value;
-                    //log
+                    
                     vendaParaAtualizar.DescontoTotal = descontoVenda;
                 }
                 else
@@ -572,7 +587,7 @@ namespace ApiEstagioBicicletaria.Services
                         {
                             parcelaIterada.Ativo = false;
                             parcelasDaVenda.RemoveAll(p => p.Id == parcelaIterada.Id);
-                            _parcelaLogService.CriarLogsDeExclusao(parcelaIterada, transacaoDaVendaASerAtualizada, _usuarioLogado);
+                            _parcelaLogService.CriarLogDeExclusao(parcelaIterada, transacaoDaVendaASerAtualizada, _usuarioLogado);
                             _contexto.Parcelas.Update(parcelaIterada);
                         }
 
@@ -665,9 +680,13 @@ namespace ApiEstagioBicicletaria.Services
             foreach(ItemVenda itemIterado in itensDaVendaASeremDeletados)
             {
                 Produto produtoDoItem = itemIterado.Produto;
-                Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.Produto.Id == produtoDoItem.Id);
+                Estoque estoqueDoProduto = _contexto.Estoques.Include(e=>e.Produto).First(e => e.Produto.Id == produtoDoItem.Id);
+                int valorAntigoQuantidadeEmEstoque = estoqueDoProduto.QuantidadeEmEstoque;
                 estoqueDoProduto.AdicionarQuantidadeEmEstoque(itemIterado.Quantidade);
                 _contexto.Estoques.Update(estoqueDoProduto);
+                _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoProduto, estoqueDoProduto.Produto, valorAntigoQuantidadeEmEstoque,
+                    estoqueDoProduto.QuantidadeEmEstoque, _usuarioLogado);
+                //colocar o meio por onde o estoque foi alterado, por uma venda, entrada de estoque, cancelamento d euma venda?? em entrada estoque também
                 itemIterado.Ativo = false;
                 _itemVendaLogService.CriarLogsDeExclusao(itemIterado, vendaASerDeletada, _usuarioLogado);
                 _contexto.Update(itemIterado);
@@ -684,7 +703,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 parcelaIterada.Ativo = false;
                 _contexto.Parcelas.Update(parcelaIterada);
-                _parcelaLogService.CriarLogsDeExclusao(parcelaIterada, transacaoDaVendaASerDeletada, _usuarioLogado);
+                _parcelaLogService.CriarLogDeExclusao(parcelaIterada, transacaoDaVendaASerDeletada, _usuarioLogado);
             }
 
             transacaoDaVendaASerDeletada.Ativo = false;
@@ -702,12 +721,8 @@ namespace ApiEstagioBicicletaria.Services
         //ver esse método novamente, para fazer um segundo code review
         public TransacaoOutputDto AtualizarQuantidadeDeParcelasPagasEmUmaTransacao(Guid idTransacaoEnviado, int quantidadeDeParcelasASerAtualizadaParaPaga)
         {
-            Transacao? transacaoReferente = _contexto.Transacoes.FirstOrDefault(t => t.Id == idTransacaoEnviado && t.Ativo);
-
-            if(transacaoReferente == null)
-            {
-                throw new ExcecaoDeRegraDeNegocio(404,"Transação não encontrada");
-            }
+            Transacao? transacaoReferente = _contexto.Transacoes.Include(t=>t.Venda).FirstOrDefault(t => t.Id == idTransacaoEnviado && t.Ativo)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Transação não encontrada");
             if (transacaoReferente.Pago)
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"Essa transação já esta paga, não há mais parcelas para pagar");
@@ -727,27 +742,24 @@ namespace ApiEstagioBicicletaria.Services
             if(!transacaoReferente.TransacaoEmCurso)
             {
                 transacaoReferente.TransacaoEmCurso = true;
+                _transacaoLogService.CriarLogDeTransacaoEmCurso(transacaoReferente, transacaoReferente.Venda, _usuarioLogado);
                 _contexto.Transacoes.Update(transacaoReferente);
             }
 
             foreach(Parcela parcelaIterada in parcelasNaoPagasDessaTransacao.Take(quantidadeDeParcelasASerAtualizadaParaPaga))
             {
                 parcelaIterada.Pago = true;
+                _parcelaLogService.CriarLogDeParcelaPaga(parcelaIterada, transacaoReferente, _usuarioLogado);
                 _contexto.Parcelas.Update(parcelaIterada);
             }
-            //método antigo
-            //for(int i = 0; i < quantidadeDeParcelasASerAtualizadaParaPaga; i++)
-            //{
-            //    Parcela parcelaIterada = parcelasNaoPagasDessaTransacao[i];
-            //    parcelaIterada.Pago = true;
-            //    _contexto.Parcelas.Update(parcelaIterada);
-            //}
+
             quantidadeDeParcelasNaoPagasNessaTransacao = parcelasDessaTransacao.Where(p => p.Pago==false).Count();
             int quantidadeDeParcelasPagasDessaTransacao=parcelasDessaTransacao.Where(p=>p.Pago).Count();
             decimal valorPago =Math.Round((parcelasDessaTransacao.Where(p => p.Pago).Sum(p => p.ValorParcela)),2,MidpointRounding.AwayFromZero);
             if (quantidadeDeParcelasPagasDessaTransacao == parcelasDessaTransacao.Count)
             {
                 transacaoReferente.Pago = true;
+                _transacaoLogService.CriarLogDeTransacaoPaga(transacaoReferente, transacaoReferente.Venda, _usuarioLogado);
                 _contexto.Transacoes.Update(transacaoReferente);
             }
             List<ParcelaOutPutDto> parcelasDto = parcelasDessaTransacao.Select(p =>
@@ -943,7 +955,50 @@ namespace ApiEstagioBicicletaria.Services
             return vendaTransacaoFormatoOutput;
         }
 
-        public VendaTransacaoOutputDto EntityToDto(Venda venda)
+        public List<BaseLogOutputDto> buscarLogsPorIdVenda(Guid idVenda)
+        {
+            Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == idVenda && t.Ativo).FirstOrDefault()
+                ?? throw new ExcecaoDeRegraDeNegocio(500, "não foi possível encontrar a transacao da venda");
+
+            List<VendaLogOutputDto> logsVendaDto = _contexto.VendaLog
+                .Where(l => l.IdVenda == idVenda)
+                .Select(l=>new VendaLogOutputDto(l.IdVenda,l.Acao,l.CampoAlterado,l.ValorAntigo,l.ValorNovo,l.IdUsuarioResponsavel,l.DataCriacao))
+                .ToList();
+            List<ItemVendaLogOutputDto> logsItemVendaDto = _contexto.ItensVendaLogs
+                .Where(l => l.IdVenda == idVenda)
+                .Include(l=>l.ItemVenda).ThenInclude(i=>i.Produto)
+                .Select(l=>new ItemVendaLogOutputDto(l.IdItemVenda,l.ItemVenda.Produto.NomeProduto,l.Acao,l.CampoAlterado,l.ValorAntigo,l.ValorNovo,
+                l.IdUsuarioResponsavel,l.DataCriacao))
+                .ToList();
+            List<ServicoVendaLogOutputDto> logsServicoVendaDto = _contexto.ServicosVendaLog
+                .Where(l => l.IdVenda == idVenda)
+                .Include(l=>l.ServicoVenda).ThenInclude(sv=>sv.Servico)
+                .Select(l=>new ServicoVendaLogOutputDto(l.IdServicoVenda,l.ServicoVenda.Servico.NomeServico,l.Acao,l.CampoAlterado,l.ValorAntigo,l.ValorNovo,
+                l.IdUsuarioResponsavel,l.DataCriacao))
+                .ToList();
+            List<TransacaoLogOutputDto> logsTransacaoDto = _contexto.TransacaoLogs
+                .Where(l => l.IdTransacao == transacaoDaVenda.Id)
+                .Select(l=>new TransacaoLogOutputDto(l.IdTransacao,l.Acao,l.CampoAlterado,l.ValorAntigo,l.ValorNovo,l.IdUsuarioResponsavel,l.DataCriacao))
+                .ToList();
+            List<ParcelaLogOutputDto> logsParcelaDto = _contexto.ParcelaLogs
+                .Where(l => l.IdTransacao == transacaoDaVenda.Id)
+                .Include(l=>l.Parcela)
+                .Select(l=>new ParcelaLogOutputDto(l.IdParcela,l.Parcela.NumeroDaParcelaDaVenda,l.Acao,l.CampoAlterado,l.ValorAntigo,l.ValorNovo,
+                l.IdUsuarioResponsavel,l.DataCriacao))
+                .ToList();
+
+            List<BaseLogOutputDto> logsGeralDto = new List<BaseLogOutputDto>();
+            logsGeralDto.AddRange(logsVendaDto);
+            logsGeralDto.AddRange(logsItemVendaDto);
+            logsGeralDto.AddRange(logsServicoVendaDto);
+            logsGeralDto.AddRange(logsTransacaoDto);
+            logsGeralDto.AddRange(logsParcelaDto);
+            return logsGeralDto.OrderByDescending(l=>l.DataCriacao).ToList();
+
+
+        }
+
+        private VendaTransacaoOutputDto EntityToDto(Venda venda)
         {
 
             List<ItemVenda> itensDaVenda = _contexto.ItensVendas.Include(i => i.Produto).Where(i => i.IdVenda == venda.Id && i.Ativo).ToList();

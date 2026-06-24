@@ -301,13 +301,13 @@ namespace ApiEstagioBicicletaria.Services
             return pdf;
         }
 
-        public List<BaseDtoLog> BuscarLogsPorIdProduto(Guid idProdutoEnviado)
+        public List<BaseLogOutputDto> BuscarLogsPorIdProduto(Guid idProdutoEnviado)
         {
             List<ProdutoLog> produtoLogs = _contextoDb.ProdutoLogs
                 .Where(l => l.IdProduto == idProdutoEnviado).ToList();
 
-            List<ProdutoLogDto> produtoLogsDto =
-                produtoLogs.Select(l => new ProdutoLogDto
+            List<ProdutoLogOutputDto> produtoLogsDto =
+                produtoLogs.Select(l => new ProdutoLogOutputDto
                 (l.IdProduto,
                 l.Acao,
                 l.CampoAlterado,
@@ -317,11 +317,13 @@ namespace ApiEstagioBicicletaria.Services
                 l.DataCriacao)).ToList();
 
             List<EstoqueLog> estoqueLogs = _contextoDb.EstoqueLogs
-               .Where(l => l.IdProduto == idProdutoEnviado).ToList();
+               .Where(l => l.IdProduto == idProdutoEnviado).Include(e=>e.Produto).ToList();
 
-            List<EstoqueLogDto> estoqueLogsDto =
-                estoqueLogs.Select(l => new EstoqueLogDto
+            List<EstoqueLogOutPutDto> estoqueLogsDto =
+                estoqueLogs.Select(l => new EstoqueLogOutPutDto
                 (l.IdEstoque,
+                l.IdProduto,
+                l.Produto.NomeProduto,
                 l.Acao,
                 l.CampoAlterado,
                 l.ValorAntigo,
@@ -329,15 +331,47 @@ namespace ApiEstagioBicicletaria.Services
                 l.IdUsuarioResponsavel,
                 l.DataCriacao)).ToList();
 
-            List<BaseDtoLog> dtoLogs = new List<BaseDtoLog>();
+            List<BaseLogOutputDto> dtoLogs = new List<BaseLogOutputDto>();
 
             dtoLogs.AddRange(produtoLogsDto);
             dtoLogs.AddRange(estoqueLogsDto);
 
-            dtoLogs.OrderByDescending(l => l.DataCriacao).ToList();
+            return dtoLogs.OrderByDescending(l => l.DataCriacao).ToList();
 
-            return dtoLogs;
         }
 
+        //public List<BaseDtoLog> BuscarLogsGeraisPorPaginacao(int paginaASerBuscada, int quantidadeDeRegistrosPorPagina)
+        //{
+        //    List<ProdutoLog> produtoLogs = _contextoDb.ProdutoLogs.OrderByDescending(l=>l.DataCriacao).ToList();
+
+        //    List<ProdutoLogDto> produtoLogsDto =
+        //        produtoLogs.Select(l => new ProdutoLogDto
+        //        (l.IdProduto,
+        //        l.Acao,
+        //        l.CampoAlterado,
+        //        l.ValorAntigo,
+        //        l.ValorNovo,
+        //        l.IdUsuarioResponsavel,
+        //        l.DataCriacao)).ToList();
+
+        //    List<EstoqueLog> estoqueLogs = _contextoDb.EstoqueLogs.OrderByDescending(l=>l.DataCriacao).ToList();
+
+        //    List<EstoqueLogDto> estoqueLogsDto =
+        //        estoqueLogs.Select(l => new EstoqueLogDto
+        //        (l.IdEstoque,
+        //        l.Acao,
+        //        l.CampoAlterado,
+        //        l.ValorAntigo,
+        //        l.ValorNovo,
+        //        l.IdUsuarioResponsavel,
+        //        l.DataCriacao)).ToList();
+
+        //    List<BaseDtoLog> dtoLogs = new List<BaseDtoLog>();
+
+        //    dtoLogs.AddRange(produtoLogsDto);
+        //    dtoLogs.AddRange(estoqueLogsDto);
+
+        //    return dtoLogs.OrderByDescending(l => l.DataCriacao).ToList();
+        //}
     }    
 }

@@ -22,6 +22,10 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             PropertyInfo[] propriedades = typeof(Parcela).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
+                if (Attribute.IsDefined(propriedade, typeof(AtributoASerIgnoradoLogCriacao)))
+                {
+                    continue;
+                }
                 var valorPropriedade = propriedade.GetValue(parcela);
 
                 ParcelaLog log = new(parcela,
@@ -41,7 +45,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             PropertyInfo[] propriedades = typeof(Parcela).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
-                if (Attribute.IsDefined(propriedade, typeof(AnotacaoDeAtributoASerIgnoradoLog)))
+                if (Attribute.IsDefined(propriedade, typeof(AtributoASerIgnoradoLogAtualizacao)))
                 {
                     continue;
                 }
@@ -65,7 +69,21 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             }
         }
 
-        public void CriarLogsDeExclusao(Parcela parcela,Transacao transacaoDaParcela, Usuario usuarioResponsavel)
+        public void CriarLogDeParcelaPaga(Parcela parcela, Transacao transacaoDaParcela, Usuario usuarioResponsavel)
+        {
+            ParcelaLog log = new(parcela,
+                transacaoDaParcela,
+                LogAcao.Exclusao,
+                "Pago",
+                "false",
+                "true",
+                usuarioResponsavel);
+
+            _repositorio.CriarLog(log);
+
+        }
+
+        public void CriarLogDeExclusao(Parcela parcela,Transacao transacaoDaParcela, Usuario usuarioResponsavel)
         {
             ParcelaLog log = new(parcela,
                 transacaoDaParcela,

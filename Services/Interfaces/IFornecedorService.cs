@@ -22,7 +22,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         byte[] GerarRelatorioFornecedoresComMaiorVolumeDeEntradaPorPeriodo(DatasParaGeracaoDeRelatorioDto dto);
 
-        List<FornecedorLogDto> BuscarLogsPorIdFornecedor(Guid id);
+        List<FornecedorLogOutputDto> BuscarLogsPorIdFornecedor(Guid id);
 
     }
 }

@@ -8,7 +8,8 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
     {
         public string CodigoVenda { get; private set; }
 
-        [AnotacaoDeAtributoASerIgnoradoLog]
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Cliente Cliente { get;  set; }
 
         public Guid IdCliente { get;  set; }
@@ -20,7 +21,8 @@ namespace ApiEstagioBicicletaria.Entities.VendaDomain
 
         public decimal ValorTotalComDesconto { get; set; } = 0.0m;
 
-        [AnotacaoDeAtributoASerIgnoradoLog]
+        [AtributoASerIgnoradoLogCriacao]
+        [AtributoASerIgnoradoLogAtualizacao]
         public Vendedor Vendedor { get; set; }
 
         public Guid IdVendedor {  get; set; }

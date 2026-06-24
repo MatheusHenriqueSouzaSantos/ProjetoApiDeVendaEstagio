@@ -192,31 +192,14 @@ namespace ApiEstagioBicicletaria.Services
             return modeloDocumento.GeneratePdf();
 
         }
-        //List<EntradaEstoqueRelatorioDto> entradasEstoquesComSeusItens =
-        //        _contexto.EntradasEstoque.AsNoTracking().Where(e => e.Ativo && e.DataCriacao >= dataInicialDoPeriodoConvertidaDateTime
-        //        && e.DataCriacao <= dataFinalDoPeriodoConvertidaDateTime && e.Status != StatusEntradaEstoque.Cancelada)
-        //        .Include(e => e.Fornecedor)
-        //        .Include(e => e.Itens.Where(i => i.Ativo))
-        //        .ThenInclude(i => i.Estoque)
-        //        .ThenInclude(e => e.Produto)
-        //        .OrderBy(e => e.DataCriacao)
-        //        .Select(e => new EntradaEstoqueRelatorioDto(
-        //                e.CodigoEntrada,
-        //                e.Fornecedor.RazaoSocial,
-        //                e.Fornecedor.Cnpj,
-        //                e.Itens.Count,
-        //                e.Itens.Select(i => new ItemEntradaEstoqueRelatorio(i.Estoque.Produto.CodigoDeBarra, i.Estoque.Produto.NomeProduto, i.Quantidade)).ToList()
-        //                )
-        //        ).ToList();
 
-
-        public List<FornecedorLogDto> BuscarLogsPorIdFornecedor(Guid id)
+        public List<FornecedorLogOutputDto> BuscarLogsPorIdFornecedor(Guid id)
         {
             List<FornecedorLog> logs = _contexto.FornecedorLogs
                 .Where(l => l.IdFornecedor == id).OrderByDescending(l => l.DataCriacao).ToList();
 
-            List<FornecedorLogDto> logsDto =
-                logs.Select(l => new FornecedorLogDto
+            List<FornecedorLogOutputDto> logsDto =
+                logs.Select(l => new FornecedorLogOutputDto
                 (l.IdFornecedor,
                 l.Acao,
                 l.CampoAlterado,

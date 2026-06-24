@@ -210,13 +210,13 @@ namespace ApiEstagioBicicletaria.Services
         }
 
 
-        public List<VendedorLogDto> BuscarLogsPorIdVendedor(Guid id)
+        public List<VendedorLogOutputDto> BuscarLogsPorIdVendedor(Guid id)
         {
             List<VendedorLog> logs = _contexto.VendedorLogs
-                .Where(l => l.IdVendedor == id).OrderByDescending(l=>l.DataCriacao).ToList();
+                .Where(l => l.IdVendedor == id).ToList();
 
-            List<VendedorLogDto> logsDto =
-                logs.Select(l => new VendedorLogDto
+            List<VendedorLogOutputDto> logsDto =
+                logs.Select(l => new VendedorLogOutputDto
                 (l.IdVendedor,
                 l.Acao,
                 l.CampoAlterado,
@@ -225,7 +225,7 @@ namespace ApiEstagioBicicletaria.Services
                 l.IdUsuarioResponsavel,
                 l.DataCriacao)).ToList();
 
-            return logsDto;
+            return logsDto.OrderByDescending(l=>l.DataCriacao).ToList();
         }
     }
 }

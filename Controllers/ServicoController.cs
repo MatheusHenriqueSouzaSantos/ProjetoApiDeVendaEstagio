@@ -162,7 +162,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [Authorize]
         [HttpGet("log/{idServico}")]
-        public ActionResult<List<ServicoLogDto>> BuscarLogsPorIdServico(Guid idServico)
+        public ActionResult<List<ServicoLogOutputDto>> BuscarLogsPorIdServico(Guid idServico)
         {
             try
             {

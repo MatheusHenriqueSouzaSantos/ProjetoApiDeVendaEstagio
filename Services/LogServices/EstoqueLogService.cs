@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Entities.EstoqueDomain;
+﻿using ApiEstagioBicicletaria.Entities;
+using ApiEstagioBicicletaria.Entities.EstoqueDomain;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Repositories;
@@ -21,6 +22,10 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             PropertyInfo[] propriedades = typeof(Estoque).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
+                if (Attribute.IsDefined(propriedade, typeof(AtributoASerIgnoradoLogCriacao)))
+                {
+                    continue;
+                }
                 var valorPropriedade = propriedade.GetValue(estoque);
 
                 EstoqueLog log = new EstoqueLog(estoque,
@@ -33,6 +38,11 @@ namespace ApiEstagioBicicletaria.Services.LogServices
 
                 _repositorio.CriarLog(log);
             }
+        }
+        public void CriarLogDeAtualizacaoQuantidadeEmEstoque(Estoque estoqueModificado,Produto produtoDoEstoque,int quantidadeAnterior,int quantidadeAtual,Usuario usuarioResponsavel)
+        {
+            _repositorio.CriarLog(new EstoqueLog(estoqueModificado,produtoDoEstoque , Entities.LogAcao.Atualizacao, "QuantidadeEmEstoque",
+                quantidadeAnterior.ToString(), quantidadeAtual.ToString(), usuarioResponsavel));
         }
         public void CriarLogsDeExclusao(Estoque estoque, Usuario usuarioResponsavel)
         {

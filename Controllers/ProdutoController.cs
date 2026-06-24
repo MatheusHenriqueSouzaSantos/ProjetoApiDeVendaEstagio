@@ -1,4 +1,5 @@
-﻿using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
+﻿using ApiEstagioBicicletaria.Dtos;
+using ApiEstagioBicicletaria.Dtos.FornecedorDtos;
 using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
@@ -201,7 +202,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [Authorize]
         [HttpGet("log/{idProduto}")]
-        public ActionResult<List<ProdutoLogDto>> BuscarLogsPorIdProduto(Guid idProduto)
+        public ActionResult<List<BaseLogOutputDto>> BuscarLogsPorIdProduto(Guid idProduto)
         {
             try
             {
@@ -218,5 +219,26 @@ namespace ApiEstagioBicicletaria.Controllers
 
             }
         }
+
+        //[Authorize]
+        //[HttpGet("log-geral-paginacao")]
+        //public ActionResult<List<ProdutoLogDto>> BuscarLogsGeraisPaginacao([FromQuery][Required(ErrorMessage ="é obrigatório enviar a página a ser buscada")] int pagina,
+        //   [FromQuery][Required(ErrorMessage = "é obrigatório enviar a quantidade de registro por página a ser buscada")] int quantidadeDeRegistroPorPagina)
+        //{
+        //    try
+        //    {
+        //        return Ok(_produtoService.BuscarLogsPorIdProduto(idProduto));
+        //    }
+        //    catch (ExcecaoDeRegraDeNegocio ex)
+        //    {
+        //        return StatusCode(ex.StatusCode, ex.Message);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, "Erro Inesperado");
+        //        //return StatusCode(500, ex.Message);
+
+        //    }
+        //}
     }
 }

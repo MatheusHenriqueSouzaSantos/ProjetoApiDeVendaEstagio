@@ -154,13 +154,13 @@ namespace ApiEstagioBicicletaria.Services
             return servicosFormatoOutPut;
         }
 
-        public List<ServicoLogDto> BuscarLogsPorIdServico(Guid id)
+        public List<ServicoLogOutputDto> BuscarLogsPorIdServico(Guid id)
         {
             List<ServicoLog> logs = _contextoDb.ServicoLogs
                 .Where(l => l.IdServico == id).OrderByDescending(l => l.DataCriacao).ToList();
 
-            List<ServicoLogDto> logsDto =
-                logs.Select(l => new ServicoLogDto
+            List<ServicoLogOutputDto> logsDto =
+                logs.Select(l => new ServicoLogOutputDto
                 (l.IdServico,
                 l.Acao,
                 l.CampoAlterado,

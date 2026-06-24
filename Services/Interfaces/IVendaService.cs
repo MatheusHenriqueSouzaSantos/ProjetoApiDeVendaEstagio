@@ -25,6 +25,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         List<VendaTransacaoOutputDto> BuscarVendasPorCpfOuCnpj(DocumentoClienteInputDto dto);
 
         VendaTransacaoOutputDto BuscarVendaPorCodigoVenda(string codigoVenda);
+
+        List<BaseLogOutputDto> buscarLogsPorIdVenda(Guid idVenda);
     }
 
 }

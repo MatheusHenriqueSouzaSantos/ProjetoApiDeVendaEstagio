@@ -18,7 +18,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         List<ServicoDtoOutPut> BuscarServicosPorNome(string nome);
 
-        List<ServicoLogDto> BuscarLogsPorIdServico(Guid id);
+        List<ServicoLogOutputDto> BuscarLogsPorIdServico(Guid id);
 
     }
 }

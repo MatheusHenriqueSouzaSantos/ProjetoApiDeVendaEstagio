@@ -1,34 +1,31 @@
 ﻿using ApiEstagioBicicletaria.Entities;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 using ApiEstagioBicicletaria.Entities.UsuarioDomain;
-using ApiEstagioBicicletaria.Entities.VendaDomain;
 using ApiEstagioBicicletaria.Repository.Repositorios;
 using System.Reflection;
 
 namespace ApiEstagioBicicletaria.Services.LogServices
 {
-    public class ItemVendaLogService
+    public class UsuarioLogService
     {
-        private readonly LogRepositorio<ItemVendaLog> _repositorio;
+        private readonly LogRepositorio<UsuarioLog> _repositorio;
 
-        public ItemVendaLogService(LogRepositorio<ItemVendaLog> repositorio)
+        public UsuarioLogService(LogRepositorio<UsuarioLog> repositorio)
         {
             _repositorio = repositorio;
         }
-
-        public void CriarLogsDeCriacao(ItemVenda itemVenda,Venda venda, Usuario usuarioResponsavel)
+        public void CriarLogDeCriacao(Usuario usuario, Usuario usuarioResponsavel)
         {
-            PropertyInfo[] propriedades = typeof(ItemVenda).GetProperties();
+            PropertyInfo[] propriedades = typeof(Usuario).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
                 if (Attribute.IsDefined(propriedade, typeof(AtributoASerIgnoradoLogCriacao)))
                 {
                     continue;
                 }
-                var valorPropriedade = propriedade.GetValue(itemVenda);
+                var valorPropriedade = propriedade.GetValue(usuario);
 
-                ItemVendaLog log = new(itemVenda,
-                    venda,
+                UsuarioLog log = new(usuario,
                     LogAcao.Criacao,
                     propriedade.Name,
                     null,
@@ -39,23 +36,22 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             }
         }
 
-        public void CriarLogsDeAtualizacao(ItemVenda itemVendaAntigo, ItemVenda itemVendaAtualizado,Venda vendaDoItem, Usuario usuarioResponsavel)
+        public void CriarLogsDeAtualizacao(Usuario usuarioAntigo, Usuario usuarioAtualizado, Usuario usuarioResponsavel)
         {
-            PropertyInfo[] propriedades = typeof(ItemVenda).GetProperties();
+            PropertyInfo[] propriedades = typeof(Usuario).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
             {
                 if (Attribute.IsDefined(propriedade, typeof(AtributoASerIgnoradoLogAtualizacao)))
                 {
                     continue;
                 }
-                var valorAntigoPropriedade = propriedade.GetValue(itemVendaAntigo);
-                var valorAtualizadoPropriedade = propriedade.GetValue(itemVendaAtualizado);
+                var valorAntigoPropriedade = propriedade.GetValue(usuarioAntigo);
+                var valorAtualizadoPropriedade = propriedade.GetValue(usuarioAtualizado);
 
                 if (!Equals(valorAntigoPropriedade, valorAtualizadoPropriedade))
                 {
-                    ItemVendaLog log = new(
-                        itemVendaAtualizado,
-                        vendaDoItem,
+                    UsuarioLog log = new(
+                        usuarioAtualizado,
                         LogAcao.Atualizacao,
                         propriedade.Name,
                         valorAntigoPropriedade?.ToString(),
@@ -68,18 +64,11 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             }
         }
 
-        public void CriarLogsDeExclusao(ItemVenda itemVenda, Venda venda, Usuario usuarioResponsavel)
+        public void CriarLogsDeExclusao(Usuario usuario, Usuario usuarioResponsavel)
         {
-            ItemVendaLog log = new(itemVenda,
-                venda,
-                LogAcao.Exclusao,
-                "Ativo",
-                "true",
-                "false",
-                usuarioResponsavel);
+            UsuarioLog log = new(usuario, LogAcao.Exclusao, "Ativo", true.ToString(), false.ToString(), usuarioResponsavel);
 
             _repositorio.CriarLog(log);
-            
         }
     }
 }
