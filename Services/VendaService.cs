@@ -100,8 +100,8 @@ namespace ApiEstagioBicicletaria.Services
 
             Console.WriteLine(vendedorDaVenda.NomeCompleto);
 
-            List<ItemVendaCreateDto> itensVenda = dto.Venda.ItensVenda;
-            List<ServicoVendaCreateDto> servicosVenda = dto.Venda.ServicosVenda;
+            List<ItemVendaCreateDto> itensVenda = dto.Venda.ItensVenda ?? [];
+            List<ServicoVendaCreateDto> servicosVenda = dto.Venda.ServicosVenda ?? [];
             decimal valorTotalDaVendaSemDescontoTotalAplicado=CalcularTotalVendaSemDescontoTotalAplicadoParaVendaCriada(itensVenda,servicosVenda);
             decimal descontoVenda = dto.Venda.DescontoSobreTotalVenda ?? 0.0m;
             if (descontoVenda < 0)
@@ -133,11 +133,11 @@ namespace ApiEstagioBicicletaria.Services
 
             _contexto.Vendas.Add(vendaCriada);
 
-            List<ItemVenda> listaDeItensDaVendaCriada = new List<ItemVenda>();
+            List<ItemVenda> listaDeItensDaVendaCriada = new List<ItemVenda>() ;
 
             List<ServicoVenda> listaDeServicosDaVendaCriada =new List<ServicoVenda>();
 
-            foreach(ItemVendaCreateDto itemEnviado in dto.Venda.ItensVenda.ToList())
+            foreach(ItemVendaCreateDto itemEnviado in dto.Venda.ItensVenda)
             {
                 Produto? produtoDoItem = _contexto.Produtos.FirstOrDefault(p => p.Id == itemEnviado.IdProduto && p.Ativo);
 
@@ -147,10 +147,6 @@ namespace ApiEstagioBicicletaria.Services
                 }
                 Estoque estoqueDoProdutoDoItem = _contexto.Estoques.Include(p=>p.Produto).FirstOrDefault(e => e.Produto.Id == produtoDoItem.Id && e.Ativo)
                     ?? throw new ExcecaoDeRegraDeNegocio(500, "Estoque não encontrado"); 
-                if (itemEnviado.Quantidade == 0)
-                {
-                    throw new ExcecaoDeRegraDeNegocio(400,"Não é possível adicionar um produto com 0 unidades");
-                }
                 if(itemEnviado.Quantidade > estoqueDoProdutoDoItem.QuantidadeEmEstoque)
                 {
                     throw new ExcecaoDeRegraDeNegocio(400, "Estoque do produto: " + produtoDoItem.NomeProduto + " insuficiente, pois tem apenas: " +
@@ -191,11 +187,25 @@ namespace ApiEstagioBicicletaria.Services
                 _servicoVendaLogService.CriarLogsDeCriacao(servicoDaVendaCriado, vendaCriada, _usuarioLogado);
                 _contexto.ServicosVendas.Add(servicoDaVendaCriado);
             }
-
-            if(dto.Transacao.TipoPagamento== TipoPagamento.AVista && dto.Transacao.QuantidadeDeParcelas != 1)
+            if (dto.Transacao.TipoPagamento == TipoPagamento.AVista)
             {
-                throw new ExcecaoDeRegraDeNegocio(400,"Uma venda à vista deve ter apenas uma parcela");
+                if(dto.Transacao.QuantidadeDeParcelas != 1)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(400,"Uma venda à vista deve ter apenas uma parcela");
+                }
+                if (dto.Transacao.DataDeVencimentoPrimeiraParcela!=DateOnly.FromDateTime(DateTime.Today))
+                {
+                    throw new ExcecaoDeRegraDeNegocio(400, "Uma venda à vista deve ter a data de pagamento como hoje");
+                }
             }
+            if (dto.Transacao.TipoPagamento == TipoPagamento.APrazo)
+            {
+                if (dto.Transacao.DataDeVencimentoPrimeiraParcela <= DateOnly.FromDateTime(DateTime.Today))
+                {
+                    throw new ExcecaoDeRegraDeNegocio(400, "Uma venda parcelada precisa que data de vencimento da primeira parcela seja maior que a data de hoje");
+                }
+            }
+
 
             Transacao transacaoCriada = new Transacao(vendaCriada, dto.Transacao.TipoPagamento, dto.Transacao.MeioPagamento);
             _contexto.Transacoes.Add(transacaoCriada);
@@ -205,12 +215,12 @@ namespace ApiEstagioBicicletaria.Services
 
             List<Decimal> valoresDasParcelas = CalcularValorDasParcelas(vendaCriada.ValorTotalComDesconto, dto.Transacao.QuantidadeDeParcelas);
 
-            if (!(dto.Transacao.DataDeVencinmentoPrimeiraParcela >= DateOnly.FromDateTime(DateTime.Today)))
+            if (!(dto.Transacao.DataDeVencimentoPrimeiraParcela >= DateOnly.FromDateTime(DateTime.Today)))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "A data de vencimento da primeira parcela deve ser maior ou igaual a data atual");
             }
 
-            DateOnly dataDeVencimentoDaPrimeiraParcela = dto.Transacao.DataDeVencinmentoPrimeiraParcela;
+            DateOnly dataDeVencimentoDaPrimeiraParcela = dto.Transacao.DataDeVencimentoPrimeiraParcela;
 
             for (int i=0;i< valoresDasParcelas.Count(); i++)
             {
@@ -513,6 +523,17 @@ namespace ApiEstagioBicicletaria.Services
                 _contexto.Vendas.Update(vendaParaAtualizar);
                
             }
+
+            DateOnly dataVencimentoPrimeiraParcelaAntiga = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.NumeroDaParcelaDaVenda == 1
+                    && p.Ativo).First().DataVencimento;
+
+            DateOnly dataVencimentoPrimeiraParcelaAtualizada = dataVencimentoPrimeiraParcelaAntiga;
+
+            int quantidadeDeParcelasAntiga = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo).Count();
+
+            int quantidadeDeParcelasAtualizada = quantidadeDeParcelasAntiga;
+
+
             if (dto.Transacao != null)
             {
                 if (dto.Transacao.MeioPagamento != null)
@@ -520,32 +541,12 @@ namespace ApiEstagioBicicletaria.Services
                     transacaoDaVendaASerAtualizada.MeioPagamento = dto.Transacao.MeioPagamento.Value;
                     //log
                 }
-                int quantidadeDeParcelasExistentesAtualmente = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo).Count();
 
                 //mais não permite mais d euma parcela se o tipo é avista, mais ver se esta sendo mandado a quantidade de parcela que daí da certo.., fazr um if dentro de outro
                 if (dto.Transacao.TipoPagamento != null)
                 {
-                    if (dto.Transacao.QuantidadeDeParcelas != null)
-                    {
-                        if (dto.Transacao.TipoPagamento == TipoPagamento.AVista && dto.Transacao.QuantidadeDeParcelas != 1)
-                        {
-                            throw new ExcecaoDeRegraDeNegocio(400, "a quantidade de parclea deve ser igual a 1 se o tipo do pagamento é avista");
-                        }
-                        transacaoDaVendaASerAtualizada.TipoPagamento = dto.Transacao.TipoPagamento.Value;
-                        //log
-                    }
-                    else
-                    {
-
-                        if (dto.Transacao.TipoPagamento == TipoPagamento.AVista && quantidadeDeParcelasExistentesAtualmente != 1)
-                        {
-                            throw new ExcecaoDeRegraDeNegocio(400, "a quantidade de parclea deve ser igual a 1 se o tipo do pagamento é avista");
-                        }
-                        transacaoDaVendaASerAtualizada.TipoPagamento = dto.Transacao.TipoPagamento.Value;
-                        //log
-                    }
+                    transacaoDaVendaASerAtualizada.TipoPagamento = dto.Transacao.TipoPagamento.Value;
                 }
-                int quantidadeDeParcelasAtualizado = quantidadeDeParcelasExistentesAtualmente;
 
                 if (dto.Transacao.QuantidadeDeParcelas != null)
                 {
@@ -553,101 +554,118 @@ namespace ApiEstagioBicicletaria.Services
                     {
                         throw new ExcecaoDeRegraDeNegocio(400, "A Quantidade De Parcelas não deve ser maior que 60");
                     }
-                    quantidadeDeParcelasAtualizado = dto.Transacao.QuantidadeDeParcelas.Value;
+                    quantidadeDeParcelasAtualizada = dto.Transacao.QuantidadeDeParcelas.Value;
                 }
 
-
-                List<decimal> valoresDasParcelas = CalcularValorDasParcelas(valorTotalDaVendaComDescontoAplicado, quantidadeDeParcelasAtualizado);
-
-                DateOnly dataVencimentoPrimeiraParcelaAntigo = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.NumeroDaParcelaDaVenda == 1
-                && p.Ativo).First().DataVencimento;
-
-                DateOnly dataVencimentoPrimeiraParcelaAtualizado = dataVencimentoPrimeiraParcelaAntigo;
-                if (dto.Transacao.DataDeVencinmentoPrimeiraParcela != null)
+                if (dto.Transacao.DataDeVencimentoPrimeiraParcela != null)
                 {
-                    if (!(dto.Transacao.DataDeVencinmentoPrimeiraParcela >= DateOnly.FromDateTime(DateTime.Today)))
+                    if (!(dto.Transacao.DataDeVencimentoPrimeiraParcela >= DateOnly.FromDateTime(DateTime.Today)))
                     {
                         throw new ExcecaoDeRegraDeNegocio(400, "A data de vencimento da primeira parcela deve ser maior ou igaual a data atual");
                     }
-                    dataVencimentoPrimeiraParcelaAtualizado = dto.Transacao.DataDeVencinmentoPrimeiraParcela.Value;
+                    dataVencimentoPrimeiraParcelaAtualizada = dto.Transacao.DataDeVencimentoPrimeiraParcela.Value;
                 }
-
-
-                List<Parcela> parcelasDaVenda = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo).Include(p=>p.Transacao)
-                    .OrderBy(p => p.NumeroDaParcelaDaVenda).ToList();
-
-                if (quantidadeDeParcelasExistentesAtualmente != quantidadeDeParcelasAtualizado || vendaParaAtualizar.ValorTotalComDesconto != valorTotalDaVendaComDescontoAplicado
-                    || dataVencimentoPrimeiraParcelaAntigo != dataVencimentoPrimeiraParcelaAtualizado)
+                if(dto.Transacao.TipoPagamento!=null || dto.Transacao.QuantidadeDeParcelas!=null || dto.Transacao.DataDeVencimentoPrimeiraParcela != null)
                 {
-                    if (quantidadeDeParcelasExistentesAtualmente > quantidadeDeParcelasAtualizado)
+                    if (transacaoDaVendaASerAtualizada.TipoPagamento == TipoPagamento.AVista)
                     {
-                        int quantidaDeParcelasASeremDeletadas = quantidadeDeParcelasExistentesAtualmente - quantidadeDeParcelasAtualizado;
-                        List<Parcela> parcelasDeletadas = parcelasDaVenda.TakeLast(quantidaDeParcelasASeremDeletadas).ToList();
-                        foreach (Parcela parcelaIterada in parcelasDeletadas)
+                        if (quantidadeDeParcelasAtualizada != 1)
                         {
-                            parcelaIterada.Ativo = false;
-                            parcelasDaVenda.RemoveAll(p => p.Id == parcelaIterada.Id);
-                            _parcelaLogService.CriarLogDeExclusao(parcelaIterada, transacaoDaVendaASerAtualizada, _usuarioLogado);
-                            _contexto.Parcelas.Update(parcelaIterada);
+                            throw new ExcecaoDeRegraDeNegocio(400, "Uma venda AVista deve ter apenas uma parcela");
                         }
-
-                        for (int i = 0; i < parcelasDaVenda.Count; i++)
+                        if (dataVencimentoPrimeiraParcelaAtualizada != DateOnly.FromDateTime(DateTime.Today))
                         {
-                            Parcela parcelaCopia = parcelasDaVenda[i].Copia();
-                            parcelasDaVenda[i].NumeroDaParcelaDaVenda = i + 1;
-                            parcelasDaVenda[i].DataVencimento = dataVencimentoPrimeiraParcelaAtualizado.AddMonths(i);
-                            parcelasDaVenda[i].ValorParcela = valoresDasParcelas[i];
-                            _parcelaLogService.CriarLogsDeAtualizacao(parcelaCopia, parcelasDaVenda[i],transacaoDaVendaASerAtualizada, _usuarioLogado);
+                            throw new ExcecaoDeRegraDeNegocio(400, "Uma venda AVista deve ter a data de pagamento de hoje");
                         }
-                        _contexto.Parcelas.UpdateRange(parcelasDaVenda);
-
-                    }
-                    else if (quantidadeDeParcelasAtualizado > quantidadeDeParcelasExistentesAtualmente)
-                    {
-                        int quantidadeDeParcelasASerCriada = quantidadeDeParcelasAtualizado - quantidadeDeParcelasExistentesAtualmente;
-                        DateOnly dataDeVencimentoProximaParcela = dataVencimentoPrimeiraParcelaAtualizado;
-                        int indiceDaParcela = 0;
-                        for (int i = 0; i < parcelasDaVenda.Count; i++)
-                        {
-                            Parcela parcelaCopia = parcelasDaVenda[i].Copia();
-                            parcelasDaVenda[i].NumeroDaParcelaDaVenda = (indiceDaParcela + 1);
-                            parcelasDaVenda[i].DataVencimento = dataDeVencimentoProximaParcela;
-                            parcelasDaVenda[i].ValorParcela = valoresDasParcelas[indiceDaParcela];
-                            _parcelaLogService.CriarLogsDeAtualizacao(parcelaCopia, parcelasDaVenda[i], transacaoDaVendaASerAtualizada, _usuarioLogado);
-                            indiceDaParcela++;
-                            dataDeVencimentoProximaParcela = dataDeVencimentoProximaParcela.AddMonths(1);
-                        }
-                        _contexto.Parcelas.UpdateRange(parcelasDaVenda);
-
-                        for (int i = 0; i < quantidadeDeParcelasASerCriada; i++)
-                        {
-                            Parcela parcela = new(transacaoDaVendaASerAtualizada, indiceDaParcela + 1, valoresDasParcelas[indiceDaParcela], dataDeVencimentoProximaParcela);
-                            indiceDaParcela++;
-                            dataDeVencimentoProximaParcela = dataDeVencimentoProximaParcela.AddMonths(1);
-                            parcelasDaVenda.Add(parcela);
-                            _parcelaLogService.CriarLogsDeCriacao(parcela, transacaoDaVendaASerAtualizada, _usuarioLogado);
-                            _contexto.Parcelas.Add(parcela);
-                        }
-
                     }
                     else
                     {
-                        for (int i = 0; i < parcelasDaVenda.Count; i++)
+                        if (dataVencimentoPrimeiraParcelaAtualizada <= DateOnly.FromDateTime(DateTime.Today))
                         {
-                            Parcela parcelaCopia = parcelasDaVenda[i].Copia();
-                            parcelasDaVenda[i].NumeroDaParcelaDaVenda = i + 1;
-                            parcelasDaVenda[i].DataVencimento = dataVencimentoPrimeiraParcelaAtualizado.AddMonths(i);
-                            parcelasDaVenda[i].ValorParcela = valoresDasParcelas[i];
-                            _parcelaLogService.CriarLogsDeAtualizacao(parcelaCopia, parcelasDaVenda[i], transacaoDaVendaASerAtualizada, _usuarioLogado);
+                            throw new ExcecaoDeRegraDeNegocio(400, "Uma venda APrazo deve ter a data de pagamento Maior do que a de hoje");
                         }
-                        _contexto.Parcelas.UpdateRange(parcelasDaVenda);
-
-
                     }
                 }
+
                 _transacaoLogService.CriarLogsDeAtualizacao(transacaoCopia, transacaoDaVendaASerAtualizada, vendaParaAtualizar, _usuarioLogado);
                 _contexto.Transacoes.Update(transacaoDaVendaASerAtualizada);
             }
+
+            if (vendaCopia.ValorTotalComDesconto!=valorTotalDaVendaComDescontoAplicado 
+                || dataVencimentoPrimeiraParcelaAntiga!= dataVencimentoPrimeiraParcelaAtualizada ||quantidadeDeParcelasAntiga!=quantidadeDeParcelasAtualizada){
+
+                List<decimal> valoresDasParcelas = CalcularValorDasParcelas(valorTotalDaVendaComDescontoAplicado, quantidadeDeParcelasAtualizada);
+                List<Parcela> parcelasDaVenda = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVendaASerAtualizada.Id && p.Ativo).Include(p => p.Transacao)
+                    .OrderBy(p => p.NumeroDaParcelaDaVenda).ToList();
+
+                if (quantidadeDeParcelasAntiga > quantidadeDeParcelasAtualizada)
+                {
+                    int quantidaDeParcelasASeremDeletadas = quantidadeDeParcelasAntiga - quantidadeDeParcelasAtualizada;
+                    List<Parcela> parcelasDeletadas = parcelasDaVenda.TakeLast(quantidaDeParcelasASeremDeletadas).ToList();
+                    foreach (Parcela parcelaIterada in parcelasDeletadas)
+                    {
+                        parcelaIterada.Ativo = false;
+                        parcelasDaVenda.RemoveAll(p => p.Id == parcelaIterada.Id);
+                        _parcelaLogService.CriarLogDeExclusao(parcelaIterada, transacaoDaVendaASerAtualizada, _usuarioLogado);
+                        _contexto.Parcelas.Update(parcelaIterada);
+                    }
+
+                    for (int i = 0; i < parcelasDaVenda.Count; i++)
+                    {
+                        Parcela parcelaCopia = parcelasDaVenda[i].Copia();
+                        parcelasDaVenda[i].NumeroDaParcelaDaVenda = i + 1;
+                        parcelasDaVenda[i].DataVencimento = dataVencimentoPrimeiraParcelaAtualizada.AddMonths(i);
+                        parcelasDaVenda[i].ValorParcela = valoresDasParcelas[i];
+                        _parcelaLogService.CriarLogsDeAtualizacao(parcelaCopia, parcelasDaVenda[i], transacaoDaVendaASerAtualizada, _usuarioLogado);
+                    }
+                    _contexto.Parcelas.UpdateRange(parcelasDaVenda);
+
+                }
+                else if (quantidadeDeParcelasAtualizada > quantidadeDeParcelasAntiga)
+                {
+                    int quantidadeDeParcelasASerCriada = quantidadeDeParcelasAtualizada - quantidadeDeParcelasAntiga;
+                    DateOnly dataDeVencimentoProximaParcela = dataVencimentoPrimeiraParcelaAtualizada;
+                    int indiceDaParcela = 0;
+                    for (int i = 0; i < parcelasDaVenda.Count; i++)
+                    {
+                        Parcela parcelaCopia = parcelasDaVenda[i].Copia();
+                        parcelasDaVenda[i].NumeroDaParcelaDaVenda = (indiceDaParcela + 1);
+                        parcelasDaVenda[i].DataVencimento = dataDeVencimentoProximaParcela;
+                        parcelasDaVenda[i].ValorParcela = valoresDasParcelas[indiceDaParcela];
+                        _parcelaLogService.CriarLogsDeAtualizacao(parcelaCopia, parcelasDaVenda[i], transacaoDaVendaASerAtualizada, _usuarioLogado);
+                        indiceDaParcela++;
+                        dataDeVencimentoProximaParcela = dataDeVencimentoProximaParcela.AddMonths(1);
+                    }
+                    _contexto.Parcelas.UpdateRange(parcelasDaVenda);
+
+                    for (int i = 0; i < quantidadeDeParcelasASerCriada; i++)
+                    {
+                        Parcela parcela = new(transacaoDaVendaASerAtualizada, indiceDaParcela + 1, valoresDasParcelas[indiceDaParcela], dataDeVencimentoProximaParcela);
+                        indiceDaParcela++;
+                        dataDeVencimentoProximaParcela = dataDeVencimentoProximaParcela.AddMonths(1);
+                        parcelasDaVenda.Add(parcela);
+                        _parcelaLogService.CriarLogsDeCriacao(parcela, transacaoDaVendaASerAtualizada, _usuarioLogado);
+                        _contexto.Parcelas.Add(parcela);
+                    }
+
+                }
+                else
+                {
+                    for (int i = 0; i < parcelasDaVenda.Count; i++)
+                    {
+                        Parcela parcelaCopia = parcelasDaVenda[i].Copia();
+                        parcelasDaVenda[i].NumeroDaParcelaDaVenda = i + 1;
+                        parcelasDaVenda[i].DataVencimento = dataVencimentoPrimeiraParcelaAtualizada.AddMonths(i);
+                        parcelasDaVenda[i].ValorParcela = valoresDasParcelas[i];
+                        _parcelaLogService.CriarLogsDeAtualizacao(parcelaCopia, parcelasDaVenda[i], transacaoDaVendaASerAtualizada, _usuarioLogado);
+                    }
+                    _contexto.Parcelas.UpdateRange(parcelasDaVenda);
+
+
+                }
+            }  
+            
+          
             _contexto.SaveChanges();
 
             return EntityToDto(vendaParaAtualizar);

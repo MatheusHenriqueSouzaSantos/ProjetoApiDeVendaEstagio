@@ -11,22 +11,22 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
 
         [EnumDataType(typeof(MeioPagamento), ErrorMessage = "tipo inválido")]
         public MeioPagamento? MeioPagamento { get; set; }
-        [Range(1, 1000000, ErrorMessage = "A quantidade de parcelas não pode ser negativa")]
+        [Range(1, 1000000, ErrorMessage = "A quantidade de parcelas deve ser maior que 0")]
         public int? QuantidadeDeParcelas { get; set; }
 
-        public DateOnly? DataDeVencinmentoPrimeiraParcela { get; set; }
+        public DateOnly? DataDeVencimentoPrimeiraParcela { get; set; }
 
         protected TransacaoUpdateDto()
         {
 
         }
 
-        public TransacaoUpdateDto(TipoPagamento? tipoPagamento, MeioPagamento? meioPagamento, int? quantidadeDeParcelas, DateOnly? dataDeVencinmentoPrimeiraParcela)
+        public TransacaoUpdateDto(TipoPagamento? tipoPagamento, MeioPagamento? meioPagamento, int? quantidadeDeParcelas, DateOnly? dataDeVencimentoPrimeiraParcela)
         {
             TipoPagamento = tipoPagamento;
             MeioPagamento = meioPagamento;
             QuantidadeDeParcelas = quantidadeDeParcelas;
-            DataDeVencinmentoPrimeiraParcela = dataDeVencinmentoPrimeiraParcela;
+            DataDeVencimentoPrimeiraParcela = dataDeVencimentoPrimeiraParcela;
         }
     }
 }

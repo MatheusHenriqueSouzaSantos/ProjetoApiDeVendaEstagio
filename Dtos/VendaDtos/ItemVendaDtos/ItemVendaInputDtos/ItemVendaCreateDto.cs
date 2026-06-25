@@ -5,7 +5,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.ItemVendaDtos.ItemVendaInputDtos
     public class ItemVendaCreateDto
     {
         [Required(ErrorMessage = "O campo quantidade produto é obrigatório")]
-        [Range(0, 1000000, ErrorMessage = "a quantidade de produtos não pode ser negativa")]
+        [Range(1, 1000000, ErrorMessage = "a quantidade de produtos deve ser maior que 0")]
         public int Quantidade { get; set; }
         [Range(0, 1000000, ErrorMessage = "O desconto Unitário não pode ser negativo")]
         public decimal? DescontoUnitario { get; set; } = 0.0m;
