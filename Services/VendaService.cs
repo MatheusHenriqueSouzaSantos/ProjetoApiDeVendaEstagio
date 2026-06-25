@@ -985,7 +985,7 @@ namespace ApiEstagioBicicletaria.Services
             List<ItemVendaLogOutputDto> logsItemVendaDto = _contexto.ItensVendaLogs
                 .Where(l => l.IdVenda == idVenda)
                 .Include(l=>l.ItemVenda).ThenInclude(i=>i.Produto)
-                .Select(l=>new ItemVendaLogOutputDto(l.IdItemVenda,l.ItemVenda.Produto.NomeProduto,l.Acao,l.CampoAlterado,l.ValorAntigo,l.ValorNovo,
+                .Select(l=>new ItemVendaLogOutputDto(l.IdItemVenda,l.ItemVenda.Produto.Id,l.ItemVenda.Produto.NomeProduto,l.Acao,l.CampoAlterado,l.ValorAntigo,l.ValorNovo,
                 l.IdUsuarioResponsavel,l.DataCriacao))
                 .ToList();
             List<ServicoVendaLogOutputDto> logsServicoVendaDto = _contexto.ServicosVendaLog

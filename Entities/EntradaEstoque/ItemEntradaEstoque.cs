@@ -31,5 +31,10 @@ namespace ApiEstagioBicicletaria.Entities.EntradaEstoque
             Quantidade = quantidade;
         }
         protected ItemEntradaEstoque() { }
+
+        public ItemEntradaEstoque Copia()
+        {
+            return new ItemEntradaEstoque(EntradaEstoque, Estoque,Quantidade);
+        }
     }
 }

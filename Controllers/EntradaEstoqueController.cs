@@ -1,5 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Dtos.EntradaEstoqueDtos.Input;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
+using ApiEstagioBicicletaria.Dtos.VendedorDtos;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
@@ -114,6 +115,26 @@ namespace ApiEstagioBicicletaria.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, "Erro interno");
+            }
+        }
+
+        [Authorize]
+        [HttpGet("log/{idEntradaEstoque}")]
+        public ActionResult<List<Object>> BuscarLogsPorIdEntradaEstoque(Guid idEntradaEstoque)
+        {
+            try
+            {
+                return Ok(_service.BuscarLogsPorIdEntradaEstoque(idEntradaEstoque));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
             }
         }
 

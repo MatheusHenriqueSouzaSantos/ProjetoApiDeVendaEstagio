@@ -93,7 +93,7 @@ namespace ApiEstagioBicicletaria.Repositories
 
         public DbSet<EstoqueLog> EstoqueLogs { get; set; }
 
-        public DbSet<EntradaEstoqueLog> EntradasEstoqueLgs { get; set; }
+        public DbSet<EntradaEstoqueLog> EntradasEstoqueLogs { get; set; }
 
         public DbSet<ItemEntradaEstoqueLog> ItensEntradaEstoqueLogs { get; set; }
 

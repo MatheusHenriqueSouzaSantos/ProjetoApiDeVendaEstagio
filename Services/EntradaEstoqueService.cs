@@ -1,15 +1,20 @@
-﻿using ApiEstagioBicicletaria.Dtos.EntradaEstoqueDtos.Input;
+﻿using ApiEstagioBicicletaria.Dtos;
+using ApiEstagioBicicletaria.Dtos.EntradaEstoqueDtos.Input;
+using ApiEstagioBicicletaria.Dtos.EntradaEstoqueDtos.Output;
 using ApiEstagioBicicletaria.Dtos.ProdutoDtos;
 using ApiEstagioBicicletaria.Dtos.RelatorioDtos;
 using ApiEstagioBicicletaria.Entities.EntradaEstoque;
 using ApiEstagioBicicletaria.Entities.EstoqueDomain;
 using ApiEstagioBicicletaria.Entities.FornedorDomain;
 using ApiEstagioBicicletaria.Entities.ProdutoDomain;
+using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Repository.Repositorios;
+using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
+using ApiEstagioBicicletaria.Services.LogServices;
 using ApiEstagioBicicletaria.Utils;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
@@ -33,9 +38,19 @@ namespace ApiEstagioBicicletaria.Services
 
         private readonly GeradorCodigoIndentificadorMovimentacao<EntradaEstoque> _geradorCodigo;
 
+        private readonly EntradaEstoqueLogService _entradaEstoqueLogService;
+
+        private readonly ItemEntradaEstoqueLogService _itemEntradaEstoqueLogService;
+
+        private readonly EstoqueLogService _estoqueLogService;
+
+        private readonly Usuario _usuarioLogado;
+
         public EntradaEstoqueService(ContextoDb contexto, EntradaEstoqueRepositorio repositorio, 
             ItemEntradaEstoqueRepositorio itemEntradaRepositorio, FornecedorRepositorio fornecedorRepositorio, 
-            ProdutoRepositorio produtoRepositorio, EstoqueRepositorio estoqueRepositorio, GeradorCodigoIndentificadorMovimentacao<EntradaEstoque> geradorCodigo)
+            ProdutoRepositorio produtoRepositorio, EstoqueRepositorio estoqueRepositorio, GeradorCodigoIndentificadorMovimentacao<EntradaEstoque> geradorCodigo,
+            EntradaEstoqueLogService entradaEstoqueLogService,ItemEntradaEstoqueLogService itemEntradaEstoqueLogService,EstoqueLogService estoqueLogService
+            ,UsuarioLogadoService usuarioLogadoService)
         {
             _contexto = contexto;
             _repositorio = repositorio;
@@ -44,6 +59,10 @@ namespace ApiEstagioBicicletaria.Services
             _produtoRepositorio = produtoRepositorio;
             _estoqueRepositorio = estoqueRepositorio;
             _geradorCodigo = geradorCodigo;
+            _entradaEstoqueLogService = entradaEstoqueLogService;
+            _itemEntradaEstoqueLogService= itemEntradaEstoqueLogService;
+            _estoqueLogService = estoqueLogService;
+            _usuarioLogado = usuarioLogadoService.ObterUsuario();
         }
 
         public List<EntradaEstoqueOutputDto> BuscarTodos()
@@ -78,11 +97,12 @@ namespace ApiEstagioBicicletaria.Services
             Fornecedor fornecedor=_fornecedorRepositorio.BuscarFornecedorPorId(dto.IdFornecedor)
             ?? throw new ExcecaoDeRegraDeNegocio(404,"Fornecedor nao encontrado");
 
-            EntradaEstoque entradaEstoque = new(fornecedor, _geradorCodigo.GerarCodigo());
+            EntradaEstoque entradaEstoque = new(fornecedor, _geradorCodigo.GerarCodigo(),StatusEntradaEstoque.Criada);
 
             List<ItemEntradaEstoque> itens=CriarItensEntradaEstoque(dto.Itens,entradaEstoque);
           
             _repositorio.Cadastrar(entradaEstoque);
+            _entradaEstoqueLogService.CriarLogsDeCriacao(entradaEstoque, _usuarioLogado);
             _contexto.SaveChanges();
             return EntidadeParaDto(entradaEstoque,itens);
         }
@@ -94,6 +114,8 @@ namespace ApiEstagioBicicletaria.Services
         {
             EntradaEstoque entradaEstoque = _contexto.EntradasEstoque.Include(e => e.Fornecedor).FirstOrDefault(e => e.Id == id && e.Ativo)
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Entrada Estoque não encontrada");
+
+            EntradaEstoque entradaEstoqueCopia = entradaEstoque.Copia(); 
 
             List<ItemEntradaEstoque> itensEntrada=_contexto.ItensEntradaEstoque.Where(i=>i.IdEntradaEstoque==entradaEstoque.Id && i.Ativo).ToList();
 
@@ -112,12 +134,20 @@ namespace ApiEstagioBicicletaria.Services
                     ItemEntradaEstoque itemASerDeletado = itensEntrada.FirstOrDefault(i => i.Id == idASerDeletado && i.Ativo)
                         ?? throw new ExcecaoDeRegraDeNegocio(404, $"nenhuma item encontrado com esse id: {idASerDeletado}");
 
-                    Estoque estoqueDoItem = _contexto.Estoques.First(e => e.Id == itemASerDeletado.IdEstoque && e.Ativo);
+                    Estoque estoqueDoItem = _contexto.Estoques.Include(e=>e.Produto).First(e => e.Id == itemASerDeletado.IdEstoque && e.Ativo);
 
-                    estoqueDoItem.AdicionarQuantidadeEmEstoque(itemASerDeletado.Quantidade);
+                    if (estoqueDoItem.QuantidadeEmEstoque - itemASerDeletado.Quantidade < 0)
+                    {
+                        throw new ExcecaoDeRegraDeNegocio(400, $"não é possível excluir o item de entrada com id:{itemASerDeletado.Id}, pois se não o estoque ficaria negativo");
+                    }
+                    int quantidadeEmEstoqueAntiga = estoqueDoItem.QuantidadeEmEstoque;
+                    estoqueDoItem.AbaterQuantidadeEmEstoque(itemASerDeletado.Quantidade);
                     _contexto.Estoques.Update(estoqueDoItem);
+                    _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoItem, estoqueDoItem.Produto, quantidadeEmEstoqueAntiga, estoqueDoItem.QuantidadeEmEstoque,
+                        AcaoQueAlterouEstoque.AtualizacaoEntradaEstoque, _usuarioLogado);
                     itemASerDeletado.Ativo = false;
                     itensEntrada.Remove(itemASerDeletado);
+                    _itemEntradaEstoqueLogService.CriarLogsDeExclusao(itemASerDeletado, entradaEstoque, _usuarioLogado);
                     _contexto.ItensEntradaEstoque.Update(itemASerDeletado);
                     //log
                 }
@@ -129,16 +159,21 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     ItemEntradaEstoque itemASerAtualizado = itensEntrada.FirstOrDefault(i => i.Id == itemDto.IdDoItem && i.Ativo)
                         ?? throw new ExcecaoDeRegraDeNegocio(404, $"nenhum item encontrado com esse id: {itemDto.IdDoItem}");
-                    Estoque estoqueDoItem = _contexto.Estoques.First(e => e.Id == itemASerAtualizado.IdEstoque && e.Ativo);
+                    ItemEntradaEstoque itemEntradaEstoqueCopia = itemASerAtualizado.Copia();
+                    Estoque estoqueDoItem = _contexto.Estoques.Include(e=>e.Produto).First(e => e.Id == itemASerAtualizado.IdEstoque && e.Ativo);
+                    int quantidadeEmEstoqueAntiga = estoqueDoItem.QuantidadeEmEstoque;
                     estoqueDoItem.AbaterQuantidadeEmEstoque(itemASerAtualizado.Quantidade);
                     estoqueDoItem.AdicionarQuantidadeEmEstoque(itemDto.Quantidade);
                     if (estoqueDoItem.QuantidadeEmEstoque<0)
                     {
-                        throw new ExcecaoDeRegraDeNegocio(400, $"Estoque insufisciente para concluir a operação, " +
+                        throw new ExcecaoDeRegraDeNegocio(400, $"Estoque insufisciente para concluir a operação, do item com id: {itemASerAtualizado.Id} " +
                             $"pois há apenas: {estoqueDoItem.QuantidadeEmEstoque} unidades");
                     }
                     _contexto.Estoques.Update(estoqueDoItem);
-                    //log
+                    _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoItem, estoqueDoItem.Produto, quantidadeEmEstoqueAntiga,
+                        estoqueDoItem.QuantidadeEmEstoque, AcaoQueAlterouEstoque.AtualizacaoEntradaEstoque, _usuarioLogado);
+                    itemASerAtualizado.Quantidade = itemDto.Quantidade;
+                    _itemEntradaEstoqueLogService.CriarLogsDeAtualizacao(itemEntradaEstoqueCopia, itemASerAtualizado, entradaEstoque, _usuarioLogado);
                 }
                 _contexto.ItensEntradaEstoque.UpdateRange(itensEntrada);
             }
@@ -150,15 +185,19 @@ namespace ApiEstagioBicicletaria.Services
                         ?? throw new ExcecaoDeRegraDeNegocio(404, $"Nenhum produto encontrado com o id: {itemDto.IdProduto}");
 
                     Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.ProdutoId == produtoDoItem.Id && produtoDoItem.Ativo);
-
+                    int quantidadeEmEstoqueAntiga = estoqueDoProduto.QuantidadeEmEstoque;
                     estoqueDoProduto.AdicionarQuantidadeEmEstoque(itemDto.Quantidade);
                     ItemEntradaEstoque itemCriado = new(entradaEstoque, estoqueDoProduto, itemDto.Quantidade);
                     _contexto.Estoques.Update(estoqueDoProduto);
-                    itensEntrada.Add(itemCriado);   
+                    _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoProduto, produtoDoItem, quantidadeEmEstoqueAntiga, estoqueDoProduto.QuantidadeEmEstoque,
+                        AcaoQueAlterouEstoque.AtualizacaoEntradaEstoque, _usuarioLogado);
+                    itensEntrada.Add(itemCriado);
+                    _itemEntradaEstoqueLogService.CriarLogsDeCriacao(itemCriado, entradaEstoque, _usuarioLogado);
                     _contexto.ItensEntradaEstoque.Add(itemCriado);
                 }
             }
             entradaEstoque.Status = StatusEntradaEstoque.Atualizada;
+            _entradaEstoqueLogService.CriarLogsDeAtualizacao(entradaEstoqueCopia, entradaEstoque, _usuarioLogado);
             _contexto.SaveChanges();
             return EntidadeParaDto(entradaEstoque, itensEntrada);
 
@@ -169,25 +208,32 @@ namespace ApiEstagioBicicletaria.Services
         {
             EntradaEstoque entrada = _repositorio.BuscarPorId(id)
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Entrada de estoque não encontrada");
+            StatusEntradaEstoque statusAntigo=entrada.Status;
             List<ItemEntradaEstoque> itensEntradaEstoque = _itemEntradaRepositorio
                 .BuscarItensPorIdEntradaEstoque(entrada.Id);
             foreach(ItemEntradaEstoque item in itensEntradaEstoque)
             {
                 if(item.Quantidade> item.Estoque.QuantidadeEmEstoque)
                 {
-                    throw new ExcecaoDeRegraDeNegocio(400, "Não é possível cancelar essa entrada, pois o estoque é insufisciente");
+                    throw new ExcecaoDeRegraDeNegocio(400, $"Não é possível cancelar essa entrada, pois o item com id: {item.Id} não pode ser excluído, " +
+                        $"pois o estoque do produto {item.Estoque.Produto.NomeProduto} não pode ficar negativo ");
                 }
-                Estoque estoqueDoItem = _contexto.Estoques.FirstOrDefault(e => e.Id == item.IdEstoque && e.Ativo)
+                Estoque estoqueDoItem = _contexto.Estoques.Include(e=>e.Produto).FirstOrDefault(e => e.Id == item.IdEstoque && e.Ativo)
                     ?? throw new ExcecaoDeRegraDeNegocio(500,"estoque não encontrado");
-                item.Ativo = false;
-                _itemEntradaRepositorio.InativarItem(item);
+                int quantidadeEmEstoqueAntiga = estoqueDoItem.QuantidadeEmEstoque;
                 estoqueDoItem.AbaterQuantidadeEmEstoque(item.Quantidade);
                 _estoqueRepositorio.AtualizarEstoque(estoqueDoItem);
+                _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoItem, estoqueDoItem.Produto, quantidadeEmEstoqueAntiga,
+                    estoqueDoItem.QuantidadeEmEstoque, AcaoQueAlterouEstoque.ExclusaoEntradaEstoque, _usuarioLogado);
+                item.Ativo = false;
+                _itemEntradaRepositorio.InativarItem(item);
+                _itemEntradaEstoqueLogService.CriarLogsDeExclusao(item, entrada, _usuarioLogado);
                 
             }
             entrada.Ativo = false;
             entrada.Status = StatusEntradaEstoque.Cancelada;
             _repositorio.Inativar(entrada);
+            _entradaEstoqueLogService.CriarLogsDeExclusao(entrada, statusAntigo, _usuarioLogado);
             _contexto.SaveChanges();
         }
 
@@ -220,15 +266,40 @@ namespace ApiEstagioBicicletaria.Services
                 }
                 Estoque estoqueDoItem=_estoqueRepositorio.BuscarEstoquePorProdutoId(itemDto.IdProduto)
                 ?? throw new ExcecaoDeRegraDeNegocio(500,"Estoque do produto não encontrado");
+                int quantidadeAnteriorDoEstoque = estoqueDoItem.QuantidadeEmEstoque;
                 ItemEntradaEstoque item = new(entradaEstoque, estoqueDoItem, itemDto.Quantidade);
                 _itemEntradaRepositorio.Cadastrar(item);
+                _itemEntradaEstoqueLogService.CriarLogsDeCriacao(item, entradaEstoque, _usuarioLogado);
                 itens.Add(item);
                 estoqueDoItem.AdicionarQuantidadeEmEstoque(itemDto.Quantidade);
+                _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoItem, estoqueDoItem.Produto, quantidadeAnteriorDoEstoque,
+                    estoqueDoItem.QuantidadeEmEstoque, AcaoQueAlterouEstoque.CriacaoEntradaEstoque, _usuarioLogado);
                 _estoqueRepositorio.AtualizarEstoque(estoqueDoItem);
             }
             return itens;
         }
 
+        public List<Object> BuscarLogsPorIdEntradaEstoque(Guid idEntrada)
+        {
+            List<EntradaEstoqueLogOutputDto> logsEntradaDto=_contexto.EntradasEstoqueLogs.Where(l=>l.IdEntradaEstoque==idEntrada)
+                .Select(l=>new EntradaEstoqueLogOutputDto(l.IdEntradaEstoque,l.Acao,l.CampoAlterado,l.ValorAntigo,l.ValorNovo,l.IdUsuarioResponsavel,l.DataCriacao)).ToList();
+
+            List<ItemEntradaEstoqueLogOutputDto> logsItemEntradaDto = _contexto.ItensEntradaEstoqueLogs
+                .Include(l => l.ItemEntradaEstoque).ThenInclude(i => i.Estoque).ThenInclude(e => e.Produto)
+                .Where(l => l.IdEntradaEstoque == idEntrada)
+                .Select(l => new ItemEntradaEstoqueLogOutputDto(l.IdItemEntradaEstoque, l.ItemEntradaEstoque.Estoque.Produto.Id,
+                l.ItemEntradaEstoque.Estoque.Produto.NomeProduto, l.Acao, l.CampoAlterado, l.ValorAntigo, l.ValorNovo, l.IdUsuarioResponsavel, l.DataCriacao)).ToList();
+
+            List<BaseLogOutputDto> logsEntradaEItensDto=new List<BaseLogOutputDto>();
+
+            logsEntradaEItensDto.AddRange(logsEntradaDto);
+            logsEntradaEItensDto.AddRange(logsItemEntradaDto);
+
+            return logsEntradaEItensDto.
+                OrderByDescending(l=>l.DataCriacao).
+                Cast<Object>().
+                ToList();
+        }
         
     }
 

@@ -16,5 +16,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         void InativarEntradaEstoque(Guid id);
 
+        List<Object> BuscarLogsPorIdEntradaEstoque(Guid idEntrada);
+
     }
 }

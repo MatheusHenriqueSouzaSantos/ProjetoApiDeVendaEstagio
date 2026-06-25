@@ -10,6 +10,7 @@ namespace ApiEstagioBicicletaria.Entities.EntradaEstoque
 
         public Guid IdFornecedor { get; set; }
 
+        [AtributoASerIgnoradoLogAtualizacao]
         public string CodigoEntrada { get; private set; }
 
         public StatusEntradaEstoque Status {get; set;}=StatusEntradaEstoque.Criada;
@@ -23,11 +24,17 @@ namespace ApiEstagioBicicletaria.Entities.EntradaEstoque
 
         }
 
-        public EntradaEstoque(Fornecedor fornecedor, string codigoEntrada)
+        public EntradaEstoque(Fornecedor fornecedor, string codigoEntrada, StatusEntradaEstoque status)
         {
             Fornecedor = fornecedor;
             IdFornecedor = fornecedor.Id;
             CodigoEntrada = codigoEntrada;
+            Status = status;
+        }
+
+        public EntradaEstoque Copia()
+        {
+            return new EntradaEstoque(Fornecedor, CodigoEntrada,Status);   
         }
     }
 }
