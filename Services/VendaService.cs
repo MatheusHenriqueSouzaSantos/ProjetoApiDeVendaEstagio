@@ -957,7 +957,7 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<Object> buscarLogsPorIdVenda(Guid idVenda)
         {
-            Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == idVenda && t.Ativo).FirstOrDefault()
+            Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == idVenda).FirstOrDefault()
                 ?? throw new ExcecaoDeRegraDeNegocio(500, "não foi possível encontrar a transacao da venda");
 
             List<VendaLogOutputDto> logsVendaDto = _contexto.VendaLog
@@ -1008,7 +1008,7 @@ namespace ApiEstagioBicicletaria.Services
 
             List<ItemVenda> itensDaVenda = _contexto.ItensVendas.Include(i => i.Produto).Where(i => i.IdVenda == venda.Id && i.Ativo).ToList();
             List<ServicoVenda> servicosDaVenda = _contexto.ServicosVendas.Include(s => s.Servico).Where(s => s.IdVenda == venda.Id && s.Ativo).ToList();
-            Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == venda.Id && t.Ativo).FirstOrDefault()
+            Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == venda.Id).FirstOrDefault()
                 ?? throw new ExcecaoDeRegraDeNegocio(500,"transacao não encontrada, erro!!");
             List<Parcela> parcelasDaTranscao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && p.Ativo).OrderBy(p=>p.DataVencimento).ToList();
 

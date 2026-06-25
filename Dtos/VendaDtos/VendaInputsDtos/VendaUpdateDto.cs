@@ -10,7 +10,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.VendaInputsDtos
         [Range(0, 1000000, ErrorMessage = "O valor do desconto não pode ser negativo")]
         public decimal? DescontoSobreTotalVenda { get; set; } = 0.0m;
 
-        public Guid? IdVendedor { get; private set; }
+        public Guid? IdVendedor { get;  set; }
 
         public List<Guid>? IdsItensDeletados { get; set; }
 
