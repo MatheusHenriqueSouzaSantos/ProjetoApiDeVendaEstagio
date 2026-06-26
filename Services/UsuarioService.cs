@@ -57,7 +57,7 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "já existe um usuário cadastrado com esse email");
             }
             string hashSenha=_senhaService.GerarHashDaSenha(dto.Senha);
-            Usuario usuario = new(dto.Nome, dto.Email, hashSenha);
+            Usuario usuario = new(dto.Nome, dto.Email, hashSenha,dto.PerfilUsuario);
             _repositorio.Cadastrar(usuario);
             _usuarioLogService.CriarLogDeCriacao(usuario, _usuarioLogadoService.ObterUsuario());
             _contexto.SaveChanges();
@@ -70,7 +70,7 @@ namespace ApiEstagioBicicletaria.Services
                ?? throw new ExcecaoDeRegraDeNegocio(404, "Usuário não encontrado");
 
             Usuario? usuarioVindoDoBancoComEmailInformado = _repositorio.BuscarPorEmail(dto.Email);
-            //usuario pode ter esse email, se for o próprio usuario e ele não for alterar o email
+
             if(usuarioVindoDoBancoComEmailInformado !=null  && usuarioVindoDoBancoComEmailInformado.Id != id)
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"Já existe um usuário com esse email cadastrado");
@@ -79,11 +79,33 @@ namespace ApiEstagioBicicletaria.Services
             usuarioVindoDoBanco.Nome = dto.Nome;
             usuarioVindoDoBanco.Email=dto.Email;
             usuarioVindoDoBanco.Senha = _senhaService.GerarHashDaSenha(dto.Senha);
+            usuarioVindoDoBanco.PerfilUsuario = dto.PerfilUsuario;
 
             _repositorio.Atualizar(usuarioVindoDoBanco);
             _usuarioLogService.CriarLogsDeAtualizacao(usuarioCopia, usuarioVindoDoBanco, _usuarioLogadoService.ObterUsuario());
             _contexto.SaveChanges();
             return EntidadeParaDto(usuarioVindoDoBanco);
+        }
+
+        public UsuarioOutputDto AtualizarUsuarioLogado(UsuarioLogadoInputDto dto)
+        {
+            Usuario usuarioLogado = _usuarioLogadoService.ObterUsuario();
+
+            Usuario? usuarioVindoDoBancoComEmailInformado = _repositorio.BuscarPorEmail(dto.Email);
+
+            if (usuarioVindoDoBancoComEmailInformado != null && usuarioVindoDoBancoComEmailInformado.Id != usuarioLogado.Id)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um usuário com esse email cadastrado");
+            }
+            Usuario usuarioCopia = usuarioLogado.Copia();
+            usuarioLogado.Nome = dto.Nome;
+            usuarioLogado.Email = dto.Email;
+            usuarioLogado.Senha = _senhaService.GerarHashDaSenha(dto.Senha);
+
+            _repositorio.Atualizar(usuarioLogado);
+            _usuarioLogService.CriarLogsDeAtualizacao(usuarioCopia, usuarioLogado, usuarioLogado);
+            _contexto.SaveChanges();
+            return EntidadeParaDto(usuarioLogado);
         }
 
         public void Desativar(Guid id)
@@ -132,7 +154,7 @@ namespace ApiEstagioBicicletaria.Services
 
         private UsuarioOutputDto EntidadeParaDto(Usuario usuario)
         {
-            return new UsuarioOutputDto(usuario.Id, usuario.DataCriacao, usuario.Ativo, usuario.Nome, usuario.Email);
+            return new UsuarioOutputDto(usuario.Id, usuario.DataCriacao, usuario.Ativo, usuario.Nome, usuario.Email,usuario.PerfilUsuario);
         }
 
     }

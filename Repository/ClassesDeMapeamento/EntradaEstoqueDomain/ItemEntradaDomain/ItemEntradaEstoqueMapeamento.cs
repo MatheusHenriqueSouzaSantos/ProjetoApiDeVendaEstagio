@@ -22,13 +22,13 @@ public class ItemEntradaEstoqueMapeamento : BaseMapeamento<ItemEntradaEstoque>
             .HasColumnName("ID_ENTRADA_ESTOQUE")
             .IsRequired();
 
-        builder.HasOne(i=>i.Estoque)
+        builder.HasOne(i=>i.Produto)
             .WithMany()
-            .HasForeignKey(i=>i.IdEstoque)
+            .HasForeignKey(i=>i.IdProduto)
             .IsRequired();
-        builder.Property(i=>i.IdEstoque)
+        builder.Property(i=>i.IdProduto)
             .HasColumnType("binary(16)")
-            .HasColumnName("ID_ESTOQUE")
+            .HasColumnName("ID_PRODUTO")
             .IsRequired();
         builder.Property(i=>i.Quantidade)
             .HasColumnName("QUANTIDADE")

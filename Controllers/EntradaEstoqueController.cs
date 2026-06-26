@@ -118,7 +118,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet("log/{idEntradaEstoque}")]
         public ActionResult<List<Object>> BuscarLogsPorIdEntradaEstoque(Guid idEntradaEstoque)
         {

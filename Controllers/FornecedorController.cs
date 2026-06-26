@@ -187,7 +187,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet("log/{idFornecedor}")]
         public ActionResult<List<FornecedorLogOutputDto>> BuscarLogsPorIdFornecedor(Guid idFornecedor)
         {

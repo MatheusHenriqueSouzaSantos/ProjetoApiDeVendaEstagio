@@ -165,7 +165,7 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost("relatorio-de-vendedores-com-maior-faturamento-por-periodo")]
         public ActionResult<byte[]> GerarRelatorioDeVendedoresComMaiorFaturamentoPorPeriodo
             ([FromBody]DatasParaGeracaoDeRelatorioDto dto)
@@ -193,7 +193,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet("log/{idVendedor}")]
         public ActionResult<List<VendedorLogOutputDto>> BuscarLogsPorIdVendedor(Guid idVendedor)
         {

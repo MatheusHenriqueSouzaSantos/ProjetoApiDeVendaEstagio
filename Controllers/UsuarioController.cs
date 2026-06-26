@@ -21,7 +21,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles ="Admin")]
         public ActionResult<List<UsuarioOutputDto>> BuscarTodos()
         {
             try
@@ -39,7 +39,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public ActionResult<UsuarioOutputDto> BuscarPorId([FromRoute] Guid id)
         {
             try
@@ -57,7 +57,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public ActionResult<UsuarioOutputDto> Cadastrar([FromBody]UsuarioInputDto dto)
         {
             try
@@ -82,7 +82,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
         [HttpPut("/{id}")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public ActionResult<UsuarioOutputDto> Atualizar([FromRoute]Guid id, [FromBody] UsuarioInputDto dto)
         {
             try
@@ -105,8 +105,32 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpPut("/{id}")]
         [Authorize]
+        public ActionResult<UsuarioOutputDto> AtualizarUsuarioLogado([FromBody] UsuarioLogadoInputDto dto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var mensagensDeErro = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(mensagensDeErro);
+                }
+                return Ok(_usuarioService.AtualizarUsuarioLogado(dto));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public ActionResult Desativar([FromRoute] Guid id)
         {
             try
@@ -149,8 +173,8 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [Authorize]
         [HttpGet("log/{idUsuario}")]
+        [Authorize(Roles = "Admin")]
         public ActionResult<List<UsuarioLogOutputDto>> BuscarLogsPorIdUsuario(Guid idProduto)
         {
             try

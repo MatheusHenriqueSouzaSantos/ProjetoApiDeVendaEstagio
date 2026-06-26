@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -143,7 +144,9 @@ namespace ApiEstagioBicicletaria
                         ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(bytesJwtKey)
+                        IssuerSigningKey = new SymmetricSecurityKey(bytesJwtKey),
+                        NameClaimType=ClaimTypes.Name,
+                        RoleClaimType=ClaimTypes.Role,
                     };
                 });
 
@@ -171,7 +174,7 @@ namespace ApiEstagioBicicletaria
 
                 if (!contexto.Usuarios.Any())
                 {
-                    Usuario usuario = new Usuario("teste","teste@gmail.com",senhaService.GerarHashDaSenha("teste"));
+                    Usuario usuario = new Usuario("teste","teste@gmail.com",senhaService.GerarHashDaSenha("teste"),PerfilUsuario.Admin);
 
                     contexto.Usuarios.Add(usuario);
                     contexto.SaveChanges();

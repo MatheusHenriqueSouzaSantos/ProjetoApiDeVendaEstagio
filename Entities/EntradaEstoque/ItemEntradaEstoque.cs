@@ -1,4 +1,5 @@
 using ApiEstagioBicicletaria.Entities.EstoqueDomain;
+using ApiEstagioBicicletaria.Entities.ProdutoDomain;
 
 namespace ApiEstagioBicicletaria.Entities.EntradaEstoque
 {
@@ -14,27 +15,27 @@ namespace ApiEstagioBicicletaria.Entities.EntradaEstoque
 
         [AtributoASerIgnoradoLogCriacao]
         [AtributoASerIgnoradoLogAtualizacao]
-        public Estoque Estoque { get; set; }
+        public Produto Produto { get; set; }
 
         [AtributoASerIgnoradoLogCriacao]
         [AtributoASerIgnoradoLogAtualizacao]
-        public Guid IdEstoque { get; set; }
+        public Guid IdProduto { get; set; }
 
         public int Quantidade { get; set; }
 
-        public ItemEntradaEstoque(EntradaEstoque entradaEstoque, Estoque estoque, int quantidade)
+        public ItemEntradaEstoque(EntradaEstoque entradaEstoque, Produto produto, int quantidade)
         {
             EntradaEstoque = entradaEstoque;
             IdEntradaEstoque = entradaEstoque.Id;
-            Estoque = estoque;
-            IdEstoque= estoque.Id;
+            Produto = produto;
+            IdProduto= produto.Id;
             Quantidade = quantidade;
         }
         protected ItemEntradaEstoque() { }
 
         public ItemEntradaEstoque Copia()
         {
-            return new ItemEntradaEstoque(EntradaEstoque, Estoque,Quantidade);
+            return new ItemEntradaEstoque(EntradaEstoque, Produto,Quantidade);
         }
     }
 }

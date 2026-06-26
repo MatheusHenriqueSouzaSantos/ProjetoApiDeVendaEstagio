@@ -237,7 +237,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet("log/{idCliente}")]
         public ActionResult<List<BaseLogOutputDto>> BuscarLogsPorIdCliente(Guid idCliente)
         {
