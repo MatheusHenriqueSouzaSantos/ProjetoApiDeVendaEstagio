@@ -105,7 +105,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpPut("/{id}")]
+        [HttpPut("/me/{id}")]
         [Authorize]
         public ActionResult<UsuarioOutputDto> AtualizarUsuarioLogado([FromBody] UsuarioLogadoInputDto dto)
         {
