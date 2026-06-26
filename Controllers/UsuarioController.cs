@@ -11,7 +11,7 @@ namespace ApiEstagioBicicletaria.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UsuarioController:ControllerBase
+    public class UsuarioController : ControllerBase
     {
         private IUsuarioService _usuarioService;
 
@@ -21,7 +21,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public ActionResult<List<UsuarioOutputDto>> BuscarTodos()
         {
             try
@@ -58,7 +58,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public ActionResult<UsuarioOutputDto> Cadastrar([FromBody]UsuarioInputDto dto)
+        public ActionResult<UsuarioOutputDto> Cadastrar([FromBody] UsuarioInputDto dto)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
                     return BadRequest(mensagensDeErro);
                 }
-                UsuarioOutputDto usuarioDto=_usuarioService.Cadastrar(dto);
+                UsuarioOutputDto usuarioDto = _usuarioService.Cadastrar(dto);
 
                 return Created($"api/usuario/{usuarioDto.Id}", usuarioDto);
             }
@@ -81,9 +81,9 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
-        [HttpPut("/{id}")]
+        [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<UsuarioOutputDto> Atualizar([FromRoute]Guid id, [FromBody] UsuarioInputDto dto)
+        public ActionResult<UsuarioOutputDto> Atualizar([FromRoute] Guid id, [FromBody] UsuarioInputDto dto)
         {
             try
             {
@@ -93,7 +93,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
                     return BadRequest(mensagensDeErro);
                 }
-                return Ok(_usuarioService.Atualizar(id,dto));
+                return Ok(_usuarioService.Atualizar(id, dto));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -105,7 +105,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpPut("/me/{id}")]
+        [HttpPut("me")]
         [Authorize]
         public ActionResult<UsuarioOutputDto> AtualizarUsuarioLogado([FromBody] UsuarioLogadoInputDto dto)
         {
@@ -129,7 +129,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public ActionResult Desativar([FromRoute] Guid id)
         {
@@ -175,11 +175,11 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpGet("log/{idUsuario}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<List<UsuarioLogOutputDto>> BuscarLogsPorIdUsuario(Guid idProduto)
+        public ActionResult<List<UsuarioLogOutputDto>> BuscarLogsPorIdUsuario(Guid idUsuario)
         {
             try
             {
-                return Ok(_usuarioService.BuscarLogsPorIdUsuario(idProduto));
+                return Ok(_usuarioService.BuscarLogsPorIdUsuario(idUsuario));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
