@@ -50,13 +50,16 @@ namespace ApiEstagioBicicletaria.Services
 
         public Vendedor BuscarVendedorPorCpf(string cpf)
         {
-            string cpfSoNumeros=DocumentoUtil.RemoverNaoNumericos(cpf);
-            bool cpfValido= DocumentoUtil.ValidarCpf(cpfSoNumeros);
-            if (!cpfValido)
+            string cpfSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(cpf);
+            if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cpfSemPontoETracos))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O cpf deve conter apenas números");
+            }
+            if (!DocumentoUtil.ValidarCpf(cpfSemPontoETracos))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
             }
-            return _contexto.Vendedores.FirstOrDefault(v => v.Cpf == cpfSoNumeros && v.Ativo)
+            return _contexto.Vendedores.FirstOrDefault(v => v.Cpf == cpfSemPontoETracos && v.Ativo)
                 ?? throw new ExcecaoDeRegraDeNegocio(400, "Vendedor não encontrado");
         }
 
@@ -239,12 +242,16 @@ namespace ApiEstagioBicicletaria.Services
         }
         public List<VendedorLogOutputDto> BuscarLogsPorCpf(string cpf)
         {
-            string cpfSomentNumeros = DocumentoUtil.RemoverNaoNumericos(cpf);
-            if (!DocumentoUtil.ValidarCpf(cpfSomentNumeros))
+            string cpfSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(cpf);
+            if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cpfSemPontoETracos))
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "Cpf Inválido");
+                throw new ExcecaoDeRegraDeNegocio(400, "O cpf deve conter apenas números");
             }
-            Vendedor vendedor=_contexto.Vendedores.FirstOrDefault(v=>v.Cpf == cpf)
+            if (!DocumentoUtil.ValidarCpf(cpfSemPontoETracos))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
+            }
+            Vendedor vendedor=_contexto.Vendedores.FirstOrDefault(v=>v.Cpf == cpfSemPontoETracos)
             ?? throw new ExcecaoDeRegraDeNegocio(404, "Vendedor não encontrado");
             List<VendedorLog> logs = _contexto.VendedorLogs
                 .Where(l => l.IdVendedor==vendedor.Id).ToList();

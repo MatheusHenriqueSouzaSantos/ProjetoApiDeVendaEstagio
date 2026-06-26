@@ -405,12 +405,16 @@ namespace ApiEstagioBicicletaria.Services
         }
         public ClienteFisicoDtoOutPut BuscarClientePorCpf(string cpfEnviado)
         {
-            string cpfSomentNumeros=DocumentoUtil.RemoverNaoNumericos(cpfEnviado);
-            if (!DocumentoUtil.ValidarCpf(cpfSomentNumeros))
+            string cpfSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(cpfEnviado);
+            if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cpfSemPontoETracos))
             {
-                throw new ExcecaoDeRegraDeNegocio(400,"Cpf Ínválido");
+                throw new ExcecaoDeRegraDeNegocio(400, "O cpf deve conter apenas números");
             }
-            ClienteFisico? clienteVindoDoBanco = _contextoDb.ClientesFisicos.Include(c=>c.Endereco).FirstOrDefault(c => c.Cpf == cpfSomentNumeros && c.Ativo);
+            if (!DocumentoUtil.ValidarCpf(cpfSemPontoETracos))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
+            }
+            ClienteFisico? clienteVindoDoBanco = _contextoDb.ClientesFisicos.Include(c=>c.Endereco).FirstOrDefault(c => c.Cpf == cpfSemPontoETracos && c.Ativo);
             if(clienteVindoDoBanco == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"Cliente não encontrado!!");
@@ -425,13 +429,16 @@ namespace ApiEstagioBicicletaria.Services
 
         public ClienteJuridicoDtoOutPut BuscarClientePorCnpj(string cnpjEnviado)
         {
-            string cnpjSomenteNumeros = DocumentoUtil.RemoverNaoNumericos(cnpjEnviado);
-
-            if (!DocumentoUtil.ValidarCnpj(cnpjSomenteNumeros))
+            string cnpjSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(cnpjEnviado);
+            if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cnpjSemPontoETracos))
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "Cnpj Inválido");
+                throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve conter apenas números");
             }
-            ClienteJuridico? clienteVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c=>c.Endereco).FirstOrDefault(c => c.Cnpj == cnpjSomenteNumeros && c.Ativo);
+            if (!DocumentoUtil.ValidarCnpj(cnpjSemPontoETracos))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Cnpj inválido");
+            }
+            ClienteJuridico? clienteVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c=>c.Endereco).FirstOrDefault(c => c.Cnpj == cnpjSemPontoETracos && c.Ativo);
             if(clienteVindoDoBanco == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cliente não encontrado!!");
@@ -504,13 +511,17 @@ namespace ApiEstagioBicicletaria.Services
             {
                 case (EnumTipoDocumentoASerBuscado.Cpf):
                     {
-                        string cpfSomentNumeros = DocumentoUtil.RemoverNaoNumericos(dto.NumeroDocumento);
-                        if (!DocumentoUtil.ValidarCpf(cpfSomentNumeros))
+                        string cpfSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(dto.NumeroDocumento);
+                        if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cpfSemPontoETracos))
                         {
-                            throw new ExcecaoDeRegraDeNegocio(400, "Cpf Ínválido");
+                            throw new ExcecaoDeRegraDeNegocio(400, "O cpf deve conter apenas números");
+                        }
+                        if (!DocumentoUtil.ValidarCpf(cpfSemPontoETracos))
+                        {
+                            throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
                         }
                         ClienteFisico clienteVindoDoBanco = _contextoDb.ClientesFisicos.Include(c => c.Endereco)
-                            .FirstOrDefault(c => c.Cpf == cpfSomentNumeros) ??
+                            .FirstOrDefault(c => c.Cpf == cpfSemPontoETracos) ??
                             throw new ExcecaoDeRegraDeNegocio(400, "Cliente não encontrado!!");
 
                         List<ClienteLog> clienteLogs = _contextoDb.ClienteLogs.Where(l => l.IdCliente == clienteVindoDoBanco.Id).ToList();
@@ -551,14 +562,17 @@ namespace ApiEstagioBicicletaria.Services
                     }
                 case (EnumTipoDocumentoASerBuscado.Cnpj):
                     {
-                        string cnpjSomenteNumeros = DocumentoUtil.RemoverNaoNumericos(dto.NumeroDocumento);
-
-                        if (!DocumentoUtil.ValidarCnpj(cnpjSomenteNumeros))
+                        string cnpjSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(dto.NumeroDocumento);
+                        if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cnpjSemPontoETracos))
                         {
-                            throw new ExcecaoDeRegraDeNegocio(400, "Cnpj Inválido");
+                            throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve conter apenas números");
+                        }
+                        if (!DocumentoUtil.ValidarCnpj(cnpjSemPontoETracos))
+                        {
+                            throw new ExcecaoDeRegraDeNegocio(400, "Cnpj inválido");
                         }
                         ClienteJuridico clienteVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c => c.Endereco)
-                            .FirstOrDefault(c => c.Cnpj == cnpjSomenteNumeros) ??
+                            .FirstOrDefault(c => c.Cnpj == cnpjSemPontoETracos) ??
                             throw new ExcecaoDeRegraDeNegocio(400, "Cliente não encontrado!!");
 
                         List<ClienteLog> clienteLogs = _contextoDb.ClienteLogs.Where(l => l.IdCliente == clienteVindoDoBanco.Id).ToList();

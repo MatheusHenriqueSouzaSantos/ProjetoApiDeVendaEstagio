@@ -58,14 +58,17 @@ namespace ApiEstagioBicicletaria.Services
 
         public Fornecedor BuscarPorCnpj(string cnpj)
         {
-            string cnpjSomenteNumeros=DocumentoUtil.RemoverPontosTracosEBarras(cnpj);
-
-            if (!DocumentoUtil.ValidarCnpj(cnpjSomenteNumeros))
+            string cnpjSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(cnpj);
+            if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cnpjSemPontoETracos))
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "O CNPJ deve estar em um formato valido");
+                throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve conter apenas números");
+            }
+            if (!DocumentoUtil.ValidarCnpj(cnpjSemPontoETracos))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Cnpj inválido");
             }
 
-            return _contexto.Fornecedores.FirstOrDefault(e => e.Cnpj == cnpjSomenteNumeros && e.Ativo)
+            return _contexto.Fornecedores.FirstOrDefault(e => e.Cnpj == cnpjSemPontoETracos && e.Ativo)
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor nao encontrado");
         }
 
@@ -220,14 +223,17 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<FornecedorLogOutputDto> BuscarLogsPorCnpj(string cnpj)
         {
-            string cnpjSomenteNumeros = DocumentoUtil.RemoverPontosTracosEBarras(cnpj);
-
-            if (!DocumentoUtil.ValidarCnpj(cnpjSomenteNumeros))
+            string cnpjSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(cnpj);
+            if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cnpjSemPontoETracos))
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "O CNPJ deve estar em um formato valido");
+                throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve conter apenas números");
+            }
+            if (!DocumentoUtil.ValidarCnpj(cnpjSemPontoETracos))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Cnpj inválido");
             }
 
-            Fornecedor fornecedor=_contexto.Fornecedores.FirstOrDefault(f=>f.Cnpj==cnpj)
+            Fornecedor fornecedor=_contexto.Fornecedores.FirstOrDefault(f=>f.Cnpj== cnpjSemPontoETracos)
                 ?? throw new ExcecaoDeRegraDeNegocio(404,"Fornecedor não encontrado");
 
             List<FornecedorLog> logs = _contexto.FornecedorLogs
