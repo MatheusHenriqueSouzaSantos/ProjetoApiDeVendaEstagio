@@ -6,6 +6,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
     public interface IServicoService
     {
         List<ServicoDtoOutPut> BuscarServicos();
+
+        List<ServicoInativoOutputDto> BuscarServicosInativos();
         ServicoDtoOutPut BuscarServicoPorId(Guid id);
 
         ServicoDtoOutPut BuscarServicoPorCodigoDoServico(string codigoDoServico);

@@ -42,6 +42,11 @@ namespace ApiEstagioBicicletaria.Services
             return _repositorio.BuscarTodos().Select(EntidadeParaDto).ToList();
         }
 
+        public List<UsuarioOutputDto> BuscarTodosInativos()
+        {
+            return _contexto.Usuarios.Where(u=>!u.Ativo).Select(EntidadeParaDto).ToList();
+        }
+
         public UsuarioOutputDto BuscarPorId(Guid id)
         {
             Usuario usuario = _repositorio.BuscarPorId(id)

@@ -78,10 +78,25 @@ namespace ApiEstagioBicicletaria.Services
                 vendaTransacaoDtos.Add(vendaTransacaoOutputDto); 
             }
             return vendaTransacaoDtos.OrderBy(vt => !vt.Transacao.TransacaoEmCurso ? 1 : vt.Transacao.TransacaoEmCurso && !vt.Transacao.Pago ? 2 : 3)
-                .ThenBy(vt=>vt.Venda.DataCriacao).ToList();
+                .ThenByDescending(vt=>vt.Venda.DataCriacao).ToList();
              
         }
-        
+
+        public List<VendaTransacaoOutputDto> BuscarTodasVendasInativas()
+        {
+            List<Venda> vendas = _contexto.Vendas.Include(v => v.Vendedor).Include(v => v.Cliente).ThenInclude(c => c.Endereco).Where(v => !v.Ativo).ToList();
+
+            List<VendaTransacaoOutputDto> vendaTransacaoDtos = new List<VendaTransacaoOutputDto>();
+
+            foreach (Venda venda in vendas)
+            {
+                VendaTransacaoOutputDto vendaTransacaoOutputDto = EntityToDtoInativo(venda);
+                vendaTransacaoDtos.Add(vendaTransacaoOutputDto);
+            }
+            return vendaTransacaoDtos.OrderByDescending(vt=>vt.Venda.DataCriacao).ToList();
+
+        }
+
         public VendaTransacaoOutputDto BuscarVendaPorId(Guid id)
         {
             Venda venda= _contexto.Vendas.Include(v => v.Vendedor).Include(v => v.Cliente).ThenInclude(c => c.Endereco).FirstOrDefault(v => v.Id == id && v.Ativo)
@@ -98,7 +113,6 @@ namespace ApiEstagioBicicletaria.Services
             Vendedor vendedorDaVenda = _vendedorRepositorio.BuscarPorId(dto.Venda.VendedorId)
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Vendedor não encontrado");
 
-            Console.WriteLine(vendedorDaVenda.NomeCompleto);
 
             List<ItemVendaCreateDto> itensVenda = dto.Venda.ItensVenda ?? [];
             List<ServicoVendaCreateDto> servicosVenda = dto.Venda.ServicosVenda ?? [];
@@ -202,6 +216,8 @@ namespace ApiEstagioBicicletaria.Services
             {
                 if (dto.Transacao.DataDeVencimentoPrimeiraParcela <= DateOnly.FromDateTime(DateTime.Today))
                 {
+                    Console.WriteLine(dto.Transacao.DataDeVencimentoPrimeiraParcela);
+                    Console.WriteLine(DateOnly.FromDateTime(DateTime.Today));
                     throw new ExcecaoDeRegraDeNegocio(400, "Uma venda parcelada precisa que data de vencimento da primeira parcela seja maior que a data de hoje");
                 }
             }
@@ -785,7 +801,7 @@ namespace ApiEstagioBicicletaria.Services
             _contexto.SaveChanges();
             return new TransacaoOutputDto(transacaoReferente.Id, transacaoReferente.DataCriacao, transacaoReferente.TipoPagamento,
                 transacaoReferente.MeioPagamento, transacaoReferente.TransacaoEmCurso, transacaoReferente.Pago, quantidadeDeParcelasNaoPagasNessaTransacao,
-                quantidadeDeParcelasPagasDessaTransacao,valorPago, parcelasDto);
+                quantidadeDeParcelasPagasDessaTransacao,valorPago, parcelasDto, transacaoReferente.Ativo);
         }
 
 
@@ -1021,6 +1037,7 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
+
         private VendaTransacaoOutputDto EntityToDto(Venda venda)
         {
 
@@ -1042,13 +1059,15 @@ namespace ApiEstagioBicicletaria.Services
             {
                 decimal precoDoProdutoNaVendaComDescontoAplicado = item.PrecoUnitarioDoProdutoNaVendaSemDesconto - item.DescontoUnitario;
                 decimal totalItem = precoDoProdutoNaVendaComDescontoAplicado * item.Quantidade;
-                ItemVendaOutputDto itemVendaOutputDto = new ItemVendaOutputDto(item.Id, item.Produto, item.DataCriacao, item.Quantidade, item.DescontoUnitario, item.PrecoUnitarioDoProdutoNaVendaSemDesconto, precoDoProdutoNaVendaComDescontoAplicado, totalItem);
+                ItemVendaOutputDto itemVendaOutputDto = new ItemVendaOutputDto(item.Id, item.Produto, item.DataCriacao, item.Quantidade,
+                    item.DescontoUnitario, item.PrecoUnitarioDoProdutoNaVendaSemDesconto, precoDoProdutoNaVendaComDescontoAplicado, totalItem,item.Ativo);
                 itensVendaFormatoDtoOutput.Add(itemVendaOutputDto);
             }
             foreach (ServicoVenda servicoVenda in servicosDaVenda)
             {
                 decimal precoServicoNaVendaComDesconto = servicoVenda.PrecoServicoNaVendaSemDesconto - servicoVenda.DescontoServico;
-                ServicoVendaOutputDto servicoVendaOutputDto = new ServicoVendaOutputDto(servicoVenda.Id, servicoVenda.Servico, servicoVenda.DataCriacao, servicoVenda.DescontoServico, servicoVenda.PrecoServicoNaVendaSemDesconto, precoServicoNaVendaComDesconto);
+                ServicoVendaOutputDto servicoVendaOutputDto = new ServicoVendaOutputDto(servicoVenda.Id, servicoVenda.Servico, servicoVenda.DataCriacao, 
+                    servicoVenda.DescontoServico, servicoVenda.PrecoServicoNaVendaSemDesconto, precoServicoNaVendaComDesconto,servicoVenda.Ativo);
                 servicosVendaFormatoDtoOutput.Add(servicoVendaOutputDto);
             }
 
@@ -1056,10 +1075,58 @@ namespace ApiEstagioBicicletaria.Services
             new ParcelaOutPutDto(p.Id, p.DataCriacao, p.Ativo, p.IdTransacao, p.NumeroDaParcelaDaVenda, p.ValorParcela, p.Pago, p.DataVencimento)).ToList();
 
             VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id, venda.CodigoVenda, venda.DataCriacao, venda.DescontoTotal, venda.ValorTotalSemDesconto, venda.ValorTotalComDesconto, venda.Cliente,
-                itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput, venda.Vendedor);
+                itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput, venda.Vendedor, venda.Ativo);
             TransacaoOutputDto transacaoOutputDto = new TransacaoOutputDto(transacaoDaVenda.Id, transacaoDaVenda.DataCriacao, transacaoDaVenda.TipoPagamento,
                 transacaoDaVenda.MeioPagamento, transacaoDaVenda.TransacaoEmCurso, transacaoDaVenda.Pago, QuantidadeDeParcelasNaoPagasDaVenda, QuantidadeDeParcelasPagasVenda,
-                valorPago, parcelasDto);
+                valorPago, parcelasDto,transacaoDaVenda.Ativo);
+
+            return new VendaTransacaoOutputDto(vendaOutputDto, transacaoOutputDto);
+
+        }
+
+        private VendaTransacaoOutputDto EntityToDtoInativo(Venda venda)
+        {
+
+            List<ItemVenda> itensDaVenda = _contexto.ItensVendas.Include(i => i.Produto).Where(i => i.IdVenda == venda.Id && !i.Ativo).ToList();
+            List<ServicoVenda> servicosDaVenda = _contexto.ServicosVendas.Include(s => s.Servico).Where(s => s.IdVenda == venda.Id && !s.Ativo).ToList();
+            Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == venda.Id && !t.Ativo).FirstOrDefault()
+                ?? throw new ExcecaoDeRegraDeNegocio(500, "transacao não encontrada, erro!!");
+            List<Parcela> parcelasDaTranscao = _contexto.Parcelas.Where(p => p.IdTransacao == transacaoDaVenda.Id && !p.Ativo)
+                .OrderBy(p => p.DataVencimento).ToList();
+
+            int QuantidadeDeParcelasNaoPagasDaVenda = parcelasDaTranscao.Where(p => p.Pago == false).Count();
+            int QuantidadeDeParcelasPagasVenda = parcelasDaTranscao.Where(p => p.Pago).Count();
+            decimal valorPago = Math.Round((parcelasDaTranscao.Where(p => p.Pago).Sum(p => p.ValorParcela)), 2, MidpointRounding.AwayFromZero);
+
+            List<ItemVendaOutputDto> itensVendaFormatoDtoOutput = new List<ItemVendaOutputDto>();
+
+            List<ServicoVendaOutputDto> servicosVendaFormatoDtoOutput = new List<ServicoVendaOutputDto>();
+
+            foreach (ItemVenda item in itensDaVenda)
+            {
+                decimal precoDoProdutoNaVendaComDescontoAplicado = item.PrecoUnitarioDoProdutoNaVendaSemDesconto - item.DescontoUnitario;
+                decimal totalItem = precoDoProdutoNaVendaComDescontoAplicado * item.Quantidade;
+                ItemVendaOutputDto itemVendaOutputDto = new ItemVendaOutputDto(item.Id, item.Produto, item.DataCriacao, 
+                    item.Quantidade, item.DescontoUnitario, item.PrecoUnitarioDoProdutoNaVendaSemDesconto, precoDoProdutoNaVendaComDescontoAplicado,
+                    totalItem, item.Ativo);
+                itensVendaFormatoDtoOutput.Add(itemVendaOutputDto);
+            }
+            foreach (ServicoVenda servicoVenda in servicosDaVenda)
+            {
+                decimal precoServicoNaVendaComDesconto = servicoVenda.PrecoServicoNaVendaSemDesconto - servicoVenda.DescontoServico;
+                ServicoVendaOutputDto servicoVendaOutputDto = new ServicoVendaOutputDto(servicoVenda.Id, servicoVenda.Servico, servicoVenda.DataCriacao,
+                    servicoVenda.DescontoServico, servicoVenda.PrecoServicoNaVendaSemDesconto, precoServicoNaVendaComDesconto, servicoVenda.Ativo);
+                servicosVendaFormatoDtoOutput.Add(servicoVendaOutputDto);
+            }
+
+            List<ParcelaOutPutDto> parcelasDto = parcelasDaTranscao.Select(p =>
+            new ParcelaOutPutDto(p.Id, p.DataCriacao, p.Ativo, p.IdTransacao, p.NumeroDaParcelaDaVenda, p.ValorParcela, p.Pago, p.DataVencimento)).ToList();
+
+            VendaOutputDto vendaOutputDto = new VendaOutputDto(venda.Id, venda.CodigoVenda, venda.DataCriacao, venda.DescontoTotal, venda.ValorTotalSemDesconto, venda.ValorTotalComDesconto, venda.Cliente,
+                itensVendaFormatoDtoOutput, servicosVendaFormatoDtoOutput, venda.Vendedor,venda.Ativo);
+            TransacaoOutputDto transacaoOutputDto = new TransacaoOutputDto(transacaoDaVenda.Id, transacaoDaVenda.DataCriacao, transacaoDaVenda.TipoPagamento,
+                transacaoDaVenda.MeioPagamento, transacaoDaVenda.TransacaoEmCurso, transacaoDaVenda.Pago, QuantidadeDeParcelasNaoPagasDaVenda, QuantidadeDeParcelasPagasVenda,
+                valorPago, parcelasDto, transacaoDaVenda.Ativo);
 
             return new VendaTransacaoOutputDto(vendaOutputDto, transacaoOutputDto);
 

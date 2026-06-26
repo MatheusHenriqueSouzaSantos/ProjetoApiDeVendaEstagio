@@ -1,12 +1,12 @@
 ﻿namespace ApiEstagioBicicletaria.Dtos.ServicoDtos
 {
-    public class ServicoDtoOutPut
+    public class ServicoInativoOutputDto
     {
-        public Guid Id { get; private set; }
+        public Guid Id { get; private set; } = Guid.NewGuid();
 
         public string CodigoDoServico { get; private set; }
 
-        public DateTime DataCriacao { get; private set; } 
+        public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
         public string NomeServico { get; set; }
 
@@ -16,9 +16,8 @@
 
         public bool Ativo { get; set; }
 
-        public bool PodeExcluir { get; set; }
-
-        public ServicoDtoOutPut(Guid id, string codigoDoServico, DateTime dataCriacao, string nomeServico, string descricao, decimal precoServico, bool ativo, bool podeExcluir)
+        public ServicoInativoOutputDto(Guid id, string codigoDoServico, DateTime dataCriacao, string nomeServico, string descricao, 
+            decimal precoServico, bool ativo)
         {
             Id = id;
             CodigoDoServico = codigoDoServico;
@@ -27,7 +26,6 @@
             Descricao = descricao;
             PrecoServico = precoServico;
             Ativo = ativo;
-            PodeExcluir = podeExcluir;
         }
     }
 }

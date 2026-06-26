@@ -8,6 +8,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
     {
         List<Fornecedor> BuscarTodos();
 
+        List<Fornecedor> BuscarTodosInativos();
+
         Fornecedor BuscarPorId(Guid id);
 
         Fornecedor BuscarPorCnpj(string cnpj);

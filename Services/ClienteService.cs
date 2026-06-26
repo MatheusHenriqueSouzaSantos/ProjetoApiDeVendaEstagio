@@ -71,6 +71,43 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
+        public List<ClienteInativoOutputDto> BuscarClientesInativos()
+        {
+            List<ClienteFisico> clientesFisicos = _contextoDb.Clientes
+               .OfType<ClienteFisico>()
+               .Include(c => c.Endereco)
+               .Where(c => !c.Ativo)
+               .ToList();
+
+            List<ClienteJuridico> clientesJuridicos = _contextoDb.Clientes
+                .OfType<ClienteJuridico>()
+                .Include(c => c.Endereco)
+                .Where(c => !c.Ativo)
+                .ToList();
+            List<ClienteInativoOutputDto> todosClientesFormatoDto = new ();
+            List<ClienteFisicoInativoOutputDto> clientesFisicoFormatoDtoOutput = new();
+
+            foreach (ClienteFisico clienteFisicoIterado in clientesFisicos)
+            {
+                ClienteFisicoInativoOutputDto clienteFormatoDtoOutput = new (clienteFisicoIterado.Nome,clienteFisicoIterado.Cpf,clienteFisicoIterado.Id,
+                    clienteFisicoIterado.Endereco,clienteFisicoIterado.DataCriacao,clienteFisicoIterado.Telefone,clienteFisicoIterado.Email,
+                    clienteFisicoIterado.TipoCliente,clienteFisicoIterado.Ativo);
+                clientesFisicoFormatoDtoOutput.Add(clienteFormatoDtoOutput);
+            }
+            todosClientesFormatoDto.AddRange(clientesFisicoFormatoDtoOutput);
+            List<ClienteJuridicoInativoOutputDto> clientesJuridicosFormatoDtoOutput = new ();
+            foreach (ClienteJuridico clienteJuridicoIterado in clientesJuridicos)
+            {
+                ClienteJuridicoInativoOutputDto clienteFormatoDtoOutput = new (clienteJuridicoIterado.RazaoSocial,clienteJuridicoIterado.NomeFantasia,
+                    clienteJuridicoIterado.InscricaoEstadual,clienteJuridicoIterado.Cnpj,clienteJuridicoIterado.Id,clienteJuridicoIterado.Endereco,
+                    clienteJuridicoIterado.DataCriacao,clienteJuridicoIterado.Telefone,clienteJuridicoIterado.Email,clienteJuridicoIterado.TipoCliente,
+                    clienteJuridicoIterado.Ativo);
+                clientesJuridicosFormatoDtoOutput.Add(clienteFormatoDtoOutput);
+            }
+            todosClientesFormatoDto.AddRange(clientesJuridicosFormatoDtoOutput);
+            return todosClientesFormatoDto;
+        }
+
         public ClienteDtoOutPut BuscarClientePorId(Guid id)
         {
             Cliente? cliente = _contextoDb.Clientes.Include(c => c.Endereco).FirstOrDefault(c => c.Id == id && c.Ativo);

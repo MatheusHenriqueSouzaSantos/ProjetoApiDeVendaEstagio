@@ -9,6 +9,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
     public interface IProdutoService
     {
         List<ProdutoDtoOutPut> BuscarProdutos();
+
+        List<ProdutoInativoOutputDto> BuscarProdutosInativos();
         ProdutoDtoOutPut BuscarProdutoPorId(Guid id);
 
         ProdutoDtoOutPut BuscarProdutoPorCodigoDeBarra(string codigoDeBarra);

@@ -15,13 +15,15 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.ServicoVendaDtos
         public decimal PrecoServicoNaVenda { get; set; }
 
         public decimal PrecoServicoNaVendaComDescontoAplicado { get; set; }
+        public bool Ativo {  get; set; }
 
         protected ServicoVendaOutputDto()
         {
 
         }
 
-        public ServicoVendaOutputDto(Guid id, Servico servico, DateTime dataCriacao, decimal descontoServico, decimal precoServicoNaVenda, decimal precoServicoNaVendaComDescontoAplicado)
+        public ServicoVendaOutputDto(Guid id, Servico servico, DateTime dataCriacao, decimal descontoServico, decimal precoServicoNaVenda, 
+            decimal precoServicoNaVendaComDescontoAplicado, bool ativo)
         {
             Id = id;
             Servico = servico;
@@ -29,6 +31,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.ServicoVendaDtos
             DescontoServico = descontoServico;
             PrecoServicoNaVenda = precoServicoNaVenda;
             PrecoServicoNaVendaComDescontoAplicado = precoServicoNaVendaComDescontoAplicado;
+            Ativo = ativo;
         }
     }
 }

@@ -38,6 +38,24 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [HttpGet("inativos")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult<List<UsuarioOutputDto>> BuscarTodosInativos()
+        {
+            try
+            {
+                return Ok(_usuarioService.BuscarTodosInativos());
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin")]
         public ActionResult<UsuarioOutputDto> BuscarPorId([FromRoute] Guid id)

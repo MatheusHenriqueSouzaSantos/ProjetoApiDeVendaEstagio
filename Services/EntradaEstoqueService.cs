@@ -82,6 +82,23 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
+        public List<EntradaEstoqueOutputDto> BuscarTodosInativos()
+        {
+            List<EntradaEstoque> entradasEstoque = _contexto.EntradasEstoque.Include(e=>e.Fornecedor).Where(e => !e.Ativo).ToList();
+            List<EntradaEstoqueOutputDto> entradasEstoqueDto = new List<EntradaEstoqueOutputDto>();
+
+            foreach (EntradaEstoque entradaEstoque in entradasEstoque)
+            {
+                List<ItemEntradaEstoque> itensEntradaEstoque = _contexto.ItensEntradaEstoque.Include(i=>i.Produto)
+                    .Where(i=>i.IdEntradaEstoque==entradaEstoque.Id && !i.Ativo).ToList();
+                EntradaEstoqueOutputDto entradaEstoqueDto = EntidadeParaDto(entradaEstoque, itensEntradaEstoque);
+                entradasEstoqueDto.Add(entradaEstoqueDto);
+            }
+
+            return entradasEstoqueDto;
+
+        }
+
         public EntradaEstoqueOutputDto BuscarPorId(Guid id)
         {
             EntradaEstoque entradaEstoque = _repositorio.BuscarPorId(id)

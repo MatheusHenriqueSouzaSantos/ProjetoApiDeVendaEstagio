@@ -44,6 +44,25 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [HttpGet("inativos")]
+        [Authorize]
+        public ActionResult<List<VendaTransacaoOutputDto>> BuscarTodasVendasInativas()
+        {
+            try
+            {
+                return Ok(_vendaService.BuscarTodasVendasInativas());
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.ToString());
+            }
+        }
+
         [HttpGet("{id}")]
         [Authorize]
         public ActionResult<VendaTransacaoOutputDto> BuscarVendaPorId([FromRoute]Guid id)

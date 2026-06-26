@@ -58,6 +58,24 @@ namespace ApiEstagioBicicletaria.Services
             }
             return produtosFomartoDto;
         }
+
+        public List<ProdutoInativoOutputDto> BuscarProdutosInativos()
+        {
+            List<Produto> produtosVindoDoBanco = _contextoDb.Produtos.Where(p => !p.Ativo).ToList();
+
+            List<ProdutoInativoOutputDto> produtosFomartoDto = new ();
+
+            foreach (Produto produtoIterado in produtosVindoDoBanco)
+            {
+                Estoque estoque = _contextoDb.Estoques.FirstOrDefault(e => e.Produto.Id == produtoIterado.Id)
+                    ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
+                EstoqueSimplificadoOutputDto estoqueDto = new(estoque.Id, estoque.QuantidadeEmEstoque);
+                ProdutoInativoOutputDto produtoFormatoDto = new (produtoIterado.Id, produtoIterado.CodigoDeBarra, produtoIterado.DataCriacao, 
+                    produtoIterado.NomeProduto, produtoIterado.Descricao,produtoIterado.Preco, produtoIterado.Ativo, estoqueDto);
+                produtosFomartoDto.Add(produtoFormatoDto);
+            }
+            return produtosFomartoDto;
+        }
         public ProdutoDtoOutPut BuscarProdutoPorId(Guid id)
         {
             Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();

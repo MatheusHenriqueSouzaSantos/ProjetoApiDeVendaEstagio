@@ -43,6 +43,24 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [HttpGet("inativos")]
+        [Authorize]
+        public ActionResult<List<Fornecedor>> BuscarTodosInativos()
+        {
+            try
+            {
+                return _service.BuscarTodosInativos();
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+
         [HttpGet("{id}")]
         [Authorize]
         public ActionResult<Fornecedor> BuscarPorId([FromRoute]Guid id)

@@ -36,6 +36,11 @@ namespace ApiEstagioBicicletaria.Services
             return _contexto.Vendedores.Where(v=>v.Ativo).ToList();
         }
 
+        public List<Vendedor> BuscarTodosOsVendedoresInativos()
+        {
+            return _contexto.Vendedores.Where(v => !v.Ativo).ToList();
+        }
+
         public Vendedor BuscarVendedorPorId(Guid id)
         {
             return _contexto.Vendedores.FirstOrDefault(v=>v.Id == id && v.Ativo)

@@ -8,6 +8,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
     {
         List<Vendedor> BuscarTodosOsVendedores();
 
+        List<Vendedor> BuscarTodosOsVendedoresInativos();
+
         Vendedor BuscarVendedorPorId(Guid id);
 
         Vendedor BuscarVendedorPorCpf(string cpf);

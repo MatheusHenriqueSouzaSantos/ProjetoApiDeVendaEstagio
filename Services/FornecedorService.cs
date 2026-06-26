@@ -44,6 +44,11 @@ namespace ApiEstagioBicicletaria.Services
             return _contexto.Fornecedores.Where(f => f.Ativo).ToList();
         }
 
+        public List<Fornecedor> BuscarTodosInativos()
+        {
+            return _contexto.Fornecedores.Where(f => !f.Ativo).ToList();
+        }
+
         public Fornecedor BuscarPorId(Guid id)
         {
             return _contexto.Fornecedores.FirstOrDefault(e=>e.Id==id && e.Ativo)

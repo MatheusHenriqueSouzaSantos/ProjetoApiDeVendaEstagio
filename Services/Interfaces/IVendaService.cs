@@ -10,6 +10,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
     {
         List<VendaTransacaoOutputDto> BuscarTodasVendas();
 
+        List<VendaTransacaoOutputDto> BuscarTodasVendasInativas();
+
         VendaTransacaoOutputDto BuscarVendaPorId(Guid id);
 
         VendaTransacaoOutputDto CadastrarVenda(VendaTransacaoCreateDto dto);

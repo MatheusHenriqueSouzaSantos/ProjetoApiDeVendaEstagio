@@ -1,0 +1,36 @@
+﻿using ApiEstagioBicicletaria.Dtos.EstoqueDtos;
+
+namespace ApiEstagioBicicletaria.Dtos.ProdutoDtos
+{
+    public class ProdutoInativoOutputDto
+    {
+        public Guid Id { get; set; }
+
+        public string CodigoDeBarra { get; set; }
+
+        public DateTime DataCriacao { get; set; }
+
+        public string NomeProduto { get; set; }
+
+        public string Descricao { get; set; }
+
+        public decimal PrecoUnitario { get; set; }
+
+        public bool Ativo { get; set; } = true;
+
+        public EstoqueSimplificadoOutputDto Estoque { get; set; }
+
+        public ProdutoInativoOutputDto(Guid id, string codigoDeBarra, DateTime dataCriacao, string nomeProduto, 
+            string descricao, decimal precoUnitario, bool ativo, EstoqueSimplificadoOutputDto estoque)
+        {
+            Id = id;
+            CodigoDeBarra = codigoDeBarra;
+            DataCriacao = dataCriacao;
+            NomeProduto = nomeProduto;
+            Descricao = descricao;
+            PrecoUnitario = precoUnitario;
+            Ativo = ativo;
+            Estoque = estoque;
+        }
+    }
+}

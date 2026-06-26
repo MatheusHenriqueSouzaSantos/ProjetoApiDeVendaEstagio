@@ -39,6 +39,20 @@ namespace ApiEstagioBicicletaria.Services
             }
             return servicosFormatoOutPut;
         }
+
+        public List<ServicoInativoOutputDto> BuscarServicosInativos()
+        {
+            List<Servico> servicosVindoDoBanco = _contextoDb.Servicos.Where(s => !s.Ativo).ToList();
+            List<ServicoInativoOutputDto> servicosFormatoOutPut = new();
+
+            foreach (Servico servicoIterado in servicosVindoDoBanco)
+            {
+                ServicoInativoOutputDto servicoFormatoDto = new(servicoIterado.Id, servicoIterado.CodigoDoServico, servicoIterado.DataCriacao, 
+                    servicoIterado.NomeServico,servicoIterado.Descricao, servicoIterado.Preco, servicoIterado.Ativo);
+                servicosFormatoOutPut.Add(servicoFormatoDto);
+            }
+            return servicosFormatoOutPut;
+        }
         public ServicoDtoOutPut BuscarServicoPorId(Guid id)
         {
             Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.Id == id && s.Ativo).FirstOrDefault();

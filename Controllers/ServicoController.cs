@@ -39,6 +39,25 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado");
             }
         }
+        [HttpGet("inativos")]
+        [Authorize]
+        public ActionResult<List<ServicoInativoOutputDto>> BuscarServicosInativos()
+        {
+            try
+            {
+                return _servicoService.BuscarServicosInativos();
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                //não retornar a mensagem pois indica exatamente o erro e há o risco de ameaças explorarem
+                //return StatusCode(500, ex.Message);
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
 
         [HttpGet("{id}")]
         [Authorize]

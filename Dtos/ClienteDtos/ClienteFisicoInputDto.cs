@@ -1,8 +1,7 @@
-﻿using ApiEstagioBicicletaria.Dtos.ClienteDtos;
-using ApiEstagioBicicletaria.Entities;
+﻿using ApiEstagioBicicletaria.Entities;
 using System.ComponentModel.DataAnnotations;
 
-namespace ApiEstagioBicicletaria.Dtos
+namespace ApiEstagioBicicletaria.Dtos.ClienteDtos
 {
     public class ClienteFisicoInputDto : ClienteInputDto
     {
