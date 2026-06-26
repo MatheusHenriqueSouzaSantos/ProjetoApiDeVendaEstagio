@@ -113,6 +113,16 @@ namespace ApiEstagioBicicletaria.Services
             Usuario usuarioVindoDoBanco = _repositorio.BuscarPorId(id)
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Usuaário não encontrado");
 
+            if (usuarioVindoDoBanco.PerfilUsuario == PerfilUsuario.Admin)
+            {
+                int quantidadeDeUsuariosAdminAtivo = _contexto.Usuarios.Count(u => u.PerfilUsuario == PerfilUsuario.Admin && u.Ativo);
+                if (quantidadeDeUsuariosAdminAtivo == 1)
+                {
+                    throw new ExcecaoDeRegraDeNegocio(400, "não é possível inativar esse usuário admin, pois o sistema precisa ter um usuário admin ativo");
+
+                }
+            }
+
             usuarioVindoDoBanco.Ativo = false;
             _repositorio.Atualizar(usuarioVindoDoBanco);
             _usuarioLogService.CriarLogsDeExclusao(usuarioVindoDoBanco, _usuarioLogadoService.ObterUsuario());
