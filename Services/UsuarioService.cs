@@ -50,6 +50,12 @@ namespace ApiEstagioBicicletaria.Services
             return EntidadeParaDto(usuario);
         }
 
+        public UsuarioOutputDto BuscarUsuarioLogado()
+        {
+            Usuario usuarioLogado = _usuarioLogadoService.ObterUsuario();
+            return EntidadeParaDto(usuarioLogado);
+        }
+
         public UsuarioOutputDto Cadastrar(UsuarioInputDto dto)
         {
             if (_repositorio.UsuarioExistentePorEmail(dto.Email))

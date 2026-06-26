@@ -56,6 +56,24 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [HttpGet("me")]
+        [Authorize]
+        public ActionResult<UsuarioOutputDto> BuscarUsuarioLogado()
+        {
+            try
+            {
+                return Ok(_usuarioService.BuscarUsuarioLogado());
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public ActionResult<UsuarioOutputDto> Cadastrar([FromBody] UsuarioInputDto dto)
