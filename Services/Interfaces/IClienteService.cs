@@ -27,7 +27,9 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         ClienteDtoOutPut BuscarClientePorDocumentoIndentificador (DocumentoClienteInputDto dto);
 
-        List<BaseLogOutputDto> BuscarLogsClientePorIdCliente(Guid idCliente);
+        List<Object> BuscarLogsClientePorIdCliente(Guid idCliente);
+
+        List<Object> BuscarLogsPorDocumentoIdentificador(DocumentoClienteInputDto dto);
 
     }
 }

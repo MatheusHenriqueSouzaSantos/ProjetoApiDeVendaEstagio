@@ -27,6 +27,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         List<Object> BuscarLogsPorIdProduto(Guid idProdutoEnviado);
 
+        List<Object> BuscarLogsPorCodigoDeBarra(string codigoDeBarra);
+
         //List<BaseDtoLog> BuscarLogsGeraisPorPaginacao(int paginaASerBuscada,int quantidadeDeRegistrosPorPagina);
     }
 }

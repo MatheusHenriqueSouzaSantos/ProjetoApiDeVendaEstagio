@@ -225,6 +225,24 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet("log/documento-identificador/{cnpj}")]
+        public ActionResult<List<FornecedorLogOutputDto>> BuscarLogsPorCnpj(string cnpj)
+        {
+            try
+            {
+                return Ok(_service.BuscarLogsPorCnpj(cnpj));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
 
+            }
+        }
     }
 }

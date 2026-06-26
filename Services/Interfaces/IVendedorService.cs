@@ -27,5 +27,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         List<VendedorLogOutputDto> BuscarLogsPorIdVendedor(Guid id);
 
+        List<VendedorLogOutputDto> BuscarLogsPorCpf(string cpf);
+
     }
 }

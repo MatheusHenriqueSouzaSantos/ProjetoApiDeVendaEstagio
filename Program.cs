@@ -31,7 +31,7 @@ namespace ApiEstagioBicicletaria
             builder.Services.AddSwaggerGen();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddScoped<ServicoJwt>();
-            builder.Services.AddScoped(typeof(GeradorCodigoIndentificadorMovimentacao<>));
+            builder.Services.AddScoped(typeof(GeradorCodigoIndentificador<>));
             builder.Services.AddScoped<IClienteService, ClienteService>();
             builder.Services.AddScoped<IProdutoService, ProdutoService>();
             builder.Services.AddScoped<IServicoService, ServicoService>();
@@ -174,7 +174,7 @@ namespace ApiEstagioBicicletaria
 
                 if (!contexto.Usuarios.Any())
                 {
-                    Usuario usuario = new Usuario("teste","teste@gmail.com",senhaService.GerarHashDaSenha("teste"),PerfilUsuario.Admin);
+                    Usuario usuario = new Usuario("1234","teste","teste@gmail.com",senhaService.GerarHashDaSenha("teste"),PerfilUsuario.Admin);
 
                     contexto.Usuarios.Add(usuario);
                     contexto.SaveChanges();

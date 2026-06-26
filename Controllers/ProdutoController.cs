@@ -241,6 +241,26 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet("log/codigo-de-barra/{codigoDeBarra}")]
+        public ActionResult<List<Object>> BuscarLogsPorCodigoDeBarra(string codigoDeBarra)
+        {
+            try
+            {
+                return Ok(_produtoService.BuscarLogsPorCodigoDeBarra(codigoDeBarra));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
+            }
+        }
+
         //[Authorize]
         //[HttpGet("log-geral-paginacao")]
         //public ActionResult<List<ProdutoLogDto>> BuscarLogsGeraisPaginacao([FromQuery][Required(ErrorMessage ="é obrigatório enviar a página a ser buscada")] int pagina,

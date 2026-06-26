@@ -11,6 +11,7 @@ using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Services.LogServices;
 using ApiEstagioBicicletaria.Validacao;
+using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using System.Globalization;
@@ -215,11 +216,38 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
-
+        
         public List<VendedorLogOutputDto> BuscarLogsPorIdVendedor(Guid id)
         {
+            Vendedor vendedor=_contexto.Vendedores.FirstOrDefault(v=>v.Id==id)
+                ?? throw new ExcecaoDeRegraDeNegocio(404,"Vendedor não encontrado");
+
             List<VendedorLog> logs = _contexto.VendedorLogs
-                .Where(l => l.IdVendedor == id).ToList();
+                .Where(l => l.IdVendedor == vendedor.Id).ToList();
+
+            List<VendedorLogOutputDto> logsDto =
+                logs.Select(l => new VendedorLogOutputDto
+                (l.IdVendedor,
+                l.Acao,
+                l.CampoAlterado,
+                l.ValorAntigo,
+                l.ValorNovo,
+                l.IdUsuarioResponsavel,
+                l.DataCriacao)).ToList();
+
+            return logsDto.OrderByDescending(l=>l.DataCriacao).ToList();
+        }
+        public List<VendedorLogOutputDto> BuscarLogsPorCpf(string cpf)
+        {
+            string cpfSomentNumeros = DocumentoUtil.RemoverNaoNumericos(cpf);
+            if (!DocumentoUtil.ValidarCpf(cpfSomentNumeros))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Cpf Inválido");
+            }
+            Vendedor vendedor=_contexto.Vendedores.FirstOrDefault(v=>v.Cpf == cpf)
+            ?? throw new ExcecaoDeRegraDeNegocio(404, "Vendedor não encontrado");
+            List<VendedorLog> logs = _contexto.VendedorLogs
+                .Where(l => l.IdVendedor==vendedor.Id).ToList();
 
             List<VendedorLogOutputDto> logsDto =
                 logs.Select(l => new VendedorLogOutputDto

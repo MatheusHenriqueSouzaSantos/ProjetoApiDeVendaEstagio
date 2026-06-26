@@ -38,7 +38,7 @@ namespace ApiEstagioBicicletaria.Services
         //private readonly int _numeroMaximoDePaginas = 5;
         //private readonly int _numeroDeLinhasPorPagina = 42;
         private ContextoDb _contexto;
-        private readonly GeradorCodigoIndentificadorMovimentacao<Venda> _geradorCodigoVenda;
+        private readonly GeradorCodigoIndentificador<Venda> _geradorCodigoVenda;
         private readonly VendedorRepositorio _vendedorRepositorio;
         private readonly VendaLogService _vendaLogService;
         private readonly ItemVendaLogService _itemVendaLogService;
@@ -48,7 +48,7 @@ namespace ApiEstagioBicicletaria.Services
         private readonly ParcelaLogService _parcelaLogService;
         private readonly EstoqueLogService _estoqueLogService;
 
-        public VendaService(ContextoDb contexto, GeradorCodigoIndentificadorMovimentacao<Venda> geradorCodigoVenda, 
+        public VendaService(ContextoDb contexto, GeradorCodigoIndentificador<Venda> geradorCodigoVenda, 
             VendedorRepositorio vendedorRepositorio, VendaLogService vendaLogService,
             ServicoVendaLogService servicoVendaLogService,ItemVendaLogService itemVendaLogService,
             UsuarioLogadoService usuarioLogadoService,TransacaoLogService transacaoLogService,
@@ -139,7 +139,7 @@ namespace ApiEstagioBicicletaria.Services
 
             decimal valorTotalDaVendaComDescontoAplicado=Math.Round((valorTotalDaVendaSemDescontoTotalAplicado-descontoVenda),2,MidpointRounding.AwayFromZero);
 
-            string codigoVenda = _geradorCodigoVenda.GerarCodigo();
+            string codigoVenda = _geradorCodigoVenda.GerarCodigoMovimentacao();
 
             Venda vendaCriada = new Venda(codigoVenda, clienteDaVenda, descontoVenda,valorTotalDaVendaSemDescontoTotalAplicado, valorTotalDaVendaComDescontoAplicado,vendedorDaVenda);
 
@@ -989,23 +989,26 @@ namespace ApiEstagioBicicletaria.Services
             return vendaTransacaoFormatoOutput;
         }
 
-        public List<Object> buscarLogsPorIdVenda(Guid idVenda)
+        public List<Object> BuscarLogsPorIdVenda(Guid idVenda)
         {
-            Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == idVenda).FirstOrDefault()
+            Venda venda = _contexto.Vendas.FirstOrDefault(v => v.Id == idVenda)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "venda não encontrada");
+
+            Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == venda.Id).FirstOrDefault()
                 ?? throw new ExcecaoDeRegraDeNegocio(500, "não foi possível encontrar a transacao da venda");
 
             List<VendaLogOutputDto> logsVendaDto = _contexto.VendaLog
-                .Where(l => l.IdVenda == idVenda)
+                .Where(l => l.IdVenda == venda.Id)
                 .Select(l=>new VendaLogOutputDto(l.IdVenda,l.Acao,l.CampoAlterado,l.ValorAntigo,l.ValorNovo,l.IdUsuarioResponsavel,l.DataCriacao))
                 .ToList();
             List<ItemVendaLogOutputDto> logsItemVendaDto = _contexto.ItensVendaLogs
-                .Where(l => l.IdVenda == idVenda)
+                .Where(l => l.IdVenda == venda.Id)
                 .Include(l=>l.ItemVenda).ThenInclude(i=>i.Produto)
                 .Select(l=>new ItemVendaLogOutputDto(l.IdItemVenda,l.ItemVenda.Produto.Id,l.ItemVenda.Produto.NomeProduto,l.Acao,l.CampoAlterado,l.ValorAntigo,l.ValorNovo,
                 l.IdUsuarioResponsavel,l.DataCriacao))
                 .ToList();
             List<ServicoVendaLogOutputDto> logsServicoVendaDto = _contexto.ServicosVendaLog
-                .Where(l => l.IdVenda == idVenda)
+                .Where(l => l.IdVenda == venda.Id)
                 .Include(l=>l.ServicoVenda).ThenInclude(sv=>sv.Servico)
                 .Select(l=>new ServicoVendaLogOutputDto(l.IdServicoVenda,l.ServicoVenda.Servico.NomeServico,l.Acao,l.CampoAlterado,l.ValorAntigo,l.ValorNovo,
                 l.IdUsuarioResponsavel,l.DataCriacao))
@@ -1035,6 +1038,54 @@ namespace ApiEstagioBicicletaria.Services
                 .ToList();
 
 
+        }
+        public List<Object> BuscarLogsPorCodigoVenda(string codigoVenda)
+        {
+            Venda venda = _contexto.Vendas.FirstOrDefault(v => v.CodigoVenda == codigoVenda)
+                            ?? throw new ExcecaoDeRegraDeNegocio(404, "venda não encontrada");
+
+            Transacao transacaoDaVenda = _contexto.Transacoes.Where(t => t.IdVenda == venda.Id).FirstOrDefault()
+                ?? throw new ExcecaoDeRegraDeNegocio(500, "não foi possível encontrar a transacao da venda");
+
+            List<VendaLogOutputDto> logsVendaDto = _contexto.VendaLog
+                .Where(l => l.IdVenda == venda.Id)
+                .Select(l => new VendaLogOutputDto(l.IdVenda, l.Acao, l.CampoAlterado, l.ValorAntigo, l.ValorNovo, l.IdUsuarioResponsavel, l.DataCriacao))
+                .ToList();
+            List<ItemVendaLogOutputDto> logsItemVendaDto = _contexto.ItensVendaLogs
+                .Where(l => l.IdVenda == venda.Id)
+                .Include(l => l.ItemVenda).ThenInclude(i => i.Produto)
+                .Select(l => new ItemVendaLogOutputDto(l.IdItemVenda, l.ItemVenda.Produto.Id, l.ItemVenda.Produto.NomeProduto, l.Acao, l.CampoAlterado, l.ValorAntigo, l.ValorNovo,
+                l.IdUsuarioResponsavel, l.DataCriacao))
+                .ToList();
+            List<ServicoVendaLogOutputDto> logsServicoVendaDto = _contexto.ServicosVendaLog
+                .Where(l => l.IdVenda == venda.Id)
+                .Include(l => l.ServicoVenda).ThenInclude(sv => sv.Servico)
+                .Select(l => new ServicoVendaLogOutputDto(l.IdServicoVenda, l.ServicoVenda.Servico.NomeServico, l.Acao, l.CampoAlterado, l.ValorAntigo, l.ValorNovo,
+                l.IdUsuarioResponsavel, l.DataCriacao))
+                .ToList();
+            List<TransacaoLogOutputDto> logsTransacaoDto = _contexto.TransacaoLogs
+                .Where(l => l.IdTransacao == transacaoDaVenda.Id)
+                .Select(l => new TransacaoLogOutputDto(l.IdTransacao, l.Acao, l.CampoAlterado, l.ValorAntigo, l.ValorNovo, l.IdUsuarioResponsavel, l.DataCriacao))
+                .ToList();
+            List<ParcelaLogOutputDto> logsParcelaDto = _contexto.ParcelaLogs
+                .Where(l => l.IdTransacao == transacaoDaVenda.Id)
+                .Include(l => l.Parcela)
+                .Select(l => new ParcelaLogOutputDto(l.IdParcela, l.Parcela.NumeroDaParcelaDaVenda, l.Acao, l.CampoAlterado, l.ValorAntigo, l.ValorNovo,
+                l.IdUsuarioResponsavel, l.DataCriacao))
+                .ToList();
+
+            List<BaseLogOutputDto> logsGeralDto = new List<BaseLogOutputDto>();
+            logsGeralDto.AddRange(logsVendaDto);
+            logsGeralDto.AddRange(logsItemVendaDto);
+            logsGeralDto.AddRange(logsServicoVendaDto);
+            logsGeralDto.AddRange(logsTransacaoDto);
+            logsGeralDto.AddRange(logsParcelaDto);
+
+
+            return logsGeralDto
+                .OrderByDescending(l => l.DataCriacao)
+                .Cast<Object>()
+                .ToList();
         }
 
 

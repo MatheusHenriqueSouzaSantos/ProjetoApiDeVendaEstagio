@@ -170,8 +170,11 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<ServicoLogOutputDto> BuscarLogsPorIdServico(Guid id)
         {
+            Servico servico = _contextoDb.Servicos.FirstOrDefault(s => s.Id == id)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
+
             List<ServicoLog> logs = _contextoDb.ServicoLogs
-                .Where(l => l.IdServico == id).OrderByDescending(l => l.DataCriacao).ToList();
+                .Where(l => l.IdServico == servico.Id).OrderByDescending(l => l.DataCriacao).ToList();
 
             List<ServicoLogOutputDto> logsDto =
                 logs.Select(l => new ServicoLogOutputDto
@@ -185,5 +188,24 @@ namespace ApiEstagioBicicletaria.Services
             return logsDto;
         }
 
+        public List<ServicoLogOutputDto> BuscarLogsPorCodigoDoServico(string codigoDoServico)
+        {
+            Servico servico = _contextoDb.Servicos.FirstOrDefault(s => s.CodigoDoServico == codigoDoServico)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
+
+            List<ServicoLog> logs = _contextoDb.ServicoLogs
+                .Where(l => l.IdServico == servico.Id).OrderByDescending(l => l.DataCriacao).ToList();
+
+            List<ServicoLogOutputDto> logsDto =
+                logs.Select(l => new ServicoLogOutputDto
+                (l.IdServico,
+                l.Acao,
+                l.CampoAlterado,
+                l.ValorAntigo,
+                l.ValorNovo,
+                l.IdUsuarioResponsavel,
+                l.DataCriacao)).ToList();
+            return logsDto;
+        }
     }
 }

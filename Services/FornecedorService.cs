@@ -200,8 +200,38 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<FornecedorLogOutputDto> BuscarLogsPorIdFornecedor(Guid id)
         {
+
+            Fornecedor fornecedor = _contexto.Fornecedores.FirstOrDefault(f => f.Id == id)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor não encontrado");
             List<FornecedorLog> logs = _contexto.FornecedorLogs
-                .Where(l => l.IdFornecedor == id).OrderByDescending(l => l.DataCriacao).ToList();
+                .Where(l => l.IdFornecedor == fornecedor.Id).OrderByDescending(l => l.DataCriacao).ToList();
+
+            List<FornecedorLogOutputDto> logsDto =
+                logs.Select(l => new FornecedorLogOutputDto
+                (l.IdFornecedor,
+                l.Acao,
+                l.CampoAlterado,
+                l.ValorAntigo,
+                l.ValorNovo,
+                l.IdUsuarioResponsavel,
+                l.DataCriacao)).ToList();
+            return logsDto;
+        }
+
+        public List<FornecedorLogOutputDto> BuscarLogsPorCnpj(string cnpj)
+        {
+            string cnpjSomenteNumeros = DocumentoUtil.RemoverPontosTracosEBarras(cnpj);
+
+            if (!DocumentoUtil.ValidarCnpj(cnpjSomenteNumeros))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O CNPJ deve estar em um formato valido");
+            }
+
+            Fornecedor fornecedor=_contexto.Fornecedores.FirstOrDefault(f=>f.Cnpj==cnpj)
+                ?? throw new ExcecaoDeRegraDeNegocio(404,"Fornecedor não encontrado");
+
+            List<FornecedorLog> logs = _contexto.FornecedorLogs
+                .Where(l => l.IdFornecedor == fornecedor.Id).OrderByDescending(l => l.DataCriacao).ToList();
 
             List<FornecedorLogOutputDto> logsDto =
                 logs.Select(l => new FornecedorLogOutputDto

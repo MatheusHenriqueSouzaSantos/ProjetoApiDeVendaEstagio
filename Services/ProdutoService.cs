@@ -321,8 +321,11 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<Object> BuscarLogsPorIdProduto(Guid idProdutoEnviado)
         {
+            Produto produto = _contextoDb.Produtos.FirstOrDefault(p => p.Id == idProdutoEnviado)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
+
             List<ProdutoLog> produtoLogs = _contextoDb.ProdutoLogs
-                .Where(l => l.IdProduto == idProdutoEnviado).ToList();
+                .Where(l => l.IdProduto == produto.Id).ToList();
 
             List<ProdutoLogOutputDto> produtoLogsDto =
                 produtoLogs.Select(l => new ProdutoLogOutputDto
@@ -335,7 +338,54 @@ namespace ApiEstagioBicicletaria.Services
                 l.DataCriacao)).ToList();
 
             List<EstoqueLog> estoqueLogs = _contextoDb.EstoqueLogs
-               .Where(l => l.IdProduto == idProdutoEnviado).Include(e=>e.Produto).ToList();
+               .Where(l => l.IdProduto == produto.Id).Include(e=>e.Produto).ToList();
+
+            List<EstoqueLogOutPutDto> estoqueLogsDto =
+                estoqueLogs.Select(l => new EstoqueLogOutPutDto
+                (l.IdEstoque,
+                l.IdProduto,
+                l.Produto.NomeProduto,
+                l.AcaoQueAlterouEstoque,
+                l.Acao,
+                l.CampoAlterado,
+                l.ValorAntigo,
+                l.ValorNovo,
+                l.IdUsuarioResponsavel,
+                l.DataCriacao)).ToList();
+
+            List<BaseLogOutputDto> dtoLogs = new List<BaseLogOutputDto>();
+
+            dtoLogs.AddRange(produtoLogsDto);
+            dtoLogs.AddRange(estoqueLogsDto);
+
+            return dtoLogs.
+                OrderByDescending(l => l.DataCriacao)
+                .Cast<Object>()
+                .ToList();
+
+        }
+
+        public List<Object> BuscarLogsPorCodigoDeBarra(string codigoDeBarra)
+        {
+
+            Produto produto = _contextoDb.Produtos.FirstOrDefault(p => p.CodigoDeBarra == codigoDeBarra)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
+
+            List<ProdutoLog> produtoLogs = _contextoDb.ProdutoLogs
+                .Where(l => l.IdProduto == produto.Id).ToList();
+
+            List<ProdutoLogOutputDto> produtoLogsDto =
+                produtoLogs.Select(l => new ProdutoLogOutputDto
+                (l.IdProduto,
+                l.Acao,
+                l.CampoAlterado,
+                l.ValorAntigo,
+                l.ValorNovo,
+                l.IdUsuarioResponsavel,
+                l.DataCriacao)).ToList();
+
+            List<EstoqueLog> estoqueLogs = _contextoDb.EstoqueLogs
+               .Where(l => l.IdProduto == produto.Id).Include(e => e.Produto).ToList();
 
             List<EstoqueLogOutPutDto> estoqueLogsDto =
                 estoqueLogs.Select(l => new EstoqueLogOutPutDto

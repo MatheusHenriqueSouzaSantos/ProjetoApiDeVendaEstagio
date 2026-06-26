@@ -25,5 +25,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         string Login(UsuarioLoginDto dto);
 
         List<UsuarioLogOutputDto> BuscarLogsPorIdUsuario(Guid id);
+
+        List<UsuarioLogOutputDto> BuscarLogsPorCodigoUsuario(string codigoUsuario);
     }
 }

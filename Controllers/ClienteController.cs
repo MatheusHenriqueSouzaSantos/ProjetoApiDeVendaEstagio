@@ -278,6 +278,26 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpPost("log/documentoIdentificador")]
+        public ActionResult<List<Object>> BuscarLogsPorDocumentoIdentificador([FromBody] DocumentoClienteInputDto dto)
+        {
+            try
+            {
+                return Ok(_clienteService.BuscarLogsPorDocumentoIdentificador(dto));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
+            }
+        }
+
     }
 
 }

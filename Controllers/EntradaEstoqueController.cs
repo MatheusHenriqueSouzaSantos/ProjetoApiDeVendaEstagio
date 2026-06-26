@@ -156,5 +156,25 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet("log/codigo-entrada/{codigoEntrada}")]
+        public ActionResult<List<Object>> BuscarLogsPorCodigoEntrada(string codigoEntrada)
+        {
+            try
+            {
+                return Ok(_service.BuscarLogsPorCodigoEntrada(codigoEntrada));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
+            }
+        }
+
     }
 }

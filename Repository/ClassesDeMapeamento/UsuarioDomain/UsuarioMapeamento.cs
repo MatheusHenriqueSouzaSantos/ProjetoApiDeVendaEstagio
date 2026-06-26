@@ -11,6 +11,10 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.UsuarioDomain
             base.Configure(builder);
             builder.ToTable("USUARIO");
 
+            builder.Property(u => u.CodigoUsuario)
+                .HasColumnName("CODIGO_USUARIO")
+                .HasMaxLength(4)
+                .IsRequired();
             builder.Property(u => u.Nome)
                 .HasColumnName("NOME")
                 .HasMaxLength(70)

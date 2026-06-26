@@ -9,6 +9,8 @@ using ApiEstagioBicicletaria.Repository.Repositorios;
 using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Services.LogServices;
+using ApiEstagioBicicletaria.Utils;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiEstagioBicicletaria.Services
 {
@@ -25,9 +27,10 @@ namespace ApiEstagioBicicletaria.Services
         private readonly UsuarioLogService _usuarioLogService;
 
         private readonly UsuarioLogadoService _usuarioLogadoService;
+        private readonly GeradorCodigoIndentificador<Usuario> _geradorCodigoIndentificador;
 
         public UsuarioService(UsuarioRepositorio repositorio, ServicoJwt servicoJwt, SenhaService senhaService, ContextoDb contexto,
-            UsuarioLogService usuarioLogService,UsuarioLogadoService usuarioLogadoService)
+            UsuarioLogService usuarioLogService,UsuarioLogadoService usuarioLogadoService,GeradorCodigoIndentificador<Usuario> geradorCodigoIndentificador)
         {
             _repositorio = repositorio;
             _servicoJwt = servicoJwt;
@@ -35,6 +38,7 @@ namespace ApiEstagioBicicletaria.Services
             _contexto = contexto;
             _usuarioLogService = usuarioLogService;
             _usuarioLogadoService = usuarioLogadoService;
+            _geradorCodigoIndentificador=geradorCodigoIndentificador;
         }
 
         public List<UsuarioOutputDto> BuscarTodos()
@@ -68,7 +72,7 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "já existe um usuário cadastrado com esse email");
             }
             string hashSenha=_senhaService.GerarHashDaSenha(dto.Senha);
-            Usuario usuario = new(dto.Nome, dto.Email, hashSenha,dto.PerfilUsuario);
+            Usuario usuario = new(_geradorCodigoIndentificador.GerarCodigoUsuario(),dto.Nome, dto.Email, hashSenha,dto.PerfilUsuario);
             _repositorio.Cadastrar(usuario);
             _usuarioLogService.CriarLogDeCriacao(usuario, _usuarioLogadoService.ObterUsuario());
             _contexto.SaveChanges();
@@ -157,12 +161,38 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<UsuarioLogOutputDto> BuscarLogsPorIdUsuario(Guid id)
         {
-            List<UsuarioLog> logs = _contexto.UsuarioLogs
-                .Where(l => l.IdUsuario == id).ToList();
+            Usuario usuario = _contexto.Usuarios.FirstOrDefault(u => u.Id == id)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Usuário não encontrado");
+
+            List<UsuarioLog> logs = _contexto.UsuarioLogs.Include(l=>l.Usuario)
+                .Where(l => l.IdUsuario == usuario.Id).ToList();
 
             List<UsuarioLogOutputDto> logsDto =
                 logs.Select(l => new UsuarioLogOutputDto
                 (l.IdUsuario,
+                l.Usuario.CodigoUsuario,
+                l.Acao,
+                l.CampoAlterado,
+                l.ValorAntigo,
+                l.ValorNovo,
+                l.IdUsuarioResponsavel,
+                l.DataCriacao)).ToList();
+
+            return logsDto.OrderByDescending(l => l.DataCriacao).ToList();
+        }
+
+        public List<UsuarioLogOutputDto> BuscarLogsPorCodigoUsuario(string codigoUsuario)
+        {
+            Usuario usuario = _contexto.Usuarios.FirstOrDefault(u => u.CodigoUsuario == codigoUsuario)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Usuário não encontrado");
+
+            List<UsuarioLog> logs = _contexto.UsuarioLogs
+                .Where(l => l.IdUsuario == usuario.Id).ToList();
+
+            List<UsuarioLogOutputDto> logsDto =
+                logs.Select(l => new UsuarioLogOutputDto
+                (l.IdUsuario,
+                l.Usuario.CodigoUsuario,
                 l.Acao,
                 l.CampoAlterado,
                 l.ValorAntigo,
@@ -175,7 +205,7 @@ namespace ApiEstagioBicicletaria.Services
 
         private UsuarioOutputDto EntidadeParaDto(Usuario usuario)
         {
-            return new UsuarioOutputDto(usuario.Id, usuario.DataCriacao, usuario.Ativo, usuario.Nome, usuario.Email,usuario.PerfilUsuario);
+            return new UsuarioOutputDto(usuario.Id, usuario.DataCriacao, usuario.Ativo,usuario.CodigoUsuario, usuario.Nome, usuario.Email,usuario.PerfilUsuario);
         }
 
     }

@@ -248,7 +248,28 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return Ok(_vendaService.buscarLogsPorIdVenda(idVenda));
+                return Ok(_vendaService.BuscarLogsPorIdVenda(idVenda));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
+            }
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("log/codigo-venda/{codigoVenda}")]
+        public ActionResult<List<Object>> BuscarLogsPorCodigoVenda(string codigoVenda)
+        {
+            try
+            {
+                return Ok(_vendaService.BuscarLogsPorCodigoVenda(codigoVenda));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {

@@ -2,6 +2,8 @@
 {
     public class Usuario : EntidadeBase
     {
+        [AtributoASerIgnoradoLogAtualizacao]
+        public string CodigoUsuario { get; set; }
         public string Nome { get; set; }=string.Empty;
 
         public string Email { get; set; }=string.Empty;
@@ -12,8 +14,9 @@
         
         protected Usuario() { }
 
-        public Usuario(string nome, string email, string senha, PerfilUsuario perfilUsuario)
+        public Usuario(string codigoUsuario, string nome, string email, string senha, PerfilUsuario perfilUsuario)
         {
+            CodigoUsuario = codigoUsuario;
             Nome = nome;
             Email = email;
             Senha = senha;
@@ -22,7 +25,7 @@
 
         public Usuario Copia()
         {
-            return new Usuario(Nome, Email, Senha,PerfilUsuario);
+            return new Usuario(CodigoUsuario,Nome, Email, Senha,PerfilUsuario);
         }
     }
 }

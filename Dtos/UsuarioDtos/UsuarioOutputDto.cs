@@ -10,17 +10,20 @@ namespace ApiEstagioBicicletaria.Dtos.Usuario
 
         public bool Ativo { get;  set; }
 
+        public string CodigoUsuario { get; set; }
+
         public string Nome { get;  set; }
 
         public string Email { get;  set; }
 
         public PerfilUsuario PerfilUsuario { get;  set; }
 
-        public UsuarioOutputDto(Guid id, DateTime dataCriacao, bool ativo, string nome, string email, PerfilUsuario perfilUsuario)
+        public UsuarioOutputDto(Guid id, DateTime dataCriacao, bool ativo,string codigoUsuario, string nome, string email, PerfilUsuario perfilUsuario)
         {
             Id = id;
             DataCriacao = dataCriacao;
             Ativo = ativo;
+            CodigoUsuario = codigoUsuario;
             Nome = nome;
             Email = email;
             PerfilUsuario = perfilUsuario;

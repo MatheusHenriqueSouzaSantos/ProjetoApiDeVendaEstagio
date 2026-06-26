@@ -230,5 +230,24 @@ namespace ApiEstagioBicicletaria.Controllers
 
             }
         }
+        [Authorize(Roles = "Admin")]
+        [HttpGet("log/documento-identificador/{cpf}")]
+        public ActionResult<List<VendedorLogOutputDto>> BuscarLogsPorCpf(string cpf)
+        {
+            try
+            {
+                return Ok(_service.BuscarLogsPorCpf(cpf));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
+            }
+        }
     }
 }

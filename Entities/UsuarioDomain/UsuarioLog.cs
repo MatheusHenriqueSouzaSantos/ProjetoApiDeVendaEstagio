@@ -5,6 +5,7 @@
 
         public Usuario Usuario { get; private set; }
         public Guid IdUsuario { get; private set; }
+
         protected UsuarioLog()
         {
         }

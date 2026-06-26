@@ -443,9 +443,23 @@ namespace ApiEstagioBicicletaria.Services
             return clienteFormatoDto;
         }
 
-        public List<BaseLogOutputDto> BuscarLogsClientePorIdCliente(Guid idCliente)
+        public List<Object> BuscarLogsClientePorIdCliente(Guid idCliente)
         {
-            List<ClienteLog> clienteLogs=_contextoDb.ClienteLogs.Where(l=>l.IdCliente==idCliente).ToList();
+            Cliente? cliente=_contextoDb.ClientesFisicos.FirstOrDefault(c=>c.Id==idCliente);
+
+            if (cliente == null)
+            {
+                cliente = _contextoDb.ClientesJuridicos.FirstOrDefault(c => c.Id == idCliente);
+            }
+
+            if (cliente == null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado");
+            }
+
+
+
+            List<ClienteLog> clienteLogs = _contextoDb.ClienteLogs.Where(l => l.IdCliente == cliente.Id).ToList();
 
             List<ClienteLogOutputDto> clienteDtoLogs = clienteLogs.Select(l =>
                 new ClienteLogOutputDto(
@@ -459,7 +473,7 @@ namespace ApiEstagioBicicletaria.Services
                     )
             ).ToList();
 
-            List<EnderecoLog> enderecoLogs = _contextoDb.EnderecoLogs.Where(l => l.IdCliente == idCliente).ToList();
+            List<EnderecoLog> enderecoLogs = _contextoDb.EnderecoLogs.Where(l => l.IdCliente == cliente.Id).ToList();
 
             List<EnderecoLogOutputDto> enderecoDtoLogs = enderecoLogs.Select(l =>
                 new EnderecoLogOutputDto(
@@ -473,15 +487,122 @@ namespace ApiEstagioBicicletaria.Services
                     )
             ).ToList();
 
-            List<BaseLogOutputDto> logDtos= new List<BaseLogOutputDto>();
+            List<BaseLogOutputDto> logDtos = new List<BaseLogOutputDto>();
 
             logDtos.AddRange(clienteDtoLogs);
-            
+
             logDtos.AddRange(enderecoDtoLogs);
 
-            return logDtos.OrderByDescending(l => l.DataCriacao).ToList();
+            return logDtos.OrderByDescending(l => l.DataCriacao).Cast<Object>().ToList();
 
-            
+
+        }
+
+        public List<Object> BuscarLogsPorDocumentoIdentificador(DocumentoClienteInputDto dto)
+        {
+            switch (dto.TipoDocumento)
+            {
+                case (EnumTipoDocumentoASerBuscado.Cpf):
+                    {
+                        string cpfSomentNumeros = DocumentoUtil.RemoverNaoNumericos(dto.NumeroDocumento);
+                        if (!DocumentoUtil.ValidarCpf(cpfSomentNumeros))
+                        {
+                            throw new ExcecaoDeRegraDeNegocio(400, "Cpf Ínválido");
+                        }
+                        ClienteFisico clienteVindoDoBanco = _contextoDb.ClientesFisicos.Include(c => c.Endereco)
+                            .FirstOrDefault(c => c.Cpf == cpfSomentNumeros) ??
+                            throw new ExcecaoDeRegraDeNegocio(400, "Cliente não encontrado!!");
+
+                        List<ClienteLog> clienteLogs = _contextoDb.ClienteLogs.Where(l => l.IdCliente == clienteVindoDoBanco.Id).ToList();
+
+                        List<ClienteLogOutputDto> clienteDtoLogs = clienteLogs.Select(l =>
+                            new ClienteLogOutputDto(
+                                    l.IdCliente,
+                                    l.Acao,
+                                    l.CampoAlterado,
+                                    l.ValorAntigo,
+                                    l.ValorNovo,
+                                    l.IdUsuarioResponsavel,
+                                    l.DataCriacao
+                                )
+                        ).ToList();
+
+                        List<EnderecoLog> enderecoLogs = _contextoDb.EnderecoLogs.Where(l => l.IdCliente == clienteVindoDoBanco.Id).ToList();
+
+                        List<EnderecoLogOutputDto> enderecoDtoLogs = enderecoLogs.Select(l =>
+                            new EnderecoLogOutputDto(
+                                    l.IdEndereco,
+                                    l.Acao,
+                                    l.CampoAlterado,
+                                    l.ValorAntigo,
+                                    l.ValorNovo,
+                                    l.IdUsuarioResponsavel,
+                                    l.DataCriacao
+                                )
+                        ).ToList();
+
+                        List<BaseLogOutputDto> logDtos = new List<BaseLogOutputDto>();
+
+                        logDtos.AddRange(clienteDtoLogs);
+
+                        logDtos.AddRange(enderecoDtoLogs);
+
+                        return logDtos.OrderByDescending(l => l.DataCriacao).Cast<Object>().ToList();
+                    }
+                case (EnumTipoDocumentoASerBuscado.Cnpj):
+                    {
+                        string cnpjSomenteNumeros = DocumentoUtil.RemoverNaoNumericos(dto.NumeroDocumento);
+
+                        if (!DocumentoUtil.ValidarCnpj(cnpjSomenteNumeros))
+                        {
+                            throw new ExcecaoDeRegraDeNegocio(400, "Cnpj Inválido");
+                        }
+                        ClienteJuridico clienteVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c => c.Endereco)
+                            .FirstOrDefault(c => c.Cnpj == cnpjSomenteNumeros) ??
+                            throw new ExcecaoDeRegraDeNegocio(400, "Cliente não encontrado!!");
+
+                        List<ClienteLog> clienteLogs = _contextoDb.ClienteLogs.Where(l => l.IdCliente == clienteVindoDoBanco.Id).ToList();
+
+                        List<ClienteLogOutputDto> clienteDtoLogs = clienteLogs.Select(l =>
+                            new ClienteLogOutputDto(
+                                    l.IdCliente,
+                                    l.Acao,
+                                    l.CampoAlterado,
+                                    l.ValorAntigo,
+                                    l.ValorNovo,
+                                    l.IdUsuarioResponsavel,
+                                    l.DataCriacao
+                                )
+                        ).ToList();
+
+                        List<EnderecoLog> enderecoLogs = _contextoDb.EnderecoLogs.Where(l => l.IdCliente == clienteVindoDoBanco.Id).ToList();
+
+                        List<EnderecoLogOutputDto> enderecoDtoLogs = enderecoLogs.Select(l =>
+                            new EnderecoLogOutputDto(
+                                    l.IdEndereco,
+                                    l.Acao,
+                                    l.CampoAlterado,
+                                    l.ValorAntigo,
+                                    l.ValorNovo,
+                                    l.IdUsuarioResponsavel,
+                                    l.DataCriacao
+                                )
+                        ).ToList();
+
+                        List<BaseLogOutputDto> logDtos = new List<BaseLogOutputDto>();
+
+                        logDtos.AddRange(clienteDtoLogs);
+
+                        logDtos.AddRange(enderecoDtoLogs);
+
+                        return logDtos.OrderByDescending(l => l.DataCriacao).Cast<Object>().ToList();
+                    }
+                default:
+                    {
+                        throw new ExcecaoDeRegraDeNegocio(400, "Tipo de cliente inválido enviado");
+                        break;
+                    }
+            }
         }
 
     }
