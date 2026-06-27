@@ -212,7 +212,7 @@ namespace ApiEstagioBicicletaria.Services
             return produtosFomartoDto;
         }
 
-        public byte[] GerarRelatorioDeProdutosComMaiorQuantidadeVendidaPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
+        public byte[] GerarRelatorioDeProdutosMaisVendidosPorPeriodo(DatasParaGeracaoDeRelatorioDto dto)
         {
             DateTime dataDeInicioDoPeriodoConvertidaDateTime;
 
@@ -270,7 +270,7 @@ namespace ApiEstagioBicicletaria.Services
 
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var modeloDocumento = new RelatorioProdutosComMaiorFaturamentoPorPeriodo(produtosMaisVendidos, dataDeInicioDoPeriodoFormatoDateOnly,dataDeFimDoPeriodoDateOnly);
+            var modeloDocumento = new RelatorioProdutosMaisVendidosPorPeriodo(produtosMaisVendidos, dataDeInicioDoPeriodoFormatoDateOnly,dataDeFimDoPeriodoDateOnly);
 
             return modeloDocumento.GeneratePdf();
 
