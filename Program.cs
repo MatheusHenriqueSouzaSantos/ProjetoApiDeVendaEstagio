@@ -27,10 +27,6 @@ namespace ApiEstagioBicicletaria
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            foreach (var item in builder.Configuration.AsEnumerable())
-            {
-                Console.WriteLine($"{item.Key} = {item.Value}");
-            }
             builder.Services.AddDbContext<ContextoDb>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddSwaggerGen();
