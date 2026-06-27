@@ -23,7 +23,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain
                 .HasColumnName("id_cliente")
                 .IsRequired();
             builder.Property(v => v.DescontoTotal)
-                .HasColumnName("desconto_unitario");
+                .HasColumnName("desconto_total");
             builder.Property(v=>v.ValorTotalComDesconto)
                 .HasColumnName("valor_total_com_desconto")
                 .IsRequired();
