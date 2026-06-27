@@ -26,6 +26,10 @@ namespace ApiEstagioBicicletaria
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            foreach (var item in builder.Configuration.AsEnumerable())
+            {
+                Console.WriteLine($"{item.Key} = {item.Value}");
+            }
             builder.Services.AddDbContext<ContextoDb>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddSwaggerGen();
@@ -124,9 +128,9 @@ namespace ApiEstagioBicicletaria
                     };
                 });
 
-            
-            var jwtKey = builder.Configuration["JWT_KEY"];
-        
+
+            var jwtKey = builder.Configuration["Jwt:Key"];
+
 
             var bytesJwtKey=Encoding.UTF8.GetBytes(jwtKey);
 
@@ -174,7 +178,8 @@ namespace ApiEstagioBicicletaria
 
                 if (!contexto.Usuarios.Any())
                 {
-                    Usuario usuario = new Usuario("1234","teste","teste@gmail.com",senhaService.GerarHashDaSenha("teste"),PerfilUsuario.Admin);
+                    Usuario usuario = new Usuario(builder.Configuration["user:codigoUser"], builder.Configuration["user:nome"],
+                        builder.Configuration["user:email"], senhaService.GerarHashDaSenha(builder.Configuration["user:senha"]),PerfilUsuario.Admin);
 
                     contexto.Usuarios.Add(usuario);
                     contexto.SaveChanges();
