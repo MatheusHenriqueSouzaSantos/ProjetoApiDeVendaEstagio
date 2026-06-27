@@ -5,14 +5,14 @@ using QuestPDF.Infrastructure;
 
 namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 {
-    public class RelatorioProdutosComMaiorFaturamentoPorPeriodo : IDocument
+    public class RelatorioProdutosMaisVendidosPorPeriodo : IDocument
     {
 
         private readonly List<ProdutoMaisVendidoDto> _produtos;
         private readonly DateOnly _dataDeInicioDoPeriodo;
         private readonly DateOnly _dataDeFimDoPeriodo;
 
-        public RelatorioProdutosComMaiorFaturamentoPorPeriodo(List<ProdutoMaisVendidoDto> produtos,DateOnly dataDeInicioDoPeriodo, DateOnly dataDeFimDoPeriodo)
+        public RelatorioProdutosMaisVendidosPorPeriodo(List<ProdutoMaisVendidoDto> produtos,DateOnly dataDeInicioDoPeriodo, DateOnly dataDeFimDoPeriodo)
         {
             this._produtos = produtos;
             _dataDeInicioDoPeriodo = dataDeInicioDoPeriodo;

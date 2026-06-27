@@ -22,7 +22,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         void DeletarProdutoPorId(Guid id);
 
         List<ProdutoDtoOutPut> BuscarProdutosPorNome(string nome);
-        byte[] GerarRelatorioDeProdutosComMaiorQuantidadeVendidaPorPeriodo(DatasParaGeracaoDeRelatorioDto dto);
+        byte[] GerarRelatorioDeProdutosMaisVendidosPorPeriodo(DatasParaGeracaoDeRelatorioDto dto);
         byte[] GerarRelatorioDeProdutosComEstoqueAbaixoOuIgualUmaQuantidade(int quantidadePaBuscarProdutosEmFalta);
 
         List<Object> BuscarLogsPorIdProduto(Guid idProdutoEnviado);
