@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Runtime.ConstrainedExecution;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -160,7 +161,6 @@ namespace ApiEstagioBicicletaria
 
             var app = builder.Build();
 
-            app.UseHttpsRedirection();
             app.UseCors("PermitirTudo");
 
             app.UseAuthentication();
@@ -186,9 +186,8 @@ namespace ApiEstagioBicicletaria
                 }
             }
 
-
-            app.Run();
-          
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+            app.Run($"http://0.0.0.0:{port}");
 
         }
     }
