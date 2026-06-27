@@ -195,8 +195,8 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
-                //return StatusCode(500, ex.Message);
+                //return StatusCode(500, "Erro Inesperado");
+                return StatusCode(500, ex.Message);
             }
         }
         [HttpGet("buscar-vendas-por-documento-indentificador-do-cliente")]
