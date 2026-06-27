@@ -10,13 +10,12 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendedorDomain
         public override void Configure(EntityTypeBuilder<VendedorLog> builder)
         {
             base.Configure(builder);
-            builder.ToTable("LOG_VENDEDOR");
+            builder.ToTable("log_vendedor");
             builder.HasOne(v => v.Vendedor)
                 .WithMany()
                 .HasForeignKey(v => v.IdVendedor);
             builder.Property(v => v.IdVendedor)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_VENDEDOR")
+                .HasColumnName("id_vendedor")
                 .IsRequired();
         }
     }

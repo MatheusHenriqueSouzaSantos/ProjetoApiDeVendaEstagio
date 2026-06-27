@@ -9,17 +9,17 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain
         public override void Configure(EntityTypeBuilder<ClienteLog> builder)
         {
             base.Configure(builder);
-            builder.ToTable("LOG_CLIENTE");
+            builder.ToTable("log_cliente");
             builder.HasOne(c => c.Cliente)
                 .WithMany()
                 .HasForeignKey(c => c.IdCliente)
                 .IsRequired();
             builder.Property(c => c.IdCliente)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_CLIENTE")
+                .HasColumnName("id_cliente")
                 .IsRequired();
             builder.Property(c => c.TipoCliente)
-                .HasColumnName("TIPO_CLIENTE")
+                .HasColumnName("tipo_cliente")
+                .HasConversion<string>()
                 .IsRequired();
            
         }

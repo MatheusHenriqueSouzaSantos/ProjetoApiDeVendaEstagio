@@ -9,31 +9,29 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.Item
         public override void Configure(EntityTypeBuilder<ItemVenda> builder)
         {
             base.Configure(builder);
-            builder.ToTable("ITEM_VENDA");
+            builder.ToTable("item_venda");
 
             builder.HasOne(i => i.Venda)
                 .WithMany()
                 .HasForeignKey(i=>i.IdVenda)
                 .IsRequired();
             builder.Property(i => i.IdVenda)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_VENDA");
+                .HasColumnName("id_venda");
             builder.HasOne(i=>i.Produto)
                 .WithMany()
                 .HasForeignKey(i=>i.IdProduto)
                 .IsRequired();
             builder.Property(i=>i.IdProduto)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_PRODUTO")
+                .HasColumnName("id_produto")
                 .IsRequired();
             builder.Property(i=>i.Quantidade)
-                .HasColumnName("QUANTIDADE")
+                .HasColumnName("quantidade")
                 .IsRequired();
             builder.Property(i=>i.DescontoUnitario)
-                .HasColumnName("DESCONTO_UNITARIO")
+                .HasColumnName("desconto_unitario")
                 .IsRequired();
             builder.Property(i=>i.PrecoUnitarioDoProdutoNaVendaSemDesconto)
-                .HasColumnName("PRECO_UNITARIO_DO_PRODUTO_NA_VENDA_SEM_DESCONTO")
+                .HasColumnName("preco_unitario_do_produto_na_venda_sem_desconto")
                 .IsRequired();
         }
     }

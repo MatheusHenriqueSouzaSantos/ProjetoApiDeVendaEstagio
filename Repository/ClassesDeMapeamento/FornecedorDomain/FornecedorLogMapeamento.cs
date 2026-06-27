@@ -11,15 +11,14 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.FornecedorDomain
         {
             base.Configure(builder);
 
-            builder.ToTable("LOG_FORNECEDOR");
+            builder.ToTable("log_fornecedor");
 
             builder.HasOne(f=>f.Fornecedor)
                 .WithMany()
                 .HasForeignKey(f=>f.IdFornecedor)
                 .IsRequired();
             builder.Property(f=>f.IdFornecedor)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_FORNECEDOR")
+                .HasColumnName("id_fornecedor")
                 .IsRequired();
 
         }

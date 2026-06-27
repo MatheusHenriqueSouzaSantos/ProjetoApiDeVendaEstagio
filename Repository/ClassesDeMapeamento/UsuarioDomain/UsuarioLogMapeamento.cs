@@ -9,15 +9,14 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.UsuarioDomain
         public override void Configure(EntityTypeBuilder<UsuarioLog> builder)
         {
             base.Configure(builder);
-            builder.ToTable("LOG_USUARIO");
+            builder.ToTable("log_usuario");
 
             builder.HasOne(u => u.Usuario)
                 .WithMany()
                 .HasForeignKey(u => u.IdUsuario)
                 .IsRequired();
             builder.Property(u => u.IdUsuario)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_USUARIO")
+                .HasColumnName("id_usuario")
                 .IsRequired();
         }
     }

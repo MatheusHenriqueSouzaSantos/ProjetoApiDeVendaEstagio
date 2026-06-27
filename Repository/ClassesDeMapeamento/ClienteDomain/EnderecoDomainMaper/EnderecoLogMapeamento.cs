@@ -9,21 +9,19 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain.En
         public override void Configure(EntityTypeBuilder<EnderecoLog> builder)
         {
             base.Configure(builder);
-            builder.ToTable("LOG_ENDERECO");
+            builder.ToTable("log_endereco");
             builder.HasOne(e => e.Endereco)
                 .WithMany()
                 .HasForeignKey(e => e.IdEndereco);
             builder.Property(e => e.IdEndereco)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_ENDERECO")
+                .HasColumnName("id_endereco")
                 .IsRequired();
             builder.HasOne(e => e.Cliente)
                 .WithMany()
                 .HasForeignKey(e => e.IdCliente)
                 .IsRequired();
             builder.Property(e=>e.IdCliente)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_CLIENTE")
+                .HasColumnName("id_cliente")
                 .IsRequired();
 
         }

@@ -9,21 +9,19 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoqueDo
         public override void Configure(EntityTypeBuilder<ItemEntradaEstoqueLog> builder)
         {
             base.Configure(builder);
-            builder.ToTable("LOG_ITEM_ENTRADA_ESTOQUE");
+            builder.ToTable("log_item_entrada_estoque");
             builder.HasOne(i => i.ItemEntradaEstoque)
                 .WithMany()
                 .HasForeignKey(i=>i.IdItemEntradaEstoque);
             builder.Property(i => i.IdItemEntradaEstoque)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_ITEM_ENTRADA_ESTOQUE")
+                .HasColumnName("id_item_entrada_estoque")
                 .IsRequired();
             builder.HasOne(i=>i.EntradaEstoque)
                 .WithMany()
                 .HasForeignKey(i=>i.IdEntradaEstoque)
                 .IsRequired();
             builder.Property(i=>i.IdEntradaEstoque)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_ENTRADA_ESTOQUE")
+                .HasColumnName("id_entrada_estoque")
                 .IsRequired();
         }
     }

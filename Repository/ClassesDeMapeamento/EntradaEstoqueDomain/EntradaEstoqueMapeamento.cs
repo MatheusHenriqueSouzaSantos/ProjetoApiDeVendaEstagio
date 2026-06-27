@@ -18,7 +18,6 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoqueDo
                 .HasForeignKey(e=>e.IdFornecedor)
                 .IsRequired();
             builder.Property(e=>e.IdFornecedor)
-                .HasColumnType("binary(16)")
                 .HasColumnName("ID_FORNECEDOR")
                 .IsRequired();
             builder.Property(e=>e.CodigoEntrada)
@@ -26,6 +25,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoqueDo
                 .IsRequired();
             builder.Property(e => e.Status)
                 .HasColumnName("STATUS")
+                .HasConversion<string>()
                 .IsRequired();
         
         }

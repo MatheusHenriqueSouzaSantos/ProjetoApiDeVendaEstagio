@@ -27,7 +27,7 @@ namespace ApiEstagioBicicletaria
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddDbContext<ContextoDb>(options =>
-            options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddSwaggerGen();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddScoped<ServicoJwt>();

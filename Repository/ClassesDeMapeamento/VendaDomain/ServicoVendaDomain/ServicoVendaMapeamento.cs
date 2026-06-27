@@ -9,29 +9,27 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.Serv
         public override void Configure(EntityTypeBuilder<ServicoVenda> builder)
         {
             base.Configure(builder);
-            builder.ToTable("SERVICO_VENDA");
+            builder.ToTable("servico_venda");
 
             builder.HasOne(s => s.Venda)
                 .WithMany()
                 .HasForeignKey(s=>s.IdVenda)
                 .IsRequired();
             builder.Property(s=>s.IdVenda)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_VENDA")
+                .HasColumnName("id_venda")
                 .IsRequired();
             builder.HasOne(s=>s.Servico)
                 .WithMany()
                 .HasForeignKey(s=>s.IdServico)
                 .IsRequired();
             builder.Property(s => s.IdServico)
-                .HasColumnName("ID_SERVICO")
-                .HasColumnType("binary(16)")
+                .HasColumnName("id_servico")
                 .IsRequired();
             builder.Property(s=>s.DescontoServico)
-                .HasColumnName("DESCONTO_SERVICO")
+                .HasColumnName("desconto_unitario")
                 .IsRequired();
             builder.Property(s=>s.PrecoServicoNaVendaSemDesconto)
-                .HasColumnName("PRECO_SERVICO_NA_VENDA_SEM_DESCONTO")
+                .HasColumnName("preco_servico_na_venda_sem_desconto")
                 .IsRequired();
         }
     }

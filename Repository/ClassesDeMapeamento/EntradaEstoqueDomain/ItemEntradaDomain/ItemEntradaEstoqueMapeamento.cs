@@ -10,7 +10,7 @@ public class ItemEntradaEstoqueMapeamento : BaseMapeamento<ItemEntradaEstoque>
     {
         base.Configure(builder);
 
-        builder.ToTable("ITEM_ENTRADA_ESTOQUE");
+        builder.ToTable("item_entrada_estoque");
 
         builder.HasOne(i=>i.EntradaEstoque)
             .WithMany(e=>e.Itens)
@@ -18,8 +18,7 @@ public class ItemEntradaEstoqueMapeamento : BaseMapeamento<ItemEntradaEstoque>
             .IsRequired();
 
         builder.Property(i=>i.IdEntradaEstoque)
-            .HasColumnType("binary(16)")
-            .HasColumnName("ID_ENTRADA_ESTOQUE")
+            .HasColumnName("id_entrada_estoque")
             .IsRequired();
 
         builder.HasOne(i=>i.Produto)
@@ -27,11 +26,10 @@ public class ItemEntradaEstoqueMapeamento : BaseMapeamento<ItemEntradaEstoque>
             .HasForeignKey(i=>i.IdProduto)
             .IsRequired();
         builder.Property(i=>i.IdProduto)
-            .HasColumnType("binary(16)")
-            .HasColumnName("ID_PRODUTO")
+            .HasColumnName("id_produto")
             .IsRequired();
         builder.Property(i=>i.Quantidade)
-            .HasColumnName("QUANTIDADE")
+            .HasColumnName("quantidade")
             .IsRequired();
             
     }

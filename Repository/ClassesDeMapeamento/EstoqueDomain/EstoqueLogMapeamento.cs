@@ -11,26 +11,24 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EstoqueDomain
         {
             base.Configure(builder);
 
-            builder.ToTable("LOG_ESTOQUE");
+            builder.ToTable("log_estoque");
 
             builder.HasOne(e => e.Estoque)
                 .WithMany()
                 .HasForeignKey(e => e.IdEstoque)
                 .IsRequired();
             builder.Property(e => e.IdEstoque)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_ESTOQUE")
+                .HasColumnName("id_estoque")
                 .IsRequired();
             builder.HasOne(e => e.Produto)
                .WithMany()
                .HasForeignKey(e => e.IdProduto)
                .IsRequired();
             builder.Property(e => e.IdProduto)
-                .HasColumnName("ID_PRODUTO")
-                .HasColumnType("binary(16)")
+                .HasColumnName("id_produto")
                 .IsRequired();
             builder.Property(e => e.AcaoQueAlterouEstoque)
-                .HasColumnName("ACAO_QUE_ALTEROU_ESTOQUE")
+                .HasColumnName("acao_que_alterou_estoque")
                 .IsRequired();
 
         }

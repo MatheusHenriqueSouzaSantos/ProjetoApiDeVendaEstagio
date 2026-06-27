@@ -9,21 +9,21 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ServicoDomain
         public override void Configure(EntityTypeBuilder<Servico> builder)
         {
             base.Configure(builder);
-            builder.ToTable("SERVICO");
+            builder.ToTable("servico");
       
             builder.Property(s => s.CodigoDoServico)
-                .HasColumnName("CODIGO_DO_SERVICO")
+                .HasColumnName("codigo_do_servico")
                 .HasMaxLength(128)
                 .IsRequired();
             builder.Property(s => s.NomeServico)
-                .HasColumnName("NOME_SERVICO")
+                .HasColumnName("nome_servico")
                 .HasMaxLength(50)
                 .IsRequired();
             builder.Property(s => s.Descricao)
                 .HasMaxLength(150)
-                .HasColumnName("DESCRICAO");
+                .HasColumnName("descricao");
             builder.Property(s => s.Preco)
-                .HasColumnName("PRECO_SERVICO")
+                .HasColumnName("preco_servico")
                 .IsRequired();
         }
     }

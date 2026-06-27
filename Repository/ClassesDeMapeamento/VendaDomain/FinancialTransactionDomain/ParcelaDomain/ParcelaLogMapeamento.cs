@@ -10,21 +10,19 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.Fina
         public override void Configure(EntityTypeBuilder<ParcelaLog> builder)
         {
             base.Configure(builder);
-            builder.ToTable("LOG_PARCELA");
+            builder.ToTable("log_parcela");
             builder.HasOne(p => p.Parcela)
                 .WithMany()
                 .HasForeignKey(p => p.IdParcela)
                 .IsRequired();
             builder.Property(p => p.IdParcela)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_PARCELA")
+                .HasColumnName("id_parcela")
                 .IsRequired();
             builder.HasOne(p => p.Transacao)
                 .WithMany()
                 .HasForeignKey(p => p.IdTransacao);
             builder.Property(p=>p.IdTransacao)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_TRANSACAO")
+                .HasColumnName("id_transacao")
                 .IsRequired();
         }
     }

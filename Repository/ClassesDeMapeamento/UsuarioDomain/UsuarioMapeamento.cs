@@ -9,26 +9,27 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.UsuarioDomain
         public override void Configure(EntityTypeBuilder<Usuario> builder)
         {
             base.Configure(builder);
-            builder.ToTable("USUARIO");
+            builder.ToTable("usuario");
 
             builder.Property(u => u.CodigoUsuario)
-                .HasColumnName("CODIGO_USUARIO")
+                .HasColumnName("codigo_usuario")
                 .HasMaxLength(4)
                 .IsRequired();
             builder.Property(u => u.Nome)
-                .HasColumnName("NOME")
+                .HasColumnName("nome")
                 .HasMaxLength(70)
                 .IsRequired();
             builder.Property(u => u.Email)
-                .HasColumnName("EMAIL")
+                .HasColumnName("email")
                 .HasMaxLength(150)
                 .IsRequired();
             builder.Property(u=>u.Senha)
-                .HasColumnName("SENHA")
+                .HasColumnName("senha")
                 .HasMaxLength(300)
                 .IsRequired();
             builder.Property(u => u.PerfilUsuario)
-                .HasColumnName("PERFIL_USUARIO")
+                .HasColumnName("perfil_usuario")
+                .HasConversion<string>()
                 .IsRequired();
         }
     }

@@ -10,7 +10,6 @@ using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Utilities;
 
 namespace ApiEstagioBicicletaria.Controllers
 {
