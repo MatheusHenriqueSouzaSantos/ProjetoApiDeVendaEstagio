@@ -161,7 +161,6 @@ namespace ApiEstagioBicicletaria
 
             var app = builder.Build();
 
-            app.UseHttpsRedirection();
             app.UseCors("PermitirTudo");
 
             app.UseAuthentication();
