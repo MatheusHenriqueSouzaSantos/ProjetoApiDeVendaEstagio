@@ -9,7 +9,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.Serv
         public override void Configure(EntityTypeBuilder<ServicoVendaLog> builder)
         {
             base.Configure(builder);
-            builder.ToTable("log_servico_veda");
+            builder.ToTable("log_servico_venda");
             builder.HasOne(s => s.ServicoVenda)
                 .WithMany()
                 .HasForeignKey(i => i.IdServicoVenda);

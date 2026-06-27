@@ -29,6 +29,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EstoqueDomain
                 .IsRequired();
             builder.Property(e => e.AcaoQueAlterouEstoque)
                 .HasColumnName("acao_que_alterou_estoque")
+                .HasConversion<string>()
                 .IsRequired();
 
         }

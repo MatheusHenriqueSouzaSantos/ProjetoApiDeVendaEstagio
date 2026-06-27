@@ -32,7 +32,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.FornecedorDomain
                 .HasMaxLength(100);
 
             builder.Property(f=>f.Cnpj)
-                .HasColumnName("npjc")
+                .HasColumnName("cnpj")
                 .HasMaxLength(14)
                 .IsRequired();
 
