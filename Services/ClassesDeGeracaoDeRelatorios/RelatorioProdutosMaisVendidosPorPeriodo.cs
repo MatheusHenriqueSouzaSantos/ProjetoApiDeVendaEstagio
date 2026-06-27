@@ -25,8 +25,22 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
 
         public void Compose(IDocumentContainer container)
         {
+            var pastaExecucao = AppDomain.CurrentDomain.BaseDirectory;
+            var pastaResources = Path.Combine(pastaExecucao, "Resources");
+
+            Console.WriteLine($"[CHECAGEM] A pasta Resources existe no servidor? {Directory.Exists(pastaResources)}");
+
+            if (Directory.Exists(pastaResources))
+            {
+                Console.WriteLine("[CHECAGEM] Arquivos encontrados dentro da pasta Resources:");
+                foreach (var arquivo in Directory.GetFiles(pastaResources))
+                {
+                    Console.WriteLine($" -> {Path.GetFileName(arquivo)}");
+                }
+            }
+
             var caminhoBase = AppDomain.CurrentDomain.BaseDirectory;
-            var caminhoImagem = Path.Combine(caminhoBase, "Resources", "LogoBikeCiaShopParaEstagio.jpg");
+            var caminhoImagem2 = Path.Combine(caminhoBase, "Resources", "LogoBikeCiaShopParaEstagio.jpg");
             container.Page(page =>
             {
                 page.Size(PageSizes.A4);
@@ -49,7 +63,7 @@ namespace ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios
                         });
 
                         table.Cell().ColumnSpan(5);
-                        table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().AlignTop().PaddingBottom(-80).Width(120).Height(60).Image(caminhoImagem).FitArea();
+                        table.Cell().ColumnSpan(3).TranslateX(143).TranslateY(-45).AlignRight().AlignTop().PaddingBottom(-80).Width(120).Height(60).Image(caminhoImagem2).FitArea();
                     });
                     col.Item().Text($"Relatório de Produtos Mais Vendidos Por Período: {_dataDeInicioDoPeriodo} à {_dataDeFimDoPeriodo}").FontSize(20).Bold();
                     col.Item().PaddingVertical(10);
