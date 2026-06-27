@@ -10,35 +10,35 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.FornecedorDomain
         {
             base.Configure(builder);
 
-            builder.ToTable("FORNECEDOR");
+            builder.ToTable("fornecedor");
 
             builder.Property(f=>f.Telefone)
-                .HasColumnName("TELEFONE")
+                .HasColumnName("telefone")
                 .HasMaxLength(20)
                 .IsRequired();
 
             builder.Property(f=>f.Email)
-                .HasColumnName("EMAIL")
+                .HasColumnName("email")
                 .HasMaxLength(200)
                 .IsRequired();
 
             builder.Property(f=>f.RazaoSocial)
-                .HasColumnName("RAZAO_SOCIAL")
+                .HasColumnName("razao_social")
                 .HasMaxLength(100)
                 .IsRequired();
 
             builder.Property(f => f.NomeFantasia)
-                .HasColumnName("NOME_FANTASIA")
+                .HasColumnName("nome_fantasia")
                 .HasMaxLength(100);
 
             builder.Property(f=>f.Cnpj)
-                .HasColumnName("CNPJ")
+                .HasColumnName("cnpj")
                 .HasMaxLength(14)
                 .IsRequired();
 
             builder.Property(f => f.InscricaoEstadual)
                 .HasMaxLength(15)
-                .HasColumnName("INSCRICAO_ESTADUAL");
+                .HasColumnName("inscricao_estadual");
 
         }
     }

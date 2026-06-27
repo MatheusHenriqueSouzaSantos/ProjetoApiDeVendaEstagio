@@ -9,7 +9,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ProdutoDomain
         public override void Configure(EntityTypeBuilder<ProdutoLog> builder)
         {
             base.Configure(builder);
-            builder.ToTable("LOG_PRODUTO");
+            builder.ToTable("log_produto");
 
             builder.HasOne(p => p.Produto)
                 .WithMany()
@@ -17,8 +17,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ProdutoDomain
                 .IsRequired();
 
             builder.Property(p => p.IdProduto)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_PRODUTO")
+                .HasColumnName("id_produto")
                 .IsRequired();
         }
     }

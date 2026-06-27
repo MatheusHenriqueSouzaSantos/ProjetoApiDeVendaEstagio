@@ -9,23 +9,23 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain.En
         public override void Configure(EntityTypeBuilder<Endereco> builder) 
         {
             base.Configure(builder);
-            builder.ToTable("ENDERECO");
+            builder.ToTable("endereco");
 
             builder.Property(e => e.Logradouro)
                 .HasMaxLength(80)
-                .HasColumnName("LOGRADOURO")
+                .HasColumnName("logradouro")
                 .IsRequired();
             builder.Property(e => e.Numero)
                 .HasMaxLength(15)
-                .HasColumnName("NUMERO")
+                .HasColumnName("numero")
                 .IsRequired();
             builder.Property(e=>e.Cidade)
                 .HasMaxLength(35)
-                .HasColumnName("CIDADE")
+                .HasColumnName("cidade")
                 .IsRequired();
             builder.Property(e=>e.SiglaUf)
                 .HasMaxLength(2)
-                .HasColumnName("SIGLA_UF")
+                .HasColumnName("sigla_uf")
                 .IsRequired();
         }
 

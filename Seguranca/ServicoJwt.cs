@@ -12,7 +12,7 @@ namespace ApiEstagioBicicletaria.Seguranca
 
         public ServicoJwt(IConfiguration configuracao)
         {
-            _chaveJwtEmString = configuracao["JWT_KEY"] ?? throw new Exception("Variavel de ambiente JWT_KEY não encontrada");
+            _chaveJwtEmString = configuracao["jwt:key"] ?? throw new Exception("Variavel de ambiente JWT_KEY não encontrada");
         }
 
         public string GerarJWT(Usuario usuario)

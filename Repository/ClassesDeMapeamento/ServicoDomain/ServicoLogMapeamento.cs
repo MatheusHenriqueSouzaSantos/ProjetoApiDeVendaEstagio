@@ -9,15 +9,14 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ServicoDomain
         public override void Configure(EntityTypeBuilder<ServicoLog> builder)
         {
             base.Configure(builder);
-            builder.ToTable("LOG_SERVICO");
+            builder.ToTable("log_servico");
 
             builder.HasOne(s => s.Servico)
                 .WithMany()
                 .HasForeignKey(s => s.IdServico)
                 .IsRequired();
             builder.Property(s => s.IdServico)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_SERVICO")
+                .HasColumnName("id_servico")
                 .IsRequired();
         }
     }

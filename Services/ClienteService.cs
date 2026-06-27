@@ -71,6 +71,43 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
+        public List<ClienteInativoOutputDto> BuscarClientesInativos()
+        {
+            List<ClienteFisico> clientesFisicos = _contextoDb.Clientes
+               .OfType<ClienteFisico>()
+               .Include(c => c.Endereco)
+               .Where(c => !c.Ativo)
+               .ToList();
+
+            List<ClienteJuridico> clientesJuridicos = _contextoDb.Clientes
+                .OfType<ClienteJuridico>()
+                .Include(c => c.Endereco)
+                .Where(c => !c.Ativo)
+                .ToList();
+            List<ClienteInativoOutputDto> todosClientesFormatoDto = new ();
+            List<ClienteFisicoInativoOutputDto> clientesFisicoFormatoDtoOutput = new();
+
+            foreach (ClienteFisico clienteFisicoIterado in clientesFisicos)
+            {
+                ClienteFisicoInativoOutputDto clienteFormatoDtoOutput = new (clienteFisicoIterado.Nome,clienteFisicoIterado.Cpf,clienteFisicoIterado.Id,
+                    clienteFisicoIterado.Endereco,clienteFisicoIterado.DataCriacao,clienteFisicoIterado.Telefone,clienteFisicoIterado.Email,
+                    clienteFisicoIterado.TipoCliente,clienteFisicoIterado.Ativo);
+                clientesFisicoFormatoDtoOutput.Add(clienteFormatoDtoOutput);
+            }
+            todosClientesFormatoDto.AddRange(clientesFisicoFormatoDtoOutput);
+            List<ClienteJuridicoInativoOutputDto> clientesJuridicosFormatoDtoOutput = new ();
+            foreach (ClienteJuridico clienteJuridicoIterado in clientesJuridicos)
+            {
+                ClienteJuridicoInativoOutputDto clienteFormatoDtoOutput = new (clienteJuridicoIterado.RazaoSocial,clienteJuridicoIterado.NomeFantasia,
+                    clienteJuridicoIterado.InscricaoEstadual,clienteJuridicoIterado.Cnpj,clienteJuridicoIterado.Id,clienteJuridicoIterado.Endereco,
+                    clienteJuridicoIterado.DataCriacao,clienteJuridicoIterado.Telefone,clienteJuridicoIterado.Email,clienteJuridicoIterado.TipoCliente,
+                    clienteJuridicoIterado.Ativo);
+                clientesJuridicosFormatoDtoOutput.Add(clienteFormatoDtoOutput);
+            }
+            todosClientesFormatoDto.AddRange(clientesJuridicosFormatoDtoOutput);
+            return todosClientesFormatoDto;
+        }
+
         public ClienteDtoOutPut BuscarClientePorId(Guid id)
         {
             Cliente? cliente = _contextoDb.Clientes.Include(c => c.Endereco).FirstOrDefault(c => c.Id == id && c.Ativo);
@@ -368,12 +405,16 @@ namespace ApiEstagioBicicletaria.Services
         }
         public ClienteFisicoDtoOutPut BuscarClientePorCpf(string cpfEnviado)
         {
-            string cpfSomentNumeros=DocumentoUtil.RemoverNaoNumericos(cpfEnviado);
-            if (!DocumentoUtil.ValidarCpf(cpfSomentNumeros))
+            string cpfSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(cpfEnviado);
+            if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cpfSemPontoETracos))
             {
-                throw new ExcecaoDeRegraDeNegocio(400,"Cpf Ínválido");
+                throw new ExcecaoDeRegraDeNegocio(400, "O cpf deve conter apenas números");
             }
-            ClienteFisico? clienteVindoDoBanco = _contextoDb.ClientesFisicos.Include(c=>c.Endereco).FirstOrDefault(c => c.Cpf == cpfSomentNumeros && c.Ativo);
+            if (!DocumentoUtil.ValidarCpf(cpfSemPontoETracos))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
+            }
+            ClienteFisico? clienteVindoDoBanco = _contextoDb.ClientesFisicos.Include(c=>c.Endereco).FirstOrDefault(c => c.Cpf == cpfSemPontoETracos && c.Ativo);
             if(clienteVindoDoBanco == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"Cliente não encontrado!!");
@@ -388,13 +429,16 @@ namespace ApiEstagioBicicletaria.Services
 
         public ClienteJuridicoDtoOutPut BuscarClientePorCnpj(string cnpjEnviado)
         {
-            string cnpjSomenteNumeros = DocumentoUtil.RemoverNaoNumericos(cnpjEnviado);
-
-            if (!DocumentoUtil.ValidarCnpj(cnpjSomenteNumeros))
+            string cnpjSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(cnpjEnviado);
+            if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cnpjSemPontoETracos))
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "Cnpj Inválido");
+                throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve conter apenas números");
             }
-            ClienteJuridico? clienteVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c=>c.Endereco).FirstOrDefault(c => c.Cnpj == cnpjSomenteNumeros && c.Ativo);
+            if (!DocumentoUtil.ValidarCnpj(cnpjSemPontoETracos))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Cnpj inválido");
+            }
+            ClienteJuridico? clienteVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c=>c.Endereco).FirstOrDefault(c => c.Cnpj == cnpjSemPontoETracos && c.Ativo);
             if(clienteVindoDoBanco == null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cliente não encontrado!!");
@@ -406,9 +450,23 @@ namespace ApiEstagioBicicletaria.Services
             return clienteFormatoDto;
         }
 
-        public List<BaseLogOutputDto> BuscarLogsClientePorIdCliente(Guid idCliente)
+        public List<Object> BuscarLogsClientePorIdCliente(Guid idCliente)
         {
-            List<ClienteLog> clienteLogs=_contextoDb.ClienteLogs.Where(l=>l.IdCliente==idCliente).ToList();
+            Cliente? cliente=_contextoDb.ClientesFisicos.FirstOrDefault(c=>c.Id==idCliente);
+
+            if (cliente == null)
+            {
+                cliente = _contextoDb.ClientesJuridicos.FirstOrDefault(c => c.Id == idCliente);
+            }
+
+            if (cliente == null)
+            {
+                throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado");
+            }
+
+
+
+            List<ClienteLog> clienteLogs = _contextoDb.ClienteLogs.Where(l => l.IdCliente == cliente.Id).ToList();
 
             List<ClienteLogOutputDto> clienteDtoLogs = clienteLogs.Select(l =>
                 new ClienteLogOutputDto(
@@ -422,7 +480,7 @@ namespace ApiEstagioBicicletaria.Services
                     )
             ).ToList();
 
-            List<EnderecoLog> enderecoLogs = _contextoDb.EnderecoLogs.Where(l => l.IdCliente == idCliente).ToList();
+            List<EnderecoLog> enderecoLogs = _contextoDb.EnderecoLogs.Where(l => l.IdCliente == cliente.Id).ToList();
 
             List<EnderecoLogOutputDto> enderecoDtoLogs = enderecoLogs.Select(l =>
                 new EnderecoLogOutputDto(
@@ -436,15 +494,129 @@ namespace ApiEstagioBicicletaria.Services
                     )
             ).ToList();
 
-            List<BaseLogOutputDto> logDtos= new List<BaseLogOutputDto>();
+            List<BaseLogOutputDto> logDtos = new List<BaseLogOutputDto>();
 
             logDtos.AddRange(clienteDtoLogs);
-            
+
             logDtos.AddRange(enderecoDtoLogs);
 
-            return logDtos.OrderByDescending(l => l.DataCriacao).ToList();
+            return logDtos.OrderByDescending(l => l.DataCriacao).Cast<Object>().ToList();
 
-            
+
+        }
+
+        public List<Object> BuscarLogsPorDocumentoIdentificador(DocumentoClienteInputDto dto)
+        {
+            switch (dto.TipoDocumento)
+            {
+                case (EnumTipoDocumentoASerBuscado.Cpf):
+                    {
+                        string cpfSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(dto.NumeroDocumento);
+                        if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cpfSemPontoETracos))
+                        {
+                            throw new ExcecaoDeRegraDeNegocio(400, "O cpf deve conter apenas números");
+                        }
+                        if (!DocumentoUtil.ValidarCpf(cpfSemPontoETracos))
+                        {
+                            throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
+                        }
+                        ClienteFisico clienteVindoDoBanco = _contextoDb.ClientesFisicos.Include(c => c.Endereco)
+                            .FirstOrDefault(c => c.Cpf == cpfSemPontoETracos) ??
+                            throw new ExcecaoDeRegraDeNegocio(400, "Cliente não encontrado!!");
+
+                        List<ClienteLog> clienteLogs = _contextoDb.ClienteLogs.Where(l => l.IdCliente == clienteVindoDoBanco.Id).ToList();
+
+                        List<ClienteLogOutputDto> clienteDtoLogs = clienteLogs.Select(l =>
+                            new ClienteLogOutputDto(
+                                    l.IdCliente,
+                                    l.Acao,
+                                    l.CampoAlterado,
+                                    l.ValorAntigo,
+                                    l.ValorNovo,
+                                    l.IdUsuarioResponsavel,
+                                    l.DataCriacao
+                                )
+                        ).ToList();
+
+                        List<EnderecoLog> enderecoLogs = _contextoDb.EnderecoLogs.Where(l => l.IdCliente == clienteVindoDoBanco.Id).ToList();
+
+                        List<EnderecoLogOutputDto> enderecoDtoLogs = enderecoLogs.Select(l =>
+                            new EnderecoLogOutputDto(
+                                    l.IdEndereco,
+                                    l.Acao,
+                                    l.CampoAlterado,
+                                    l.ValorAntigo,
+                                    l.ValorNovo,
+                                    l.IdUsuarioResponsavel,
+                                    l.DataCriacao
+                                )
+                        ).ToList();
+
+                        List<BaseLogOutputDto> logDtos = new List<BaseLogOutputDto>();
+
+                        logDtos.AddRange(clienteDtoLogs);
+
+                        logDtos.AddRange(enderecoDtoLogs);
+
+                        return logDtos.OrderByDescending(l => l.DataCriacao).Cast<Object>().ToList();
+                    }
+                case (EnumTipoDocumentoASerBuscado.Cnpj):
+                    {
+                        string cnpjSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(dto.NumeroDocumento);
+                        if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cnpjSemPontoETracos))
+                        {
+                            throw new ExcecaoDeRegraDeNegocio(400, "O Cnpj deve conter apenas números");
+                        }
+                        if (!DocumentoUtil.ValidarCnpj(cnpjSemPontoETracos))
+                        {
+                            throw new ExcecaoDeRegraDeNegocio(400, "Cnpj inválido");
+                        }
+                        ClienteJuridico clienteVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c => c.Endereco)
+                            .FirstOrDefault(c => c.Cnpj == cnpjSemPontoETracos) ??
+                            throw new ExcecaoDeRegraDeNegocio(400, "Cliente não encontrado!!");
+
+                        List<ClienteLog> clienteLogs = _contextoDb.ClienteLogs.Where(l => l.IdCliente == clienteVindoDoBanco.Id).ToList();
+
+                        List<ClienteLogOutputDto> clienteDtoLogs = clienteLogs.Select(l =>
+                            new ClienteLogOutputDto(
+                                    l.IdCliente,
+                                    l.Acao,
+                                    l.CampoAlterado,
+                                    l.ValorAntigo,
+                                    l.ValorNovo,
+                                    l.IdUsuarioResponsavel,
+                                    l.DataCriacao
+                                )
+                        ).ToList();
+
+                        List<EnderecoLog> enderecoLogs = _contextoDb.EnderecoLogs.Where(l => l.IdCliente == clienteVindoDoBanco.Id).ToList();
+
+                        List<EnderecoLogOutputDto> enderecoDtoLogs = enderecoLogs.Select(l =>
+                            new EnderecoLogOutputDto(
+                                    l.IdEndereco,
+                                    l.Acao,
+                                    l.CampoAlterado,
+                                    l.ValorAntigo,
+                                    l.ValorNovo,
+                                    l.IdUsuarioResponsavel,
+                                    l.DataCriacao
+                                )
+                        ).ToList();
+
+                        List<BaseLogOutputDto> logDtos = new List<BaseLogOutputDto>();
+
+                        logDtos.AddRange(clienteDtoLogs);
+
+                        logDtos.AddRange(enderecoDtoLogs);
+
+                        return logDtos.OrderByDescending(l => l.DataCriacao).Cast<Object>().ToList();
+                    }
+                default:
+                    {
+                        throw new ExcecaoDeRegraDeNegocio(400, "Tipo de cliente inválido enviado");
+                        break;
+                    }
+            }
         }
 
     }

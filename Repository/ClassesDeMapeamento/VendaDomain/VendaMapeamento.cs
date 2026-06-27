@@ -9,10 +9,10 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain
         public override void Configure(EntityTypeBuilder<Venda> builder)
         {
             base.Configure(builder);
-            builder.ToTable("VENDA");
+            builder.ToTable("venda");
 
             builder.Property(v => v.CodigoVenda)
-                .HasColumnName("CODIGO_VENDA")
+                .HasColumnName("codigo_venda")
                 .IsRequired();
 
             builder.HasOne(v => v.Cliente)
@@ -20,23 +20,22 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain
                 .HasForeignKey(v=>v.IdCliente)
                 .IsRequired();
             builder.Property(v => v.IdCliente)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_CLIENTE")
+                .HasColumnName("id_cliente")
                 .IsRequired();
             builder.Property(v => v.DescontoTotal)
-                .HasColumnName("DESCONTO_TOTAL");
+                .HasColumnName("desconto_total");
             builder.Property(v=>v.ValorTotalComDesconto)
-                .HasColumnName("VALOR_TOTAL_COM_DESCONTO")
+                .HasColumnName("valor_total_com_desconto")
                 .IsRequired();
             builder.Property(v => v.ValorTotalSemDesconto)
-                .HasColumnName("VALOR_TOTAL_SEM_DESCONTO")
+                .HasColumnName("valor_total_sem_desconto")
                 .IsRequired();
             builder.HasOne(v=>v.Vendedor)
                 .WithMany()
                 .HasForeignKey(v=>v.IdVendedor)
                 .IsRequired();
             builder.Property(v=>v.IdVendedor)
-                .HasColumnName("ID_VENDEDOR")
+                .HasColumnName("id_vendedor")
                 .IsRequired();
         }
     }

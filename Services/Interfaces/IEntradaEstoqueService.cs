@@ -8,6 +8,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
     {
         List<EntradaEstoqueOutputDto> BuscarTodos();
 
+        List<EntradaEstoqueOutputDto> BuscarTodosInativos();
+
         EntradaEstoqueOutputDto BuscarPorId(Guid id);
 
         EntradaEstoqueOutputDto Cadastrar(EntradaEstoqueCreateDto dto);
@@ -17,6 +19,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         void InativarEntradaEstoque(Guid id);
 
         List<Object> BuscarLogsPorIdEntradaEstoque(Guid idEntrada);
+
+        List<Object> BuscarLogsPorCodigoEntrada(string codigoEntrada);
 
     }
 }

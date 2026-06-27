@@ -36,7 +36,7 @@ namespace ApiEstagioBicicletaria.Services
 
         private readonly EstoqueRepositorio _estoqueRepositorio;
 
-        private readonly GeradorCodigoIndentificadorMovimentacao<EntradaEstoque> _geradorCodigo;
+        private readonly GeradorCodigoIndentificador<EntradaEstoque> _geradorCodigo;
 
         private readonly EntradaEstoqueLogService _entradaEstoqueLogService;
 
@@ -48,7 +48,7 @@ namespace ApiEstagioBicicletaria.Services
 
         public EntradaEstoqueService(ContextoDb contexto, EntradaEstoqueRepositorio repositorio, 
             ItemEntradaEstoqueRepositorio itemEntradaRepositorio, FornecedorRepositorio fornecedorRepositorio, 
-            ProdutoRepositorio produtoRepositorio, EstoqueRepositorio estoqueRepositorio, GeradorCodigoIndentificadorMovimentacao<EntradaEstoque> geradorCodigo,
+            ProdutoRepositorio produtoRepositorio, EstoqueRepositorio estoqueRepositorio, GeradorCodigoIndentificador<EntradaEstoque> geradorCodigo,
             EntradaEstoqueLogService entradaEstoqueLogService,ItemEntradaEstoqueLogService itemEntradaEstoqueLogService,EstoqueLogService estoqueLogService
             ,UsuarioLogadoService usuarioLogadoService)
         {
@@ -82,6 +82,23 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
+        public List<EntradaEstoqueOutputDto> BuscarTodosInativos()
+        {
+            List<EntradaEstoque> entradasEstoque = _contexto.EntradasEstoque.Include(e=>e.Fornecedor).Where(e => !e.Ativo).ToList();
+            List<EntradaEstoqueOutputDto> entradasEstoqueDto = new List<EntradaEstoqueOutputDto>();
+
+            foreach (EntradaEstoque entradaEstoque in entradasEstoque)
+            {
+                List<ItemEntradaEstoque> itensEntradaEstoque = _contexto.ItensEntradaEstoque.Include(i=>i.Produto)
+                    .Where(i=>i.IdEntradaEstoque==entradaEstoque.Id && !i.Ativo).ToList();
+                EntradaEstoqueOutputDto entradaEstoqueDto = EntidadeParaDto(entradaEstoque, itensEntradaEstoque);
+                entradasEstoqueDto.Add(entradaEstoqueDto);
+            }
+
+            return entradasEstoqueDto;
+
+        }
+
         public EntradaEstoqueOutputDto BuscarPorId(Guid id)
         {
             EntradaEstoque entradaEstoque = _repositorio.BuscarPorId(id)
@@ -97,7 +114,7 @@ namespace ApiEstagioBicicletaria.Services
             Fornecedor fornecedor=_fornecedorRepositorio.BuscarFornecedorPorId(dto.IdFornecedor)
             ?? throw new ExcecaoDeRegraDeNegocio(404,"Fornecedor nao encontrado");
 
-            EntradaEstoque entradaEstoque = new(fornecedor, _geradorCodigo.GerarCodigo(),StatusEntradaEstoque.Criada);
+            EntradaEstoque entradaEstoque = new(fornecedor, _geradorCodigo.GerarCodigoMovimentacao(),StatusEntradaEstoque.Criada);
 
             List<ItemEntradaEstoque> itens=CriarItensEntradaEstoque(dto.Itens,entradaEstoque);
           
@@ -287,12 +304,15 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<Object> BuscarLogsPorIdEntradaEstoque(Guid idEntrada)
         {
-            List<EntradaEstoqueLogOutputDto> logsEntradaDto=_contexto.EntradasEstoqueLogs.Where(l=>l.IdEntradaEstoque==idEntrada)
+            EntradaEstoque entradaEstoque = _contexto.EntradasEstoque.FirstOrDefault(e => e.Id == idEntrada)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Entrada estoque não encontrada");
+
+            List<EntradaEstoqueLogOutputDto> logsEntradaDto=_contexto.EntradasEstoqueLogs.Where(l=>l.IdEntradaEstoque==entradaEstoque.Id)
                 .Select(l=>new EntradaEstoqueLogOutputDto(l.IdEntradaEstoque,l.Acao,l.CampoAlterado,l.ValorAntigo,l.ValorNovo,l.IdUsuarioResponsavel,l.DataCriacao)).ToList();
 
             List<ItemEntradaEstoqueLogOutputDto> logsItemEntradaDto = _contexto.ItensEntradaEstoqueLogs
                 .Include(l => l.ItemEntradaEstoque).ThenInclude(i => i.Produto)
-                .Where(l => l.IdEntradaEstoque == idEntrada)
+                .Where(l => l.IdEntradaEstoque == entradaEstoque.Id)
                 .Select(l => new ItemEntradaEstoqueLogOutputDto(l.IdItemEntradaEstoque, l.ItemEntradaEstoque.IdProduto,
                 l.ItemEntradaEstoque.Produto.NomeProduto, l.Acao, l.CampoAlterado, l.ValorAntigo, l.ValorNovo, l.IdUsuarioResponsavel, l.DataCriacao)).ToList();
 
@@ -306,7 +326,32 @@ namespace ApiEstagioBicicletaria.Services
                 Cast<Object>().
                 ToList();
         }
-        
+
+        public List<Object> BuscarLogsPorCodigoEntrada(string codigoEntrada)
+        {
+            EntradaEstoque entradaEstoque=_contexto.EntradasEstoque.FirstOrDefault(e=>e.CodigoEntrada==codigoEntrada)
+                ?? throw new ExcecaoDeRegraDeNegocio(404,"Entrada estoque não encontrada");
+
+            List<EntradaEstoqueLogOutputDto> logsEntradaDto = _contexto.EntradasEstoqueLogs.Where(l => l.IdEntradaEstoque == entradaEstoque.Id)
+                .Select(l => new EntradaEstoqueLogOutputDto(l.IdEntradaEstoque, l.Acao, l.CampoAlterado, l.ValorAntigo, l.ValorNovo, l.IdUsuarioResponsavel, l.DataCriacao)).ToList();
+
+            List<ItemEntradaEstoqueLogOutputDto> logsItemEntradaDto = _contexto.ItensEntradaEstoqueLogs
+                .Include(l => l.ItemEntradaEstoque).ThenInclude(i => i.Produto)
+                .Where(l => l.IdEntradaEstoque == entradaEstoque.Id)
+                .Select(l => new ItemEntradaEstoqueLogOutputDto(l.IdItemEntradaEstoque, l.ItemEntradaEstoque.IdProduto,
+                l.ItemEntradaEstoque.Produto.NomeProduto, l.Acao, l.CampoAlterado, l.ValorAntigo, l.ValorNovo, l.IdUsuarioResponsavel, l.DataCriacao)).ToList();
+
+            List<BaseLogOutputDto> logsEntradaEItensDto = new List<BaseLogOutputDto>();
+
+            logsEntradaEItensDto.AddRange(logsEntradaDto);
+            logsEntradaEItensDto.AddRange(logsItemEntradaDto);
+
+            return logsEntradaEItensDto.
+                OrderByDescending(l => l.DataCriacao).
+                Cast<Object>().
+                ToList();
+        }
+
     }
 
         // public void DeletarItensEntradaEstoque(Guid idEntradaEstoqueDosItens)

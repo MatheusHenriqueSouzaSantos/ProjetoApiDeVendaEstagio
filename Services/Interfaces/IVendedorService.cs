@@ -8,6 +8,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
     {
         List<Vendedor> BuscarTodosOsVendedores();
 
+        List<Vendedor> BuscarTodosOsVendedoresInativos();
+
         Vendedor BuscarVendedorPorId(Guid id);
 
         Vendedor BuscarVendedorPorCpf(string cpf);
@@ -24,6 +26,8 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
             (DatasParaGeracaoDeRelatorioDto dto);
 
         List<VendedorLogOutputDto> BuscarLogsPorIdVendedor(Guid id);
+
+        List<VendedorLogOutputDto> BuscarLogsPorCpf(string cpf);
 
     }
 }

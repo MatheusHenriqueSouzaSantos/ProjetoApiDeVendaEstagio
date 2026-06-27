@@ -11,29 +11,28 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.Fina
         {
             base.Configure(builder);
 
-            builder.ToTable("TRANSACAO");
+            builder.ToTable("transacao");
 
             builder.HasOne(t => t.Venda)
                 .WithOne()
                 .HasForeignKey<Transacao>(t=>t.IdVenda)
                 .IsRequired();
             builder.Property(t => t.IdVenda)
-                .HasColumnName("ID_VENDA")
-                .HasColumnType("binary(16)")
+                .HasColumnName("id_venda")
                 .IsRequired();
             builder.Property(t => t.TipoPagamento)
-                .HasColumnName("TIPO_PAGAMENTO")
+                .HasColumnName("tipo_pagamento")
                 .HasConversion<string>()
                 .IsRequired();
             builder.Property(t => t.MeioPagamento)
-                .HasColumnName("MEIO_PAGAMENTO")
+                .HasColumnName("meio_pagamento")
                 .HasConversion<string>()
                 .IsRequired();
             builder.Property(t => t.TransacaoEmCurso)
-                .HasColumnName("TRANSACAO_EM_CURSO")
+                .HasColumnName("transacao_em_curso")
                 .IsRequired();
             builder.Property(t => t.Pago)
-                .HasColumnName("PAGO")
+                .HasColumnName("pago")
                 .IsRequired();
         }
     }

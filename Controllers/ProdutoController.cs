@@ -41,6 +41,27 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [HttpGet("inativos")]
+        [Authorize]
+        public ActionResult<List<ProdutoInativoOutputDto>> BuscarProdutosInativos()
+        {
+
+            try
+            {
+                return _produtoService.BuscarProdutosInativos();
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                //não retornar a mensagem pois indica exatamente o erro e há o risco de ameaças explorarem
+                //return StatusCode(500, ex.Message);
+                return StatusCode(500, "Erro Inesperado");
+            }
+        }
+
         [HttpGet("{id}")]
         [Authorize]
         public ActionResult<ProdutoDtoOutPut> BuscarProdutoPorId([FromRoute] Guid id)
@@ -207,6 +228,26 @@ namespace ApiEstagioBicicletaria.Controllers
             try
             {
                 return Ok(_produtoService.BuscarLogsPorIdProduto(idProduto));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("log/codigo-de-barra/{codigoDeBarra}")]
+        public ActionResult<List<Object>> BuscarLogsPorCodigoDeBarra(string codigoDeBarra)
+        {
+            try
+            {
+                return Ok(_produtoService.BuscarLogsPorCodigoDeBarra(codigoDeBarra));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {

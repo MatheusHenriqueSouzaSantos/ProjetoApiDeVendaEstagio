@@ -10,7 +10,6 @@ using ApiEstagioBicicletaria.Excecoes;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Utilities;
 
 namespace ApiEstagioBicicletaria.Controllers
 {
@@ -32,6 +31,25 @@ namespace ApiEstagioBicicletaria.Controllers
             try
             {
                 return Ok(_vendaService.BuscarTodasVendas());
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.ToString());
+            }
+        }
+
+        [HttpGet("inativos")]
+        [Authorize]
+        public ActionResult<List<VendaTransacaoOutputDto>> BuscarTodasVendasInativas()
+        {
+            try
+            {
+                return Ok(_vendaService.BuscarTodasVendasInativas());
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -229,7 +247,28 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return Ok(_vendaService.buscarLogsPorIdVenda(idVenda));
+                return Ok(_vendaService.BuscarLogsPorIdVenda(idVenda));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
+            }
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("log/codigo-venda/{codigoVenda}")]
+        public ActionResult<List<Object>> BuscarLogsPorCodigoVenda(string codigoVenda)
+        {
+            try
+            {
+                return Ok(_vendaService.BuscarLogsPorCodigoVenda(codigoVenda));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {

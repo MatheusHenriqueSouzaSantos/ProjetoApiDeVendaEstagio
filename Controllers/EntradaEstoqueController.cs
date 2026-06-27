@@ -38,6 +38,24 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
+        [HttpGet("inativos")]
+        [Authorize]
+        public ActionResult<List<EntradaEstoqueOutputDto>> BuscarTodosInativos()
+        {
+            try
+            {
+                return Ok(_service.BuscarTodosInativos());
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro interno");
+            }
+        }
+
         [HttpGet("{id}")]
         [Authorize]
         public ActionResult<EntradaEstoqueOutputDto> BuscarPorId([FromRoute]Guid id)
@@ -125,6 +143,26 @@ namespace ApiEstagioBicicletaria.Controllers
             try
             {
                 return Ok(_service.BuscarLogsPorIdEntradaEstoque(idEntradaEstoque));
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado");
+                //return StatusCode(500, ex.Message);
+
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("log/codigo-entrada/{codigoEntrada}")]
+        public ActionResult<List<Object>> BuscarLogsPorCodigoEntrada(string codigoEntrada)
+        {
+            try
+            {
+                return Ok(_service.BuscarLogsPorCodigoEntrada(codigoEntrada));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {

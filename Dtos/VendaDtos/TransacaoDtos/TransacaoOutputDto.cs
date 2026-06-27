@@ -23,17 +23,17 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
         public int NumeroDeParcelasPagas { get; set; } = 0;
 
         public decimal ValorPago { get; set; }
-
-
         public List<ParcelaOutPutDto> Parcelas { get; set; }
+
+        public bool Ativo { get; set; }
 
         protected TransacaoOutputDto()
         {
 
         }
 
-        public TransacaoOutputDto(Guid idTransacao, DateTime dataCriacao, TipoPagamento tipoPagamento, MeioPagamento meioPagamento, bool transacaoEmCurso, bool pago, int numeroDeParcelasNaoPagas,
-            int numeroDeParcelasPagas, decimal valorPago, List<ParcelaOutPutDto> parcelas)
+        public TransacaoOutputDto(Guid idTransacao, DateTime dataCriacao, TipoPagamento tipoPagamento, MeioPagamento meioPagamento, bool transacaoEmCurso,
+            bool pago, int numeroDeParcelasNaoPagas,int numeroDeParcelasPagas, decimal valorPago, List<ParcelaOutPutDto> parcelas, bool ativo)
         {
             IdTransacao = idTransacao;
             DataCriacao = dataCriacao;
@@ -45,6 +45,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos.TransacaoDtos
             NumeroDeParcelasPagas = numeroDeParcelasPagas;
             ValorPago = valorPago;
             Parcelas = parcelas;
+            Ativo = ativo;
         }
 
 

@@ -9,7 +9,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EstoqueDomain
         public override void Configure(EntityTypeBuilder<Estoque> builder)
         {
             base.Configure(builder);
-            builder.ToTable("ESTOQUE");
+            builder.ToTable("estoque");
 
             builder.HasOne(e => e.Produto)
                 .WithOne()
@@ -17,11 +17,10 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EstoqueDomain
                 .IsRequired();
 
             builder.Property(e => e.ProdutoId)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_PRODUTO");
+                .HasColumnName("id_produto");
 
             builder.Property(e=>e.QuantidadeEmEstoque)
-                .HasColumnName("QUANTIDADE_EM_ESTOQUE")
+                .HasColumnName("quantidade_em_estoque")
                 .IsRequired();
         }
     }

@@ -1,6 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ApiEstagioBicicletaria;
 
@@ -8,18 +9,22 @@ public class BaseMapeamento<T> : IEntityTypeConfiguration<T> where T: EntidadeBa
 {
     public virtual void Configure(EntityTypeBuilder<T> builder)
     {
+        var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
+           v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(), 
+           v => DateTime.SpecifyKind(v, DateTimeKind.Local).ToLocalTime() 
+       );
 
-         builder.HasKey(t => t.Id);
+        builder.HasKey(t => t.Id);
 
             builder.Property(t => t.Id)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID")
+                .HasColumnName("id")
                 .IsRequired();
             builder.Property(t => t.DataCriacao)
-                .HasColumnName("DATA_CRIACAO")
+                .HasColumnName("data_criacao")
+                .HasConversion(dateTimeConverter)
                 .IsRequired();
             builder.Property(t => t.Ativo)
-                .HasColumnName("ATIVO")
+                .HasColumnName("ativo")
                 .IsRequired();
     }
 }

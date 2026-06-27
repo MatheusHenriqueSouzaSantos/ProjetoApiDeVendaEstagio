@@ -11,21 +11,21 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.EntradaEstoqueDo
         {
             base.Configure(builder);
 
-            builder.ToTable("ENTRADA_ESTOQUE");
+            builder.ToTable("entrada_estoque");
 
             builder.HasOne(e=>e.Fornecedor)
                 .WithMany()
                 .HasForeignKey(e=>e.IdFornecedor)
                 .IsRequired();
             builder.Property(e=>e.IdFornecedor)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_FORNECEDOR")
+                .HasColumnName("id_fornecedor")
                 .IsRequired();
             builder.Property(e=>e.CodigoEntrada)
-                .HasColumnName("CODIGO_ENTRADA")
+                .HasColumnName("codigo_entrada")
                 .IsRequired();
             builder.Property(e => e.Status)
-                .HasColumnName("STATUS")
+                .HasColumnName("status")
+                .HasConversion<string>()
                 .IsRequired();
         
         }

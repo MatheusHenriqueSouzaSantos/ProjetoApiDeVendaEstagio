@@ -1,7 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Identity;
-using Org.BouncyCastle.Crypto.Generators;
 
 namespace ApiEstagioBicicletaria.Services
 {

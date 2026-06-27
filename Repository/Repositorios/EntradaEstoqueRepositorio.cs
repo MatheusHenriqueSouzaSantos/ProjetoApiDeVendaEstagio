@@ -15,8 +15,9 @@ namespace ApiEstagioBicicletaria.Repository.Repositorios
 
         public List<EntradaEstoque> BuscarTodos()
         {
-            return _contexto.EntradasEstoque.
-            OrderBy(e=>e.Status== StatusEntradaEstoque.Criada? 1 : e.Status==StatusEntradaEstoque.Atualizada? 2 : 3)
+            return _contexto.EntradasEstoque
+            .Where(e=>e.Ativo)
+            .OrderBy(e=>e.Status== StatusEntradaEstoque.Criada? 1 : e.Status==StatusEntradaEstoque.Atualizada? 2 : 3)
             .Include(e=>e.Fornecedor)
             .ToList();
         }

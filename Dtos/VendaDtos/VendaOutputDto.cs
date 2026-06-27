@@ -25,6 +25,8 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
         public List<ItemVendaOutputDto> ItensVenda { get; private set; }
         public List<ServicoVendaOutputDto> ServicosVenda { get; private set; }
 
+        public bool Ativo {  get; private set; }
+
         public Vendedor Vendedor { get; private set; }
 
         protected VendaOutputDto()
@@ -34,7 +36,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
 
         public VendaOutputDto(Guid idVenda, string codigoVenda, DateTime dataCriacao, 
             decimal descontoTotalVenda, decimal valorTotalSemDesconto, decimal valorTotalComDesconto, 
-            Cliente cliente, List<ItemVendaOutputDto> itensVenda, List<ServicoVendaOutputDto> servicosVenda, Vendedor vendedor)
+            Cliente cliente, List<ItemVendaOutputDto> itensVenda, List<ServicoVendaOutputDto> servicosVenda, Vendedor vendedor,bool ativo)
         {
             IdVenda = idVenda;
             CodigoVenda = codigoVenda;
@@ -46,6 +48,7 @@ namespace ApiEstagioBicicletaria.Dtos.VendaDtos
             ItensVenda = itensVenda;
             ServicosVenda = servicosVenda;
             Vendedor = vendedor;
+            Ativo = ativo;
         }
     }
 }

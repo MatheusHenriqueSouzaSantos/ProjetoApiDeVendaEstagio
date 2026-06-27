@@ -9,26 +9,26 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendedorDomain
         public override void Configure(EntityTypeBuilder<Vendedor> builder)
         {
             base.Configure(builder);
-            builder.ToTable("VENDEDOR");
+            builder.ToTable("vendedor");
 
             builder.Property(v => v.Telefone)
                 .IsRequired()
-                .HasColumnName("TELEFONE")
+                .HasColumnName("telefone")
                 .HasMaxLength(20);
 
             builder.Property(v => v.Email)
                 .IsRequired()
-                .HasColumnName("EMAIL")
+                .HasColumnName("email")
                 .HasMaxLength(200);
 
             builder.Property(v => v.NomeCompleto)
                 .IsRequired()
-                .HasColumnName("NOME_COMPLETO")
+                .HasColumnName("nome_completo")
                 .HasMaxLength(100);
 
             builder.Property(v => v.Cpf)
                 .IsRequired()
-                .HasColumnName("CPF")
+                .HasColumnName("cpf")
                 .HasMaxLength(11);
 
         }

@@ -10,22 +10,22 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ProdutoDomain
         {
             base.Configure(builder);
 
-            builder.ToTable("PRODUTO");
+            builder.ToTable("produto");
         
             builder.Property(p => p.CodigoDeBarra)
-                .HasColumnName("CODIGO_DE_BARRA")
+                .HasColumnName("codigo_de_barra")
                 .HasMaxLength(128)
                 .IsRequired();
 
             builder.Property(p => p.NomeProduto)
-                .HasColumnName("NOME_PRODUTO")
+                .HasColumnName("nome_produto")
                 .HasMaxLength(50)
                 .IsRequired();
             builder.Property(p => p.Descricao)
                 .HasMaxLength(150)
-                .HasColumnName("DESCRICAO");
+                .HasColumnName("descricao");
             builder.Property(p => p.Preco)
-                .HasColumnName("PRECO_UNITARIO")
+                .HasColumnName("preco_unitario")
                 .IsRequired();
         }
     }

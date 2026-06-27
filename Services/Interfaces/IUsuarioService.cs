@@ -8,6 +8,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
     {
         // o usuario inicial sempre será criado pelo sistema
         List<UsuarioOutputDto> BuscarTodos();
+        List<UsuarioOutputDto> BuscarTodosInativos();
 
         UsuarioOutputDto BuscarPorId(Guid id);
 
@@ -24,5 +25,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         string Login(UsuarioLoginDto dto);
 
         List<UsuarioLogOutputDto> BuscarLogsPorIdUsuario(Guid id);
+
+        List<UsuarioLogOutputDto> BuscarLogsPorCodigoUsuario(string codigoUsuario);
     }
 }

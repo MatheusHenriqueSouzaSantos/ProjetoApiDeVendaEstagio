@@ -8,13 +8,12 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain
     {
         public void Configure(EntityTypeBuilder<ClienteFisico> builder)
         {
-            builder.ToTable("CLIENTE_FISICO");
+            builder.ToTable("cliente_fisico");
             //builder.HasKey(c => c.Id);
 
             //banco já faz isso:
 
             builder.Property(c => c.Id)
-                .HasColumnType("Binary(16)")
                 .IsRequired();
 
             //builder.HasKey(c => c.Id);
@@ -23,10 +22,10 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.ClienteDomain
 
             builder.Property(c => c.Nome)
                 .HasMaxLength(120)
-                .HasColumnName("NOME")
+                .HasColumnName("nome")
                 .IsRequired();
             builder.Property(c=>c.Cpf)
-                .HasColumnName("CPF")
+                .HasColumnName("cpf")
                 .HasMaxLength(11)
                 .IsRequired();
         }

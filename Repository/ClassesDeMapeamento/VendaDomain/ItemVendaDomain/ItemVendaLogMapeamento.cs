@@ -10,21 +10,19 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.VendaDomain.Item
         public override void Configure(EntityTypeBuilder<ItemVendaLog> builder)
         {
             base.Configure(builder);
-            builder.ToTable("LOG_ITEM_VENDA");
+            builder.ToTable("log_item_venda");
             builder.HasOne(i => i.ItemVenda)
                 .WithMany()
                 .HasForeignKey(i => i.IdItemVenda);
             builder.Property(i => i.IdItemVenda)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_ITEM_VENDA")
+                .HasColumnName("id_item_venda")
                 .IsRequired();
             builder.HasOne(i => i.Venda)
                 .WithMany()
                 .HasForeignKey(i => i.IdVenda)
                 .IsRequired();
             builder.Property(i => i.IdVenda)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID_VENDA")
+                .HasColumnName("id_venda")
                 .IsRequired();
         }
 

@@ -1,6 +1,7 @@
 ﻿using ApiEstagioBicicletaria.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento
 {
@@ -8,35 +9,41 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento
     {
         public virtual void Configure(EntityTypeBuilder<T> builder)
         {
+
+            var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
+           v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
+           v => DateTime.SpecifyKind(v, DateTimeKind.Local).ToLocalTime()
+       );
+
             builder.HasKey(t => t.Id);
 
             builder.Property(t => t.Id)
-                .HasColumnType("binary(16)")
-                .HasColumnName("ID")
+                .HasColumnName("id")
                 .IsRequired();
             builder.Property(t => t.Acao)
-                .HasColumnName("ACAO")
+                .HasColumnName("acao")
+                .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
             builder.Property(t => t.CampoAlterado)
-                .HasColumnName("CAMPO_ALTERADO")
+                .HasColumnName("campo_alterado")
                 .HasMaxLength(50)
                 .IsRequired();
             builder.Property(t => t.ValorAntigo)
-                .HasColumnName("VALOR_ANTIGO")
+                .HasColumnName("valor_antigo")
                 .HasMaxLength(300);
             builder.Property(t => t.ValorNovo)
-                .HasColumnName("VALOR_NOVO")
+                .HasColumnName("valor_novo")
                 .HasMaxLength(300);
             builder.HasOne(t => t.UsuarioResponsavel)
                 .WithMany()
                 .HasForeignKey(t => t.IdUsuarioResponsavel);
             builder.Property(t => t.IdUsuarioResponsavel)
-                .HasColumnName("ID_USUARIO_RESPONSAVEL")
-                .HasColumnType("binary(16)")
+                .HasColumnName("id_usuario_responsavel")
                 .IsRequired();
             builder.Property(t => t.DataCriacao)
-                .HasColumnName("DATA_CRIACAO")
+                .HasColumnName("data_criacao")
+                .HasConversion(dateTimeConverter)
                 .IsRequired();
         }
     }
