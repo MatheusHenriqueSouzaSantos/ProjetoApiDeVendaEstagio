@@ -205,7 +205,7 @@ namespace ApiEstagioBicicletaria.Services
                     Produto produtoDoItem = _contexto.Produtos.FirstOrDefault(p => p.Id == itemDto.IdProduto && p.Ativo)
                         ?? throw new ExcecaoDeRegraDeNegocio(404, $"Nenhum produto encontrado com o id: {itemDto.IdProduto}");
 
-                    Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.ProdutoId == produtoDoItem.Id && produtoDoItem.Ativo);
+                    Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.ProdutoId == produtoDoItem.Id && e.Ativo);
                     int quantidadeEmEstoqueAntiga = estoqueDoProduto.QuantidadeEmEstoque;
                     estoqueDoProduto.AdicionarQuantidadeEmEstoque(itemDto.Quantidade);
                     ItemEntradaEstoque itemCriado = new(entradaEstoque, produtoDoItem, itemDto.Quantidade);
@@ -288,7 +288,7 @@ namespace ApiEstagioBicicletaria.Services
                 }
                 Produto produtoDoItem=_contexto.Produtos.FirstOrDefault(p=>p.Id==itemDto.IdProduto && p.Ativo)
                     ?? throw new ExcecaoDeRegraDeNegocio(400,$"Produto com id:{itemDto.IdProduto} não encontrado");
-                Estoque estoqueDoItem=_contexto.Estoques.First(e=>e.ProdutoId==produtoDoItem.Id && produtoDoItem.Ativo);
+                Estoque estoqueDoItem=_contexto.Estoques.First(e=>e.ProdutoId==produtoDoItem.Id && e.Ativo);
                 int quantidadeAnteriorDoEstoque = estoqueDoItem.QuantidadeEmEstoque;
                 ItemEntradaEstoque item = new(entradaEstoque, produtoDoItem, itemDto.Quantidade);
                 _itemEntradaRepositorio.Cadastrar(item);
