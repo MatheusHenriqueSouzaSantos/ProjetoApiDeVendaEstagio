@@ -148,6 +148,7 @@ namespace ApiEstagioBicicletaria
                         IssuerSigningKey = new SymmetricSecurityKey(bytesJwtKey),
                         NameClaimType=ClaimTypes.Name,
                         RoleClaimType=ClaimTypes.Role,
+                        ClockSkew=TimeSpan.Zero
                     };
                 });
 
