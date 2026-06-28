@@ -38,8 +38,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
-                //return StatusCode(500, ex.ToString());
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
 
@@ -57,8 +56,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
-                //return StatusCode(500, ex.ToString());
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
 
@@ -76,7 +74,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
 
@@ -100,7 +98,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
 
@@ -124,7 +122,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
 
@@ -143,7 +141,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch(Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
 
@@ -170,7 +168,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
 
@@ -195,8 +193,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                //return StatusCode(500, "Erro Inesperado");
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
         [HttpGet("buscar-vendas-por-documento-indentificador-do-cliente")]
@@ -219,7 +216,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch(Exception ex)
             {
-                return StatusCode(500, "Erro no Servidor");
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
 
@@ -237,7 +234,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro no Servidor");
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
 
@@ -255,8 +252,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
-                //return StatusCode(500, ex.Message);
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
 
             }
         }
@@ -276,8 +272,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
-                //return StatusCode(500, ex.Message);
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
 
             }
         }

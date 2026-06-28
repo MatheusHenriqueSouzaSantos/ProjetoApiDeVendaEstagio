@@ -35,12 +35,12 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
 
         [HttpPatch("{id}/adicionar-quantidade-em-estoque/{quantidade}")]
-        [Authorize]
+        [Authorize(Roles ="Admin")]
         public ActionResult<Produto> AdicionarQuantidadeEmEstoqueDeProdutoPorId([FromRoute]Guid id,[FromRoute] int quantidade)
         {
             try
@@ -53,12 +53,12 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
 
         [HttpPatch("{id}/abater-quantidade-em-estoque/{quantidade}")]
-        [Authorize]
+        [Authorize(Roles ="Admin")]
         public ActionResult<Produto> AbaterQuantidadeEmEstoqueDeProdutoPorId([FromRoute] Guid id,[FromRoute] int quantidade)
         {
             try
@@ -71,7 +71,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado");
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
         
