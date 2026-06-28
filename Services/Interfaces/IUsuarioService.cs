@@ -18,7 +18,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         UsuarioOutputDto Atualizar(Guid id, UsuarioInputDto dto);
 
-        UsuarioOutputDto AtualizarUsuarioLogado(UsuarioLogadoInputDto dto);
+        UsuarioOutputDto AtualizarUsuarioLogado(AlteracaoDeUsuarioLogadoDto dto);
 
         void Desativar(Guid id);
 

@@ -2,7 +2,7 @@
 
 namespace ApiEstagioBicicletaria.Dtos.UsuarioDtos
 {
-    public class UsuarioLogadoInputDto
+    public class AlteracaoDeUsuarioLogadoDto
     {
         [Required(ErrorMessage = "O nome é obrigatório")]
         [MaxLength(70, ErrorMessage = "O nome deve ter no máximo 70 caracteres")]
@@ -17,11 +17,16 @@ namespace ApiEstagioBicicletaria.Dtos.UsuarioDtos
         [MaxLength(20, ErrorMessage = "a senha deve conter no máximo 20 caracteres")]
         public string Senha { get; set; }
 
-        public UsuarioLogadoInputDto(string nome, string email, string senha)
+        [MaxLength(20, ErrorMessage = "a senha deve conter no máximo 20 caracteres")]
+        public string? SenhaNova { get; set; }
+
+        public AlteracaoDeUsuarioLogadoDto(string nome, string email, string senha, string? senhaNova)
         {
             Nome = nome;
             Email = email;
             Senha = senha;
+            SenhaNova = senhaNova;
         }
+
     }
 }
