@@ -102,9 +102,14 @@ namespace ApiEstagioBicicletaria.Services
             return EntidadeParaDto(usuarioVindoDoBanco);
         }
 
-        public UsuarioOutputDto AtualizarUsuarioLogado(UsuarioLogadoInputDto dto)
+        public UsuarioOutputDto AtualizarUsuarioLogado(AlteracaoDeUsuarioLogadoDto dto)
         {
             Usuario usuarioLogado = _usuarioLogadoService.ObterUsuario();
+
+            if (!_senhaService.ValidarSenha(usuarioLogado.Senha, dto.Senha))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Senha incorreta");
+            }
 
             Usuario? usuarioVindoDoBancoComEmailInformado = _repositorio.BuscarPorEmail(dto.Email);
 
@@ -115,12 +120,15 @@ namespace ApiEstagioBicicletaria.Services
             Usuario usuarioCopia = usuarioLogado.Copia();
             usuarioLogado.Nome = dto.Nome;
             usuarioLogado.Email = dto.Email;
-            usuarioLogado.Senha = _senhaService.GerarHashDaSenha(dto.Senha);
-
+            if (dto.SenhaNova != null)
+            {
+                usuarioLogado.Senha = _senhaService.GerarHashDaSenha(dto.SenhaNova);
+            }
             _repositorio.Atualizar(usuarioLogado);
             _usuarioLogService.CriarLogsDeAtualizacao(usuarioCopia, usuarioLogado, usuarioLogado);
             _contexto.SaveChanges();
             return EntidadeParaDto(usuarioLogado);
+
         }
 
         public void Desativar(Guid id)

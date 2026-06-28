@@ -143,7 +143,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpPut("me")]
         [Authorize]
-        public ActionResult<UsuarioOutputDto> AtualizarUsuarioLogado([FromBody] UsuarioLogadoInputDto dto)
+        public ActionResult<UsuarioOutputDto> AtualizarUsuarioLogado([FromBody] AlteracaoDeUsuarioLogadoDto dto)
         {
             try
             {
