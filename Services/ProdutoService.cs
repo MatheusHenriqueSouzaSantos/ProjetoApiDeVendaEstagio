@@ -302,6 +302,7 @@ namespace ApiEstagioBicicletaria.Services
                         produto.Preco,
                         estoque.QuantidadeEmEstoque
                     })
+                .Where(x => x.QuantidadeEmEstoque <= quantidadeParaBuscarDosProdutosEmFalta)
                 .OrderBy(x => x.QuantidadeEmEstoque)
                 .Select(x => new ProdutoEmFaltaDto(
                     x.Id,
