@@ -134,7 +134,8 @@ namespace ApiEstagioBicicletaria.Services
 
             EntradaEstoque entradaEstoqueCopia = entradaEstoque.Copia(); 
 
-            List<ItemEntradaEstoque> itensEntrada=_contexto.ItensEntradaEstoque.Where(i=>i.IdEntradaEstoque==entradaEstoque.Id && i.Ativo).ToList();
+            List<ItemEntradaEstoque> itensEntrada=_contexto.ItensEntradaEstoque.Include(i=>i.EntradaEstoque).Include(i=>i.Produto).
+                Where(i=>i.IdEntradaEstoque==entradaEstoque.Id && i.Ativo).ToList();
 
             if (dto.IdFornecedor != null)
             {
