@@ -25,7 +25,7 @@ namespace ApiEstagioBicicletaria.Services
             _logService = logService;
         }
 
-        public List<ServicoDtoOutPut> BuscarServicos()
+        public List<ServicoDtoOutPut> BuscarServicosAtivos()
         {
             List<Servico> servicosVindoDoBanco= _contextoDb.Servicos.Where(s => s.Ativo).ToList();
             List<ServicoDtoOutPut> servicosFormatoOutPut = new List<ServicoDtoOutPut>();
@@ -53,7 +53,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             return servicosFormatoOutPut;
         }
-        public ServicoDtoOutPut BuscarServicoPorId(Guid id)
+        public ServicoDtoOutPut BuscarServicoAtivoPorId(Guid id)
         {
             Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.Id == id && s.Ativo).FirstOrDefault();
 
@@ -68,7 +68,7 @@ namespace ApiEstagioBicicletaria.Services
             return servicoFormatoDto;
         }
 
-        public ServicoDtoOutPut BuscarServicoPorCodigoDoServico(string codigoDoServico)
+        public ServicoDtoOutPut BuscarServicoAtivoPorCodigoDoServico(string codigoDoServico)
         {
             Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.CodigoDoServico == codigoDoServico && s.Ativo).FirstOrDefault();
 
@@ -89,18 +89,17 @@ namespace ApiEstagioBicicletaria.Services
 
             if (string.IsNullOrWhiteSpace(dto.CodigoDoServico))
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "O código do Serviço não pode ser null ou vazio");
+                throw new ExcecaoDeRegraDeNegocio(400, "O código do Serviço não pode ser vazio");
             }
-            string codigoDoServicoSomenteNumerosELetras = Regex.Replace(dto.CodigoDoServico, @"[^a-zA-Z0-9]", "");
 
             Servico? servicoVindoDoBancoComMesmoCodigoDoServico = _contextoDb
-                .Servicos.Where(s => s.CodigoDoServico == dto.CodigoDoServico && s.Ativo).FirstOrDefault();
+                .Servicos.Where(s => s.CodigoDoServico == dto.CodigoDoServico).FirstOrDefault();
 
             if (servicoVindoDoBancoComMesmoCodigoDoServico != null)
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um Serviço com esse código de barra!");
+                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um Serviço com esse Código de Serviço!");
             }
-            Servico servicoAInserirNoBanco = new Servico(codigoDoServicoSomenteNumerosELetras,
+            Servico servicoAInserirNoBanco = new Servico(dto.CodigoDoServico,
                 dto.NomeServico, dto.Descricao, dto.PrecoServico);
             _contextoDb.Add(servicoAInserirNoBanco);
             _logService.CriarLogsDeCriacao(servicoAInserirNoBanco,_usuarioLogado);
@@ -111,16 +110,21 @@ namespace ApiEstagioBicicletaria.Services
 
         public Servico AtualizarServico(Guid id, ServicoInputDto dto)
         {
-            Servico servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.Id == id && s.Ativo).FirstOrDefault()
+            Servico servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.Id == id).FirstOrDefault()
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
 
-            Servico? servicoVindoDoBancoComMesmoCodigoDeBarras = _contextoDb.Servicos.Where(s => s.CodigoDoServico == dto.CodigoDoServico && s.Id != id && s.Ativo)
+            if (servicoVindoDoBanco.Ativo == false)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Serviço está inativo, reative-o para poder atualiza-lo");
+            }
+
+            Servico? servicoVindoDoBancoComMesmoCodigoDeBarras = _contextoDb.Servicos.Where(s => s.CodigoDoServico == dto.CodigoDoServico && s.Id != id)
                 .FirstOrDefault();
 
 
             if (servicoVindoDoBancoComMesmoCodigoDeBarras != null)
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um servico com esse código de barras");
+                throw new ExcecaoDeRegraDeNegocio(400, "Já existe um servico com esse código de serviço");
             }
 
             Servico servicoDesatualizado = servicoVindoDoBanco.Copia();
@@ -134,22 +138,33 @@ namespace ApiEstagioBicicletaria.Services
             return servicoVindoDoBanco;
         }
 
-        public void DeletarServicoPorId(Guid id)
+        public void InativarServicoPorId(Guid id)
         {
-            Servico? servicoVindoDoBanco = _contextoDb.Servicos.Where(s => s.Id == id && s.Ativo).FirstOrDefault();
+            Servico servicoVindoDoBanco = _contextoDb.Servicos.FirstOrDefault(s => s.Id == id)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
 
-            if (servicoVindoDoBanco == null)
+            if (servicoVindoDoBanco.Ativo == false)
             {
-                throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
-            }
-            bool servicoEstaEmAlgumaVenda = _contextoDb.ServicosVendas.Where(sv => sv.IdServico == servicoVindoDoBanco.Id && sv.Ativo).Any();
-            if (servicoEstaEmAlgumaVenda)
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "Esse serviço esta em uma venda, exclua a venda antes de exclui-lo");
+                throw new ExcecaoDeRegraDeNegocio(400, "Serviço já está inativo");
             }
             servicoVindoDoBanco.Ativo = false;
-            _contextoDb.Update(servicoVindoDoBanco);
-            _logService.CriarLogsDeExclusao(servicoVindoDoBanco, _usuarioLogado);
+            _contextoDb.Servicos.Update(servicoVindoDoBanco);
+            _logService.CriarLogsDeInativacao(servicoVindoDoBanco, _usuarioLogado);
+            _contextoDb.SaveChanges();
+        }
+
+        public void ReativarServicoPorId(Guid id)
+        {
+            Servico servicoVindoDoBanco = _contextoDb.Servicos.FirstOrDefault(s => s.Id == id)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado");
+
+            if (servicoVindoDoBanco.Ativo == true)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Serviço já está Ativo");
+            }
+            servicoVindoDoBanco.Ativo = true;
+            _contextoDb.Servicos.Update(servicoVindoDoBanco);
+            _logService.CriarLogsDeReativacao(servicoVindoDoBanco, _usuarioLogado);
             _contextoDb.SaveChanges();
         }
 

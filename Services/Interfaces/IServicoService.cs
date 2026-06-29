@@ -5,18 +5,20 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 {
     public interface IServicoService
     {
-        List<ServicoDtoOutPut> BuscarServicos();
+        List<ServicoDtoOutPut> BuscarServicosAtivos();
 
         List<ServicoInativoOutputDto> BuscarServicosInativos();
-        ServicoDtoOutPut BuscarServicoPorId(Guid id);
+        ServicoDtoOutPut BuscarServicoAtivoPorId(Guid id);
 
-        ServicoDtoOutPut BuscarServicoPorCodigoDoServico(string codigoDoServico);
+        ServicoDtoOutPut BuscarServicoAtivoPorCodigoDoServico(string codigoDoServico);
 
         Servico CadastrarServico(ServicoInputDto dto);
 
         Servico AtualizarServico(Guid id, ServicoInputDto dto);
 
-        void DeletarServicoPorId(Guid id);
+        void InativarServicoPorId(Guid id);
+
+        void ReativarServicoPorId(Guid id);
 
         List<ServicoDtoOutPut> BuscarServicosPorNome(string nome);
 
