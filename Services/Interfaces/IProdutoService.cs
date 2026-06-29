@@ -8,18 +8,20 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 {
     public interface IProdutoService
     {
-        List<ProdutoDtoOutPut> BuscarProdutos();
+        List<ProdutoDtoOutPut> BuscarProdutosAtivos();
 
         List<ProdutoInativoOutputDto> BuscarProdutosInativos();
-        ProdutoDtoOutPut BuscarProdutoPorId(Guid id);
+        ProdutoDtoOutPut BuscarProdutoAtivoPorId(Guid id);
 
-        ProdutoDtoOutPut BuscarProdutoPorCodigoDeBarra(string codigoDeBarra);
+        ProdutoDtoOutPut BuscarProdutoAtivoPorCodigoDeBarra(string codigoDeBarra);
 
         Produto CadastrarProduto(ProdutoInputDto dto);
 
         Produto AtualizarProduto(Guid id, ProdutoInputDto dto);
 
-        void DeletarProdutoPorId(Guid id);
+        void InativarProdutoPorId(Guid id);
+
+        void ReativarProdutoPorId(Guid id);
 
         List<ProdutoDtoOutPut> BuscarProdutosPorNome(string nome);
         byte[] GerarRelatorioDeProdutosMaisVendidosPorPeriodo(DatasParaGeracaoDeRelatorioDto dto);
