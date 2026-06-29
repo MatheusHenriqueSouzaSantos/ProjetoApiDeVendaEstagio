@@ -25,7 +25,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return _servicoService.BuscarServicos();
+                return _servicoService.BuscarServicosAtivos();
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -60,7 +60,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return _servicoService.BuscarServicoPorId(id);
+                return _servicoService.BuscarServicoAtivoPorId(id);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -78,7 +78,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return _servicoService.BuscarServicoPorCodigoDoServico(codigoDoServico);
+                return _servicoService.BuscarServicoAtivoPorCodigoDoServico(codigoDoServico);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -138,11 +138,30 @@ namespace ApiEstagioBicicletaria.Controllers
         }
         [HttpDelete("{id}")]
         [Authorize]
-        public ActionResult DeletarServico([FromRoute] Guid id)
+        public ActionResult InativarServico([FromRoute] Guid id)
         {
             try
             {
-                _servicoService.DeletarServicoPorId(id);
+                _servicoService.InativarServicoPorId(id);
+                return Ok("Operação realizada com sucesso ");
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
+            }
+        }
+
+        [HttpPatch("reativar/{id}")]
+        [Authorize]
+        public ActionResult ReativarServico([FromRoute] Guid id)
+        {
+            try
+            {
+                _servicoService.ReativarServicoPorId(id);
                 return Ok("Operação realizada com sucesso ");
             }
             catch (ExcecaoDeRegraDeNegocio ex)

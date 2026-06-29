@@ -41,7 +41,7 @@ namespace ApiEstagioBicicletaria.Services
             _geradorCodigoIndentificador=geradorCodigoIndentificador;
         }
 
-        public List<UsuarioOutputDto> BuscarTodos()
+        public List<UsuarioOutputDto> BuscarTodosAtivos()
         {
             return _repositorio.BuscarTodos().Select(EntidadeParaDto).ToList();
         }
@@ -51,7 +51,7 @@ namespace ApiEstagioBicicletaria.Services
             return _contexto.Usuarios.Where(u=>!u.Ativo).Select(EntidadeParaDto).ToList();
         }
 
-        public UsuarioOutputDto BuscarPorId(Guid id)
+        public UsuarioOutputDto BuscarPorIdAtivo(Guid id)
         {
             Usuario usuario = _repositorio.BuscarPorId(id)
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Usuário não encontrado");
@@ -67,7 +67,7 @@ namespace ApiEstagioBicicletaria.Services
 
         public UsuarioOutputDto Cadastrar(UsuarioInputDto dto)
         {
-            if (_repositorio.UsuarioExistentePorEmail(dto.Email))
+            if (_contexto.Usuarios.Any(u=>u.Email==dto.Email))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "já existe um usuário cadastrado com esse email");
             }
@@ -81,10 +81,15 @@ namespace ApiEstagioBicicletaria.Services
 
         public UsuarioOutputDto Atualizar(Guid id, UsuarioInputDto dto)
         {
-            Usuario usuarioVindoDoBanco = _repositorio.BuscarPorId(id)
+            Usuario usuarioVindoDoBanco = _contexto.Usuarios.FirstOrDefault(u => u.Id == id)
                ?? throw new ExcecaoDeRegraDeNegocio(404, "Usuário não encontrado");
 
-            Usuario? usuarioVindoDoBancoComEmailInformado = _repositorio.BuscarPorEmail(dto.Email);
+            if (usuarioVindoDoBanco.Ativo == false)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Usuário esta inativo, reative-o antes para poder atualiza-lo");
+            }
+
+            Usuario? usuarioVindoDoBancoComEmailInformado = _contexto.Usuarios.FirstOrDefault(u=>u.Email==dto.Email);
 
             if(usuarioVindoDoBancoComEmailInformado !=null  && usuarioVindoDoBancoComEmailInformado.Id != id)
             {
@@ -106,12 +111,13 @@ namespace ApiEstagioBicicletaria.Services
         {
             Usuario usuarioLogado = _usuarioLogadoService.ObterUsuario();
 
+
             if (!_senhaService.ValidarSenha(usuarioLogado.Senha, dto.Senha))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Senha incorreta");
             }
 
-            Usuario? usuarioVindoDoBancoComEmailInformado = _repositorio.BuscarPorEmail(dto.Email);
+            Usuario? usuarioVindoDoBancoComEmailInformado = _contexto.Usuarios.FirstOrDefault(u=>u.Email==dto.Email);
 
             if (usuarioVindoDoBancoComEmailInformado != null && usuarioVindoDoBancoComEmailInformado.Id != usuarioLogado.Id)
             {
@@ -131,10 +137,15 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
-        public void Desativar(Guid id)
+        public void Inativar(Guid id)
         {
-            Usuario usuarioVindoDoBanco = _repositorio.BuscarPorId(id)
-                ?? throw new ExcecaoDeRegraDeNegocio(404, "Usuaário não encontrado");
+            Usuario usuarioVindoDoBanco = _contexto.Usuarios.FirstOrDefault(u => u.Id == id)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Usuário não encontrado");
+
+            if (usuarioVindoDoBanco.Ativo == false)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400,"Usuário já está inativo");
+            }
 
             if (usuarioVindoDoBanco.PerfilUsuario == PerfilUsuario.Admin)
             {
@@ -147,17 +158,34 @@ namespace ApiEstagioBicicletaria.Services
             }
 
             usuarioVindoDoBanco.Ativo = false;
-            _repositorio.Atualizar(usuarioVindoDoBanco);
-            _usuarioLogService.CriarLogsDeExclusao(usuarioVindoDoBanco, _usuarioLogadoService.ObterUsuario());
+            _contexto.Usuarios.Update(usuarioVindoDoBanco);
+            _usuarioLogService.CriarLogsDeInativacao(usuarioVindoDoBanco, _usuarioLogadoService.ObterUsuario());
+            _contexto.SaveChanges();
+        }
+
+        public void Reativar(Guid id)
+        {
+            Usuario usuarioVindoDoBanco = _contexto.Usuarios.FirstOrDefault(u => u.Id == id)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Usuário não encontrado");
+
+            if (usuarioVindoDoBanco.Ativo == true)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Usuário já está ativo");
+            }
+
+            usuarioVindoDoBanco.Ativo = true;
+            _contexto.Usuarios.Update(usuarioVindoDoBanco);
+            _usuarioLogService.CriarLogsDeReativacao(usuarioVindoDoBanco, _usuarioLogadoService.ObterUsuario());
             _contexto.SaveChanges();
         }
 
         public string Login(UsuarioLoginDto dto)
         {
-            Usuario? usuarioVindoDoBanco = _repositorio.BuscarPorEmail(dto.Email);
-            if(usuarioVindoDoBanco==null)
+            Usuario usuarioVindoDoBanco = _contexto.Usuarios.FirstOrDefault(u=>u.Email==dto.Email)
+                ??throw new ExcecaoDeRegraDeNegocio(400, "usuário ou senha inválida");
+            if (usuarioVindoDoBanco.Ativo == false)
             {
-                throw new ExcecaoDeRegraDeNegocio(400,"usuário ou senha inválida");
+                throw new ExcecaoDeRegraDeNegocio(400, "usuário está inativo, entre em contato com o administrador do sistema, para reativa-lo, para fazer login");
             }
             if (!_senhaService.ValidarSenha(usuarioVindoDoBanco.Senha,dto.Senha))
             {
@@ -194,7 +222,7 @@ namespace ApiEstagioBicicletaria.Services
             Usuario usuario = _contexto.Usuarios.FirstOrDefault(u => u.CodigoUsuario == codigoUsuario)
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Usuário não encontrado");
 
-            List<UsuarioLog> logs = _contexto.UsuarioLogs
+            List<UsuarioLog> logs = _contexto.UsuarioLogs.Include(l => l.Usuario)
                 .Where(l => l.IdUsuario == usuario.Id).ToList();
 
             List<UsuarioLogOutputDto> logsDto =
