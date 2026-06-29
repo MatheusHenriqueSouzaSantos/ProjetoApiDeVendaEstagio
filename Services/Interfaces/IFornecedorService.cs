@@ -6,21 +6,23 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 {
     public interface IFornecedorService
     {
-        List<Fornecedor> BuscarTodos();
+        List<Fornecedor> BuscarTodosAtivos();
 
         List<Fornecedor> BuscarTodosInativos();
 
-        Fornecedor BuscarPorId(Guid id);
+        Fornecedor BuscarAtivoPorId(Guid id);
 
-        Fornecedor BuscarPorCnpj(string cnpj);
+        Fornecedor BuscarAtivoPorCnpj(string cnpj);
 
-        List<Fornecedor> BuscarPorNome(string nome);
+        List<Fornecedor> BuscarAtivoPorNome(string nome);
 
         Fornecedor Cadastrar(FornecedorCreateDto dto);
 
         Fornecedor Atualizar(Guid id,FornecedorUpdateDto dto);
 
-        void Desativar(Guid id);
+        void Inativar(Guid id);
+
+        void Reativar(Guid id);
 
         byte[] GerarRelatorioFornecedoresComMaiorVolumeDeEntradaPorPeriodo(DatasParaGeracaoDeRelatorioDto dto);
 

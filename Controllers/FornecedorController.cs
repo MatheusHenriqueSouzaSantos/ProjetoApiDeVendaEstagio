@@ -31,7 +31,7 @@ namespace ApiEstagioBicicletaria.Controllers
         public ActionResult<List<Fornecedor>> BuscarTodos() {
             try
             {
-                return _service.BuscarTodos();
+                return _service.BuscarTodosAtivos();
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -67,7 +67,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return _service.BuscarPorId(id);
+                return _service.BuscarAtivoPorId(id);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -85,7 +85,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return _service.BuscarPorCnpj(cnpj);
+                return _service.BuscarAtivoPorCnpj(cnpj);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -103,7 +103,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return Ok(_service.BuscarPorNome(nome));
+                return Ok(_service.BuscarAtivoPorNome(nome));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -167,11 +167,30 @@ namespace ApiEstagioBicicletaria.Controllers
         }
         [HttpDelete("{id}")]
         [Authorize]
-        public ActionResult Desativar([FromRoute] Guid id)
+        public ActionResult Inativar([FromRoute] Guid id)
         {
             try
             {
-                _service.Desativar(id);
+                _service.Inativar(id);
+                return Ok("Operação realizada com sucesso ");
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
+            }
+        }
+
+        [HttpPatch("ativar/{id}")]
+        [Authorize]
+        public ActionResult Reativar([FromRoute] Guid id)
+        {
+            try
+            {
+                _service.Reativar(id);
                 return Ok("Operação realizada com sucesso ");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
