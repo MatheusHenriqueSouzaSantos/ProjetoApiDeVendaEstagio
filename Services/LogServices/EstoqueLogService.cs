@@ -17,7 +17,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             _repositorio = repositorio;
         }
 
-        public void CriarLogsDeCriacao(Estoque estoque, Usuario usuarioResponsavel)
+        public void CriarLogsDeCriacao(Estoque estoque,Produto produtoDoEstoque, Usuario usuarioResponsavel)
         {
             PropertyInfo[] propriedades = typeof(Estoque).GetProperties();
             foreach (PropertyInfo propriedade in propriedades)
@@ -29,7 +29,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
                 var valorPropriedade = propriedade.GetValue(estoque);
 
                 EstoqueLog log = new EstoqueLog(AcaoQueAlterouEstoque.CriacaoProduto,estoque,
-                    estoque.Produto,
+                    produtoDoEstoque,
                     Entities.LogAcao.Criacao,
                     propriedade.Name,
                     null,
@@ -42,18 +42,18 @@ namespace ApiEstagioBicicletaria.Services.LogServices
         public void CriarLogDeAtualizacaoQuantidadeEmEstoque(Estoque estoqueModificado,Produto produtoDoEstoque,int quantidadeAnterior,int quantidadeAtual,
             AcaoQueAlterouEstoque acaoQueAlterouEstoque,Usuario usuarioResponsavel)
         {
-            _repositorio.CriarLog(new EstoqueLog(acaoQueAlterouEstoque,estoqueModificado,produtoDoEstoque , Entities.LogAcao.Atualizacao, "QuantidadeEmEstoque",
+            _repositorio.CriarLog(new EstoqueLog(acaoQueAlterouEstoque,estoqueModificado,produtoDoEstoque,Entities.LogAcao.Atualizacao, "QuantidadeEmEstoque",
                 quantidadeAnterior.ToString(), quantidadeAtual.ToString(), usuarioResponsavel));
         }
-        public void CriarLogsDeInativacao(Estoque estoque, Usuario usuarioResponsavel)
+        public void CriarLogsDeInativacao(Estoque estoque,Produto produtoDoEstoque, Usuario usuarioResponsavel)
         {
-            _repositorio.CriarLog(new EstoqueLog(AcaoQueAlterouEstoque.InativacaoProduto,estoque,estoque.Produto, Entities.LogAcao.Inativacao, "Ativo", true.ToString(),
+            _repositorio.CriarLog(new EstoqueLog(AcaoQueAlterouEstoque.InativacaoProduto,estoque, produtoDoEstoque, Entities.LogAcao.Inativacao, "Ativo", true.ToString(),
                 false.ToString(), usuarioResponsavel));
         }
 
-        public void CriarLogsDeReativacao(Estoque estoque, Usuario usuarioResponsavel)
+        public void CriarLogsDeReativacao(Estoque estoque, Produto produtoDoEstoque, Usuario usuarioResponsavel)
         {
-            _repositorio.CriarLog(new EstoqueLog(AcaoQueAlterouEstoque.ReativacaoProduto, estoque, estoque.Produto, Entities.LogAcao.Reativacao, "Ativo", false.ToString(),
+            _repositorio.CriarLog(new EstoqueLog(AcaoQueAlterouEstoque.ReativacaoProduto, estoque, produtoDoEstoque, Entities.LogAcao.Reativacao, "Ativo", false.ToString(),
                 true.ToString(), usuarioResponsavel));
         }
     }

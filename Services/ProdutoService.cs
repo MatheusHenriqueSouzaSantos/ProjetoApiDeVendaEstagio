@@ -131,7 +131,7 @@ namespace ApiEstagioBicicletaria.Services
             _contextoDb.Add(produtoAInserirNoBanco);
             _contextoDb.Add(estoque);
             _produtoLogService.CriarLogsDeCriacao(produtoAInserirNoBanco,_usuarioLogado);
-            _estoqueLogService.CriarLogsDeCriacao(estoque,_usuarioLogado);
+            _estoqueLogService.CriarLogsDeCriacao(estoque,produtoAInserirNoBanco,_usuarioLogado);
             _contextoDb.SaveChanges();
             return new ProdutoDtoOutPut(produtoAInserirNoBanco.Id,produtoAInserirNoBanco.CodigoDeBarra,produtoAInserirNoBanco.DataCriacao,produtoAInserirNoBanco.NomeProduto,
                 produtoAInserirNoBanco.Descricao,produtoAInserirNoBanco.Preco,produtoAInserirNoBanco.Ativo, 
@@ -193,7 +193,7 @@ namespace ApiEstagioBicicletaria.Services
             _contextoDb.Produtos.Update(produtoVindoDoBanco);
             _contextoDb.Estoques.Update(estoque);
             _produtoLogService.CriarLogsDeInativacao(produtoVindoDoBanco,_usuarioLogado);
-            _estoqueLogService.CriarLogsDeInativacao(estoque, _usuarioLogado);
+            _estoqueLogService.CriarLogsDeInativacao(estoque,produtoVindoDoBanco, _usuarioLogado);
             _contextoDb.SaveChanges();
         }
 
@@ -212,7 +212,7 @@ namespace ApiEstagioBicicletaria.Services
             _contextoDb.Produtos.Update(produtoVindoDoBanco);
             _contextoDb.Estoques.Update(estoque);
             _produtoLogService.CriarLogsDeReativacao(produtoVindoDoBanco,_usuarioLogado);
-            _estoqueLogService.CriarLogsDeReativacao(estoque, _usuarioLogado);
+            _estoqueLogService.CriarLogsDeReativacao(estoque,produtoVindoDoBanco, _usuarioLogado);
             _contextoDb.SaveChanges();
         }
 
