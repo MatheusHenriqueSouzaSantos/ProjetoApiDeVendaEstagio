@@ -40,7 +40,7 @@ namespace ApiEstagioBicicletaria.Services
             _usuarioLogado = userLogadoService.ObterUsuario();
         }
 
-        public List<ProdutoDtoOutPut> BuscarProdutos()
+        public List<ProdutoDtoOutPut> BuscarProdutosAtivos()
         {
             List<Produto> produtosVindoDoBanco= _contextoDb.Produtos.Where(p=>p.Ativo).ToList();
 
@@ -76,7 +76,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             return produtosFomartoDto;
         }
-        public ProdutoDtoOutPut BuscarProdutoPorId(Guid id)
+        public ProdutoDtoOutPut BuscarProdutoAtivoPorId(Guid id)
         {
             Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
 
@@ -94,7 +94,7 @@ namespace ApiEstagioBicicletaria.Services
             return produtoFormatoDto;
         }
 
-        public ProdutoDtoOutPut BuscarProdutoPorCodigoDeBarra(string codigoDeBarra)
+        public ProdutoDtoOutPut BuscarProdutoAtivoPorCodigoDeBarra(string codigoDeBarra)
         {
 
             Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.CodigoDeBarra == codigoDeBarra && p.Ativo).FirstOrDefault();
@@ -115,22 +115,19 @@ namespace ApiEstagioBicicletaria.Services
 
         public Produto CadastrarProduto(ProdutoInputDto dto)
         {
-            //validar formato de codigo de barra? mais qual o formato vai utilizar?
-
-            string codigoDeBarraSomenteNumerosELetras = Regex.Replace(dto.CodigoDeBarra, @"[^a-zA-Z0-9]", "");
-
+            //depende do formato código de barra, por enaqunto livre
             if (string.IsNullOrWhiteSpace(dto.CodigoDeBarra))
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "O código de barra não pode ser null ou vazio");
+                throw new ExcecaoDeRegraDeNegocio(400, "O código de barra não pode ser vazio");
             }
             Produto? produtoVindoDoBancoComMesmoCodigoDeBarra = _contextoDb
-                .Produtos.Where(p => p.CodigoDeBarra == dto.CodigoDeBarra && p.Ativo).FirstOrDefault();
+                .Produtos.Where(p => p.CodigoDeBarra == dto.CodigoDeBarra).FirstOrDefault();
 
             if(produtoVindoDoBancoComMesmoCodigoDeBarra != null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um produto com esse código de barra!");
             }
-            Produto produtoAInserirNoBanco = new Produto(codigoDeBarraSomenteNumerosELetras,
+            Produto produtoAInserirNoBanco = new Produto(dto.CodigoDeBarra,
                 dto.NomeProduto, dto.Descricao, dto.PrecoUnitario);
             Estoque estoque = new(produtoAInserirNoBanco);
             estoque.Produto = produtoAInserirNoBanco;
@@ -145,10 +142,20 @@ namespace ApiEstagioBicicletaria.Services
 
         public Produto AtualizarProduto(Guid id, ProdutoInputDto dto)
         {
-            Produto? produtoVindoDoBanco = 
-                _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault() ?? throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
+            Produto? produtoVindoDoBanco = _contextoDb.Produtos.FirstOrDefault(p => p.Id == id) 
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
 
-            Produto? produtoVindoDoBancoComMesmoCodigoDeBarras = _contextoDb.Produtos.Where(p => p.CodigoDeBarra == dto.CodigoDeBarra && p.Id != id && p.Ativo)
+            if (produtoVindoDoBanco.Ativo == false)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O produto está inativo, reative-o antes para atualiza-lo");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.CodigoDeBarra))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O código de barra não pode ser vazio");
+            }
+
+            Produto? produtoVindoDoBancoComMesmoCodigoDeBarras = _contextoDb.Produtos.Where(p => p.CodigoDeBarra == dto.CodigoDeBarra && p.Id != id)
                 .FirstOrDefault();
 
 
@@ -169,26 +176,42 @@ namespace ApiEstagioBicicletaria.Services
             return produtoVindoDoBanco;
         }
 
-        public void DeletarProdutoPorId(Guid id)
+        public void InativarProdutoPorId(Guid id)
         {
-            Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id && p.Ativo).FirstOrDefault();
+            Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id).FirstOrDefault()
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
 
-            if(produtoVindoDoBanco== null)
+            if(produtoVindoDoBanco.Ativo == false)
             {
-                throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
-            }
-            bool produtoEstaEmAlgumaVenda = _contextoDb.ItensVendas.Where(i => i.IdProduto == produtoVindoDoBanco.Id && i.Ativo).Any();
-            if (produtoEstaEmAlgumaVenda)
-            {
-                throw new ExcecaoDeRegraDeNegocio(400,"Esse produto esta em uma venda, exclua a venda antes de exclui-lo");
+                throw new ExcecaoDeRegraDeNegocio(400, "O produto já está inativo");
             }
             Estoque estoque = _contextoDb.Estoques.Include(e=>e.Produto).FirstOrDefault(e => e.Produto.Id == produtoVindoDoBanco.Id)
                   ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
             produtoVindoDoBanco.Ativo = false;
             estoque.Ativo=false;
-            _contextoDb.Update(produtoVindoDoBanco);
-            _produtoLogService.CriarLogsDeExclusao(produtoVindoDoBanco,_usuarioLogado);
-            _estoqueLogService.CriarLogsDeExclusao(estoque, _usuarioLogado);
+            _contextoDb.Produtos.Update(produtoVindoDoBanco);
+            _contextoDb.Estoques.Update(estoque);
+            _produtoLogService.CriarLogsDeInativacao(produtoVindoDoBanco,_usuarioLogado);
+            _estoqueLogService.CriarLogsDeInativacao(estoque, _usuarioLogado);
+            _contextoDb.SaveChanges();
+        }
+
+        public void ReativarProdutoPorId(Guid id)
+        {
+            Produto? produtoVindoDoBanco = _contextoDb.Produtos.Where(p => p.Id == id).FirstOrDefault()
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
+            if (produtoVindoDoBanco.Ativo == true)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O produto já está Ativo");
+            }
+            Estoque estoque = _contextoDb.Estoques.Include(e=>e.Produto).FirstOrDefault(e => e.Produto.Id == produtoVindoDoBanco.Id)
+                  ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
+            produtoVindoDoBanco.Ativo = true;
+            estoque.Ativo=true;
+            _contextoDb.Produtos.Update(produtoVindoDoBanco);
+            _contextoDb.Estoques.Update(estoque);
+            _produtoLogService.CriarLogsDeReativacao(produtoVindoDoBanco,_usuarioLogado);
+            _estoqueLogService.CriarLogsDeReativacao(estoque, _usuarioLogado);
             _contextoDb.SaveChanges();
         }
 

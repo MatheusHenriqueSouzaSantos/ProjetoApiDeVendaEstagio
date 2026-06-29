@@ -9,6 +9,7 @@
         CriacaoEntradaEstoque,
         AtualizacaoEntradaEstoque,
         ExclusaoEntradaEstoque,
-        ExclusaoProduto
+        InativacaoProduto,
+        ReativacaoProduto
     }
 }

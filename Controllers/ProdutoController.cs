@@ -27,7 +27,7 @@ namespace ApiEstagioBicicletaria.Controllers
             
             try
             {
-                return _produtoService.BuscarProdutos();
+                return _produtoService.BuscarProdutosAtivos();
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -64,7 +64,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return _produtoService.BuscarProdutoPorId(id);
+                return _produtoService.BuscarProdutoAtivoPorId(id);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -81,7 +81,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return _produtoService.BuscarProdutoPorCodigoDeBarra(codigoDeBarra);
+                return _produtoService.BuscarProdutoAtivoPorCodigoDeBarra(codigoDeBarra);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -141,11 +141,11 @@ namespace ApiEstagioBicicletaria.Controllers
         }
         [HttpDelete("{id}")]
         [Authorize]
-        public ActionResult DeletarProduto([FromRoute] Guid id)
+        public ActionResult InativarProduto([FromRoute] Guid id)
         {
             try
             {
-                _produtoService.DeletarProdutoPorId(id);
+                _produtoService.InativarProdutoPorId(id);
                 return Ok("Operação realizada com sucesso ");
             }
             catch (ExcecaoDeRegraDeNegocio ex)
@@ -157,6 +157,26 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
+
+        [HttpPatch("ativar/{id}")]
+        [Authorize]
+        public ActionResult ReativarProduto([FromRoute] Guid id)
+        {
+            try
+            {
+                _produtoService.ReativarProdutoPorId(id);
+                return Ok("Operação realizada com sucesso ");
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
+            }
+        }
+
         [HttpGet("buscar-produtos-por-nome/{nome}")]
         [Authorize]
         public ActionResult<List<ProdutoDtoOutPut>> BuscarProdutosPorNome([FromRoute] string nome)
