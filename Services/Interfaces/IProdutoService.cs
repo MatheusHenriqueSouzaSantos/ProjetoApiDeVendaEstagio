@@ -13,7 +13,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         List<ProdutoInativoOutputDto> BuscarProdutosInativos();
         ProdutoDtoOutPut BuscarProdutoAtivoPorId(Guid id);
 
-        ProdutoDtoOutPut BuscarProdutoInativoPorId(Guid id)
+        ProdutoDtoOutPut BuscarProdutoInativoPorId(Guid id);
 
         ProdutoDtoOutPut BuscarProdutoAtivoPorCodigoDeBarra(string codigoDeBarra);
 
