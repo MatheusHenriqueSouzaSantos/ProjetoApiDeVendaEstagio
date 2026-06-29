@@ -72,7 +72,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
         {
             ItemEntradaEstoqueLog log = new(itemEntradaEstoque,
                 entradaEstoqueDoItem,
-                LogAcao.Exclusao,
+                LogAcao.Inativacao,
                 "Ativo",
                 "true",
                 "false",
