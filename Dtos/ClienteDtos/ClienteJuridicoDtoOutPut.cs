@@ -17,9 +17,9 @@ namespace ApiEstagioBicicletaria.Dtos.ClienteDtos
 
         }
 
-        public ClienteJuridicoDtoOutPut(Guid id, Endereco endereco, DateTime dataCriacao, string telefone, string email, TipoCliente tipoCliente, bool podeExcluir, bool ativo,string razaoSocial,
+        public ClienteJuridicoDtoOutPut(Guid id, Endereco endereco, DateTime dataCriacao, string telefone, string email, TipoCliente tipoCliente, bool ativo,string razaoSocial,
             string nomeFantasia,string inscricaoestadual,string cnpj) : 
-            base(id, endereco, dataCriacao, telefone, email, tipoCliente, podeExcluir, ativo)
+            base(id, endereco, dataCriacao, telefone, email, tipoCliente, ativo)
         {
             RazaoSocial= razaoSocial;
             NomeFantasia= nomeFantasia;

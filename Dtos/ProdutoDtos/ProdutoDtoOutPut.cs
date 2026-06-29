@@ -18,12 +18,10 @@ namespace ApiEstagioBicicletaria.Dtos.ProdutoDtos
 
         public bool Ativo { get; set; } = true;
 
-        public bool PodeExcluir {  get; set; }
-
         public EstoqueSimplificadoOutputDto Estoque {  get; set; }
 
         public ProdutoDtoOutPut(Guid id, string codigoDeBarra, DateTime dataCriacao, string nomeProduto, 
-            string descricao, decimal precoUnitario, bool ativo, bool podeExcluir, EstoqueSimplificadoOutputDto estoque)
+            string descricao, decimal precoUnitario, bool ativo, EstoqueSimplificadoOutputDto estoque)
         {
             Id = id;
             CodigoDeBarra = codigoDeBarra;
@@ -32,7 +30,6 @@ namespace ApiEstagioBicicletaria.Dtos.ProdutoDtos
             Descricao = descricao;
             PrecoUnitario = precoUnitario;
             Ativo = ativo;
-            PodeExcluir = podeExcluir;
             Estoque = estoque;
         }
     }

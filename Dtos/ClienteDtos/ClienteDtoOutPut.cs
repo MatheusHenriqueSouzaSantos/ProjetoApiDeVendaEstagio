@@ -12,13 +12,12 @@ namespace ApiEstagioBicicletaria.Dtos.ClienteDtos
         public string Telefone { get; set; }
         public string Email { get; set; }
         public TipoCliente TipoCliente { get;  set; }
-        public bool PodeExcluir { get; set; }
 
         public bool Ativo { get; set; } = true;
 
         protected ClienteDtoOutPut() { }
 
-        protected ClienteDtoOutPut(Guid id, Endereco endereco, DateTime dataCriacao, string telefone, string email, TipoCliente tipoCliente, bool podeExcluir, bool ativo)
+        protected ClienteDtoOutPut(Guid id, Endereco endereco, DateTime dataCriacao, string telefone, string email, TipoCliente tipoCliente, bool ativo)
         {
             Id = id;
             Endereco = endereco;
@@ -26,7 +25,6 @@ namespace ApiEstagioBicicletaria.Dtos.ClienteDtos
             Telefone = telefone;
             Email = email;
             TipoCliente = tipoCliente;
-            PodeExcluir = podeExcluir;
             Ativo = ativo;
         }
     }
