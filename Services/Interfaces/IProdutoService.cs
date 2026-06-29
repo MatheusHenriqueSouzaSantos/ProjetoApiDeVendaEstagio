@@ -15,9 +15,9 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         ProdutoDtoOutPut BuscarProdutoAtivoPorCodigoDeBarra(string codigoDeBarra);
 
-        Produto CadastrarProduto(ProdutoInputDto dto);
+        ProdutoDtoOutPut CadastrarProduto(ProdutoInputDto dto);
 
-        Produto AtualizarProduto(Guid id, ProdutoInputDto dto);
+        ProdutoDtoOutPut AtualizarProduto(Guid id, ProdutoInputDto dto);
 
         void InativarProdutoPorId(Guid id);
 

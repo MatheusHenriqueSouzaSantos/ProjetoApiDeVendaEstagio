@@ -48,12 +48,11 @@ namespace ApiEstagioBicicletaria.Services
             
             foreach(Produto produtoIterado in produtosVindoDoBanco)
             {
-                bool podeExcluir = !_contextoDb.ItensVendas.Any(iv => iv.IdProduto == produtoIterado.Id && iv.Ativo);
                 Estoque estoque = _contextoDb.Estoques.FirstOrDefault(e => e.Produto.Id == produtoIterado.Id) 
                     ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
                 EstoqueSimplificadoOutputDto estoqueDto = new(estoque.Id,estoque.QuantidadeEmEstoque);
                 ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoIterado.Id,produtoIterado.CodigoDeBarra,produtoIterado.DataCriacao,produtoIterado.NomeProduto,produtoIterado.Descricao,
-                    produtoIterado.Preco,produtoIterado.Ativo,podeExcluir,estoqueDto);
+                    produtoIterado.Preco,produtoIterado.Ativo,estoqueDto);
                 produtosFomartoDto.Add(produtoFormatoDto);
             }
             return produtosFomartoDto;
@@ -84,13 +83,12 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
             }
-            bool podeExcluir = !_contextoDb.ItensVendas.Any(iv => iv.IdProduto == produtoVindoDoBanco.Id && iv.Ativo);
             Estoque estoque = _contextoDb.Estoques.FirstOrDefault(e => e.Produto.Id == produtoVindoDoBanco.Id)
                    ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
             EstoqueSimplificadoOutputDto estoqueDto = new(estoque.Id, estoque.QuantidadeEmEstoque);
             ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoVindoDoBanco.Id, produtoVindoDoBanco.CodigoDeBarra, produtoVindoDoBanco.DataCriacao,
                 produtoVindoDoBanco.NomeProduto, produtoVindoDoBanco.Descricao, produtoVindoDoBanco.Preco,
-                produtoVindoDoBanco.Ativo, podeExcluir,estoqueDto);
+                produtoVindoDoBanco.Ativo,estoqueDto);
             return produtoFormatoDto;
         }
 
@@ -103,17 +101,16 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Produto não encontrado");
             }
-            bool podeExcluir = !_contextoDb.ItensVendas.Any(iv => iv.IdProduto == produtoVindoDoBanco.Id && iv.Ativo);
             Estoque estoque = _contextoDb.Estoques.FirstOrDefault(e => e.Produto.Id == produtoVindoDoBanco.Id)
                   ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
             EstoqueSimplificadoOutputDto estoqueDto = new(estoque.Id, estoque.QuantidadeEmEstoque);
             ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoVindoDoBanco.Id, produtoVindoDoBanco.CodigoDeBarra, produtoVindoDoBanco.DataCriacao,
                 produtoVindoDoBanco.NomeProduto, produtoVindoDoBanco.Descricao, produtoVindoDoBanco.Preco, 
-                produtoVindoDoBanco.Ativo, podeExcluir, estoqueDto);
+                produtoVindoDoBanco.Ativo, estoqueDto);
             return produtoFormatoDto;
         }
 
-        public Produto CadastrarProduto(ProdutoInputDto dto)
+        public ProdutoDtoOutPut CadastrarProduto(ProdutoInputDto dto)
         {
             //depende do formato código de barra, por enaqunto livre
             if (string.IsNullOrWhiteSpace(dto.CodigoDeBarra))
@@ -136,11 +133,13 @@ namespace ApiEstagioBicicletaria.Services
             _produtoLogService.CriarLogsDeCriacao(produtoAInserirNoBanco,_usuarioLogado);
             _estoqueLogService.CriarLogsDeCriacao(estoque,_usuarioLogado);
             _contextoDb.SaveChanges();
-            return produtoAInserirNoBanco;
+            return new ProdutoDtoOutPut(produtoAInserirNoBanco.Id,produtoAInserirNoBanco.CodigoDeBarra,produtoAInserirNoBanco.DataCriacao,produtoAInserirNoBanco.NomeProduto,
+                produtoAInserirNoBanco.Descricao,produtoAInserirNoBanco.Preco,produtoAInserirNoBanco.Ativo, 
+                new EstoqueSimplificadoOutputDto(estoque.Id,estoque.QuantidadeEmEstoque));
 
         }
 
-        public Produto AtualizarProduto(Guid id, ProdutoInputDto dto)
+        public ProdutoDtoOutPut AtualizarProduto(Guid id, ProdutoInputDto dto)
         {
             Produto? produtoVindoDoBanco = _contextoDb.Produtos.FirstOrDefault(p => p.Id == id) 
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado");
@@ -163,7 +162,8 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um produto com esse código de barras");
             }
-
+            Estoque estoque = _contextoDb.Estoques.FirstOrDefault(e => e.ProdutoId == produtoVindoDoBanco.Id)
+                  ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
             Produto produtoSemAtualizar = produtoVindoDoBanco.Copia();
 
             produtoVindoDoBanco.CodigoDeBarra = dto.CodigoDeBarra;
@@ -173,7 +173,8 @@ namespace ApiEstagioBicicletaria.Services
             _contextoDb.Update(produtoVindoDoBanco);
             _produtoLogService.CriarLogsDeAtualizacao(produtoSemAtualizar,produtoVindoDoBanco,_usuarioLogado);
             _contextoDb.SaveChanges();
-            return produtoVindoDoBanco;
+            return new ProdutoDtoOutPut(produtoVindoDoBanco.Id,produtoVindoDoBanco.CodigoDeBarra,produtoVindoDoBanco.DataCriacao,produtoVindoDoBanco.NomeProduto,
+                produtoVindoDoBanco.Descricao,produtoVindoDoBanco.Preco,produtoVindoDoBanco.Ativo,new EstoqueSimplificadoOutputDto(estoque.Id,estoque.QuantidadeEmEstoque));
         }
 
         public void InativarProdutoPorId(Guid id)
@@ -223,13 +224,12 @@ namespace ApiEstagioBicicletaria.Services
 
             foreach (Produto produtoIterado in produtosVindoDoBanco)
             {
-                bool podeExcluir = !_contextoDb.ItensVendas.Any(iv => iv.IdProduto == produtoIterado.Id && iv.Ativo);
                 Estoque estoque = _contextoDb.Estoques.FirstOrDefault(e => e.Produto.Id == produtoIterado.Id)
                    ?? throw new ExcecaoDeRegraDeNegocio(500, "Erro Interno em Estoque");
                 EstoqueSimplificadoOutputDto estoqueDto = new(estoque.Id, estoque.QuantidadeEmEstoque);
                 ProdutoDtoOutPut produtoFormatoDto = new ProdutoDtoOutPut(produtoIterado.Id, produtoIterado.CodigoDeBarra,
                     produtoIterado.DataCriacao, produtoIterado.NomeProduto, produtoIterado.Descricao, 
-                    produtoIterado.Preco, produtoIterado.Ativo, podeExcluir, estoqueDto);
+                    produtoIterado.Preco, produtoIterado.Ativo, estoqueDto);
                 produtosFomartoDto.Add(produtoFormatoDto);
             }
             return produtosFomartoDto;

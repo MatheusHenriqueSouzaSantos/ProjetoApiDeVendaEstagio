@@ -11,8 +11,8 @@ namespace ApiEstagioBicicletaria.Dtos.ClienteDtos
 
         public ClienteFisicoDtoOutPut() { }
 
-        public ClienteFisicoDtoOutPut(Guid id, Endereco endereco, DateTime dataCriacao, string telefone, string email, TipoCliente tipoCliente, bool podeExcluir, bool ativo,string nome,string cpf) : 
-            base(id, endereco, dataCriacao, telefone, email, tipoCliente, podeExcluir, ativo)
+        public ClienteFisicoDtoOutPut(Guid id, Endereco endereco, DateTime dataCriacao, string telefone, string email, TipoCliente tipoCliente, bool ativo,string nome,string cpf) : 
+            base(id, endereco, dataCriacao, telefone, email, tipoCliente, ativo)
         {
             Nome = nome;
             Cpf = cpf;

@@ -94,7 +94,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
         [HttpPost]
         [Authorize]
-        public ActionResult<Produto> CadastrarProduto([FromBody] ProdutoInputDto dto)
+        public ActionResult<ProdutoDtoOutPut> CadastrarProduto([FromBody] ProdutoInputDto dto)
         {
             try
             {
@@ -104,8 +104,8 @@ namespace ApiEstagioBicicletaria.Controllers
 
                     return BadRequest(mensagensDeErro);
                 }
-                Produto produto= _produtoService.CadastrarProduto(dto);
-                return Created($"api/produto/{produto.Id}",produto);
+                ProdutoDtoOutPut Dtoproduto= _produtoService.CadastrarProduto(dto);
+                return Created($"api/produto/{Dtoproduto.Id}", Dtoproduto);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -118,7 +118,7 @@ namespace ApiEstagioBicicletaria.Controllers
         }
         [HttpPut("{id}")]
         [Authorize]
-        public ActionResult<Produto> AtualizarProduto([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ProdutoInputDto dto)
+        public ActionResult<ProdutoDtoOutPut> AtualizarProduto([FromRoute, Required(ErrorMessage = "O id é obrigatório")] Guid id, [FromBody] ProdutoInputDto dto)
         {
             try
             {
