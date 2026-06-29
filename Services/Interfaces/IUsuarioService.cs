@@ -7,10 +7,10 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
     public interface IUsuarioService
     {
         // o usuario inicial sempre será criado pelo sistema
-        List<UsuarioOutputDto> BuscarTodos();
+        List<UsuarioOutputDto> BuscarTodosAtivos();
         List<UsuarioOutputDto> BuscarTodosInativos();
 
-        UsuarioOutputDto BuscarPorId(Guid id);
+        UsuarioOutputDto BuscarPorIdAtivo(Guid id);
 
         UsuarioOutputDto BuscarUsuarioLogado();
 
@@ -20,7 +20,9 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         UsuarioOutputDto AtualizarUsuarioLogado(AlteracaoDeUsuarioLogadoDto dto);
 
-        void Desativar(Guid id);
+        void Inativar(Guid id);
+
+        void Reativar(Guid id);
 
         string Login(UsuarioLoginDto dto);
 

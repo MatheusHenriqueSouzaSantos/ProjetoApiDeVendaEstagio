@@ -1,5 +1,6 @@
 ﻿using ApiEstagioBicicletaria.Entities.UsuarioDomain;
 using ApiEstagioBicicletaria.Excecoes;
+using ApiEstagioBicicletaria.Repositories;
 using ApiEstagioBicicletaria.Repository.Repositorios;
 using System.Security.Claims;
 
@@ -8,12 +9,12 @@ namespace ApiEstagioBicicletaria.Seguranca
     public class UsuarioLogadoService
     {
         private readonly IHttpContextAccessor _httpContext;
-        private readonly UsuarioRepositorio _usuarioRepositorio;
+        private readonly ContextoDb _contextoDb;
 
-        public UsuarioLogadoService(IHttpContextAccessor httpContext, UsuarioRepositorio usuarioRepositorio)
+        public UsuarioLogadoService(IHttpContextAccessor httpContext, ContextoDb contextoDb)
         {
             _httpContext = httpContext;
-            _usuarioRepositorio = usuarioRepositorio;
+            _contextoDb = contextoDb;
         }
 
         public Usuario ObterUsuario()
@@ -25,7 +26,13 @@ namespace ApiEstagioBicicletaria.Seguranca
                 throw new ExcecaoDeRegraDeNegocio(500, "Erro interno de conversão");
             }
 
-            return _usuarioRepositorio.BuscarPorId(id) ?? throw new ExcecaoDeRegraDeNegocio(500, "Não foi encontrado o usuario logado"); ;
+            Usuario usuarioVindoDoBanco= _contextoDb.Usuarios.FirstOrDefault(u=>u.Id==id) 
+                ?? throw new ExcecaoDeRegraDeNegocio(500, "Não foi encontrado o usuario logado");
+            if (usuarioVindoDoBanco.Ativo == false)
+            {
+                throw new ExcecaoDeRegraDeNegocio(403, "Não é possível concluir a ação, pois o usuário está inativo");
+            }
+            return usuarioVindoDoBanco;
         }
     }
 }

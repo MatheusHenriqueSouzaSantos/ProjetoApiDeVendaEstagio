@@ -155,7 +155,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpPatch("ativar/{id}")]
+        [HttpPatch("reativar/{id}")]
         [Authorize]
         public ActionResult ReativarServico([FromRoute] Guid id)
         {
