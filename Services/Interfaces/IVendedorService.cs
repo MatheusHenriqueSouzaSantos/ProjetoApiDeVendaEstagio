@@ -6,11 +6,11 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 {
     public interface IVendedorService
     {
-        List<Vendedor> BuscarTodosOsVendedores();
+        List<Vendedor> BuscarTodosOsVendedoresAtivos();
 
         List<Vendedor> BuscarTodosOsVendedoresInativos();
 
-        Vendedor BuscarVendedorPorId(Guid id);
+        Vendedor BuscarVendedorAtivoPorId(Guid id);
 
         Vendedor BuscarVendedorPorCpf(string cpf);
 
@@ -20,7 +20,9 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         Vendedor AtualizarVendedor(Guid id,VendedorUpdatedDto dto);
 
-        void DesativarVendedor(Guid id);
+        void InativarVendedor(Guid id);
+
+        void ReativarVendedor(Guid id);
 
         byte[] GerarRelatorioDeVendedoresComMaiorFaturamentoPorPeriodo
             (DatasParaGeracaoDeRelatorioDto dto);

@@ -32,7 +32,7 @@ namespace ApiEstagioBicicletaria.Services
             _usuarioLogado = usuarioLogadoService.ObterUsuario();
         }
 
-        public List<Vendedor> BuscarTodosOsVendedores()
+        public List<Vendedor> BuscarTodosOsVendedoresAtivos()
         {
             return _contexto.Vendedores.Where(v=>v.Ativo).ToList();
         }
@@ -42,10 +42,10 @@ namespace ApiEstagioBicicletaria.Services
             return _contexto.Vendedores.Where(v => !v.Ativo).ToList();
         }
 
-        public Vendedor BuscarVendedorPorId(Guid id)
+        public Vendedor BuscarVendedorAtivoPorId(Guid id)
         {
             return _contexto.Vendedores.FirstOrDefault(v=>v.Id == id && v.Ativo)
-                ?? throw new ExcecaoDeRegraDeNegocio(400,"Vendedor não encontrado");
+                ?? throw new ExcecaoDeRegraDeNegocio(404,"Vendedor não encontrado");
         }
 
         public Vendedor BuscarVendedorPorCpf(string cpf)
@@ -60,7 +60,7 @@ namespace ApiEstagioBicicletaria.Services
                 throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
             }
             return _contexto.Vendedores.FirstOrDefault(v => v.Cpf == cpfSemPontoETracos && v.Ativo)
-                ?? throw new ExcecaoDeRegraDeNegocio(400, "Vendedor não encontrado");
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Vendedor não encontrado");
         }
 
         public List<Vendedor> BuscarVendedoresPorNome(string nome)
@@ -71,24 +71,28 @@ namespace ApiEstagioBicicletaria.Services
 
         public Vendedor CadastrarVendedor(VendedorCreateDto dto)
         {
-            string cpfSoNumeros = DocumentoUtil.RemoverNaoNumericos(dto.Cpf);
-            if (!DocumentoUtil.ValidarCpf(cpfSoNumeros))
+            string cpfSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(dto.Cpf);
+            if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cpfSemPontoETracos))
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "O cpf deve conter apenas números");
+            }
+            if (!DocumentoUtil.ValidarCpf(cpfSemPontoETracos))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Cpf inválido");
             }
-            bool vendedorExistenteComEsseCpf = _contexto.Vendedores.Any(v => v.Cpf == cpfSoNumeros && v.Ativo);
+            bool vendedorExistenteComEsseCpf = _contexto.Vendedores.Any(v => v.Cpf == cpfSemPontoETracos);
             if (vendedorExistenteComEsseCpf)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um vendedor cadastrado com esse cpf");
             }
-            bool vendedorCadastradoComEsseEmail = _contexto.Vendedores.Any(v => v.Email == dto.Email && v.Ativo);
+            bool vendedorCadastradoComEsseEmail = _contexto.Vendedores.Any(v => v.Email == dto.Email);
 
             if (vendedorCadastradoComEsseEmail)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um vendedor cadastrado com esse email");
             }
 
-            Vendedor vendedor = new Vendedor(dto.Telefone,dto.Email,dto.NomeCompleto, cpfSoNumeros);
+            Vendedor vendedor = new Vendedor(dto.Telefone,dto.Email,dto.NomeCompleto, cpfSemPontoETracos);
 
             _contexto.Vendedores.Add(vendedor);
             _logService.CriarLogsDeCriacao(vendedor, _usuarioLogado);
@@ -98,10 +102,15 @@ namespace ApiEstagioBicicletaria.Services
         }
         public Vendedor AtualizarVendedor(Guid id,VendedorUpdatedDto dto)
         {
-            Vendedor vendedor = _contexto.Vendedores.FirstOrDefault(v => v.Id == id && v.Ativo)
+            Vendedor vendedor = _contexto.Vendedores.FirstOrDefault(v => v.Id == id)
                 ?? throw new ExcecaoDeRegraDeNegocio(400, "Vendedor não encontrado");
+
+            if (vendedor.Ativo == false)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Vendedor Inativo, reative-o antes para poder atualiza-lo");
+            }
             
-            bool vendedorCadastradoComEsseEmail = _contexto.Vendedores.Any(v => v.Email == dto.Email && v.Ativo && v.Id!=id);
+            bool vendedorCadastradoComEsseEmail = _contexto.Vendedores.Any(v => v.Email == dto.Email && v.Id!=id);
 
             if (vendedorCadastradoComEsseEmail)
             {
@@ -120,20 +129,33 @@ namespace ApiEstagioBicicletaria.Services
             return vendedor;
         }
 
-        public void DesativarVendedor(Guid id)
+        public void InativarVendedor(Guid id)
         {
-            Vendedor vendedor = _contexto.Vendedores.FirstOrDefault(v => v.Id == id && v.Ativo)
+            Vendedor vendedor = _contexto.Vendedores.FirstOrDefault(v => v.Id == id)
                ?? throw new ExcecaoDeRegraDeNegocio(400, "Vendedor não encontrado");
 
-            bool vendedorPresenteEmAlgumaVenda = _contexto.Vendas.Any(v => v.Vendedor.Id == id && v.Ativo);
-
-            if (vendedorPresenteEmAlgumaVenda)
+            if (vendedor.Ativo == false)
             {
-                throw new ExcecaoDeRegraDeNegocio(400, "O Vendedor Está presente em uma venda!, A Venda deve ser excluída antes de poder excluír o cliente");
+                throw new ExcecaoDeRegraDeNegocio(400, "Vendedor já está inativo");
             }
             vendedor.Ativo = false;
             _contexto.Vendedores.Update(vendedor);
-            _logService.CriarLogsDeExclusao(vendedor, _usuarioLogado);
+            _logService.CriarLogsDeInativacao(vendedor, _usuarioLogado);
+            _contexto.SaveChanges();
+        }
+
+        public void ReativarVendedor(Guid id)
+        {
+            Vendedor vendedor = _contexto.Vendedores.FirstOrDefault(v => v.Id == id)
+               ?? throw new ExcecaoDeRegraDeNegocio(400, "Vendedor não encontrado");
+
+            if (vendedor.Ativo == true)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Vendedor já está ativo");
+            }
+            vendedor.Ativo = true;
+            _contexto.Vendedores.Update(vendedor);
+            _logService.CriarLogsDeReativacao(vendedor, _usuarioLogado);
             _contexto.SaveChanges();
         }
 

@@ -66,9 +66,14 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             }
         }
 
-        public void CriarLogsDeExclusao(Vendedor vendedor, Usuario usuarioResponsavel)
+        public void CriarLogsDeInativacao(Vendedor vendedor, Usuario usuarioResponsavel)
         {
             _repositorio.CriarLog(new VendedorLog(vendedor, LogAcao.Inativacao, "Ativo", true.ToString(), false.ToString(), usuarioResponsavel));
+        }
+
+        public void CriarLogsDeReativacao(Vendedor vendedor, Usuario usuarioResponsavel)
+        {
+            _repositorio.CriarLog(new VendedorLog(vendedor, LogAcao.Reativacao, "Ativo", false.ToString(), true.ToString(), usuarioResponsavel));
         }
     }
 }

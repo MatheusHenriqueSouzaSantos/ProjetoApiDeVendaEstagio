@@ -28,7 +28,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return Ok(_service.BuscarTodosOsVendedores());
+                return Ok(_service.BuscarTodosOsVendedoresAtivos());
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -64,7 +64,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return Ok(_service.BuscarVendedorPorId(id));
+                return Ok(_service.BuscarVendedorAtivoPorId(id));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -166,11 +166,31 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpDelete("{id}")]
         [Authorize]
-        public ActionResult<Vendedor> Desativar([FromRoute]Guid id)
+        public ActionResult<Vendedor> Inativar([FromRoute]Guid id)
         {
             try
             {
-                _service.DesativarVendedor(id);
+                _service.InativarVendedor(id);
+
+                return Ok("Operação realizada com sucesso ");
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
+            }
+        }
+
+        [HttpPatch("reativar/{id}")]
+        [Authorize]
+        public ActionResult<Vendedor> Reativar([FromRoute] Guid id)
+        {
+            try
+            {
+                _service.ReativarVendedor(id);
 
                 return Ok("Operação realizada com sucesso ");
             }
