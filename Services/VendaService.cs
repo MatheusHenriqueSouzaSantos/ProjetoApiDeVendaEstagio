@@ -97,9 +97,9 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
-        public VendaTransacaoOutputDto BuscarVendaPorId(Guid id)
+        public VendaTransacaoOutputDto BuscarVendaAtivasOuInativasPorId(Guid id)
         {
-            Venda venda= _contexto.Vendas.Include(v => v.Vendedor).Include(v => v.Cliente).ThenInclude(c => c.Endereco).FirstOrDefault(v => v.Id == id && v.Ativo)
+            Venda venda= _contexto.Vendas.Include(v => v.Vendedor).Include(v => v.Cliente).ThenInclude(c => c.Endereco).FirstOrDefault(v => v.Id == id)
              ?? throw new ExcecaoDeRegraDeNegocio(404, "Venda não encontrada!!!");
 
             return EntityToDto(venda);
@@ -108,10 +108,10 @@ namespace ApiEstagioBicicletaria.Services
         public VendaTransacaoOutputDto CadastrarVenda(VendaTransacaoCreateDto dto)
         {
             Cliente? clienteDaVenda = _contexto.Clientes.Where(c => c.Id == dto.Venda.IdCliente && c.Ativo).Include(c => c.Endereco).FirstOrDefault()
-            ?? throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado!!!");
+            ?? throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado ou inativo!!!");
 
-            Vendedor vendedorDaVenda = _vendedorRepositorio.BuscarPorId(dto.Venda.VendedorId)
-                ?? throw new ExcecaoDeRegraDeNegocio(404, "Vendedor não encontrado");
+            Vendedor vendedorDaVenda = _contexto.Vendedores.FirstOrDefault(v=>v.Id==dto.Venda.VendedorId&&v.Ativo)
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Vendedor não encontrado ou inativo");
 
 
             List<ItemVendaCreateDto> itensVenda = dto.Venda.ItensVenda ?? [];
@@ -157,9 +157,9 @@ namespace ApiEstagioBicicletaria.Services
 
                 if(produtoDoItem == null)
                 {
-                    throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado!!!");
+                    throw new ExcecaoDeRegraDeNegocio(404, "Produto não encontrado ou inativo!!!");
                 }
-                Estoque estoqueDoProdutoDoItem = _contexto.Estoques.Include(p=>p.Produto).FirstOrDefault(e => e.Produto.Id == produtoDoItem.Id && e.Ativo)
+                Estoque estoqueDoProdutoDoItem = _contexto.Estoques.Include(p=>p.Produto).FirstOrDefault(e => e.Produto.Id == produtoDoItem.Id)
                     ?? throw new ExcecaoDeRegraDeNegocio(500, "Estoque não encontrado"); 
                 if(itemEnviado.Quantidade > estoqueDoProdutoDoItem.QuantidadeEmEstoque)
                 {
@@ -189,7 +189,7 @@ namespace ApiEstagioBicicletaria.Services
                 Servico? servicoDaVenda = _contexto.Servicos.FirstOrDefault(s=>s.Id==servicoEnviado.IdServico && s.Ativo);
                 if(servicoDaVenda == null)
                 {
-                    throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado!!!");
+                    throw new ExcecaoDeRegraDeNegocio(404, "Serviço não encontrado ou inativo!!!");
                 }
                 decimal descontoDoServicoNaVenda = servicoEnviado.DescontoServico ?? 0.0m;
                 if (descontoDoServicoNaVenda > servicoDaVenda.Preco)
@@ -216,8 +216,6 @@ namespace ApiEstagioBicicletaria.Services
             {
                 if (dto.Transacao.DataDeVencimentoPrimeiraParcela <= DateOnly.FromDateTime(DateTime.Today))
                 {
-                    Console.WriteLine(dto.Transacao.DataDeVencimentoPrimeiraParcela);
-                    Console.WriteLine(DateOnly.FromDateTime(DateTime.Today));
                     throw new ExcecaoDeRegraDeNegocio(400, "Uma venda parcelada precisa que data de vencimento da primeira parcela seja maior que a data de hoje");
                 }
             }
@@ -316,10 +314,10 @@ namespace ApiEstagioBicicletaria.Services
         {
             
             Venda vendaParaAtualizar = _contexto.Vendas.Where(v => v.Id == idVendaEnviado && v.Ativo).Include(v=>v.Cliente).Include(v=>v.Vendedor).FirstOrDefault()
-            ?? throw new ExcecaoDeRegraDeNegocio(404, "Venda não encontrada!!");
+            ?? throw new ExcecaoDeRegraDeNegocio(404, "Venda não encontrada ou inativa!!!");
 
             Transacao transacaoDaVendaASerAtualizada = _contexto.Transacoes.Where(t=>t.IdVenda== vendaParaAtualizar.Id && t.Ativo).Include(t=>t.Venda).FirstOrDefault()
-            ?? throw new ExcecaoDeRegraDeNegocio(404, "Transação não encontrada!!");
+            ?? throw new ExcecaoDeRegraDeNegocio(404, "Transação não encontrada ou inativa!!!");
 
 
             if (transacaoDaVendaASerAtualizada.TransacaoEmCurso)
@@ -340,14 +338,14 @@ namespace ApiEstagioBicicletaria.Services
                 if (dto.Venda.IdCliente != null)
                 {
                     Cliente clienteAtualizadoDaVenda = _contexto.Clientes.Where(c => c.Id == dto.Venda.IdCliente && c.Ativo).Include(c => c.Endereco).FirstOrDefault()
-                    ?? throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado!!!");
+                    ?? throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado ou inativo!!!");
                     vendaParaAtualizar.Cliente = clienteAtualizadoDaVenda;
                     vendaParaAtualizar.IdCliente = clienteAtualizadoDaVenda.Id;
                 }
                 if (dto.Venda.IdVendedor != null)
                 {
-                    Vendedor vendedorAtualizado = _vendedorRepositorio.BuscarPorId(dto.Venda.IdVendedor.Value)
-                    ?? throw new ExcecaoDeRegraDeNegocio(404, "Vendedor não encontrado");
+                    Vendedor vendedorAtualizado = _contexto.Vendedores.FirstOrDefault(v=>v.Id==dto.Venda.IdVendedor&& v.Ativo)
+                    ?? throw new ExcecaoDeRegraDeNegocio(404, "Vendedor não encontrado ou inativo");
                     vendaParaAtualizar.Vendedor=vendedorAtualizado;
                     vendaParaAtualizar.IdVendedor=vendedorAtualizado.Id;
                 }
@@ -359,7 +357,7 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     foreach(Guid idASerDeletado in dto.Venda.IdsItensDeletados)
                     {
-                        ItemVenda itemASerExcluido = itensVenda.FirstOrDefault(i => i.Id == idASerDeletado && i.Ativo)
+                        ItemVenda itemASerExcluido = itensVenda.FirstOrDefault(i => i.Id == idASerDeletado)
                             ?? throw new ExcecaoDeRegraDeNegocio(400, $"nenhum item encontrado para ser excluído com o id: {idASerDeletado}");
                         Estoque estoqueDoItem = _contexto.Estoques.Include(e=>e.Produto).Where(e => e.ProdutoId == itemASerExcluido.IdProduto).First();
                         int valorAntigoQuantidadeEmEstoque = estoqueDoItem.QuantidadeEmEstoque;
@@ -370,7 +368,7 @@ namespace ApiEstagioBicicletaria.Services
                         itemASerExcluido.Ativo = false;
                         _itemVendaLogService.CriarLogsDeExclusao(itemASerExcluido, vendaParaAtualizar, _usuarioLogado);
                         itensVenda.Remove(itemASerExcluido);
-                        _contexto.ItensVendas.Update(itemASerExcluido);
+                        _contexto.ItensVendas.Remove(itemASerExcluido);
                     }
                 }
 
@@ -381,13 +379,13 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     foreach (Guid idASerDeletado in dto.Venda.IdsServicosDeletados)
                     {
-                        ServicoVenda servicoVendaASerExcluido = servicosVenda.FirstOrDefault(i => i.Id == idASerDeletado && i.Ativo)
+                        ServicoVenda servicoVendaASerExcluido = servicosVenda.FirstOrDefault(i => i.Id == idASerDeletado)
                             ?? throw new ExcecaoDeRegraDeNegocio(400, $"nenhum servico venda encontrado para ser excluído com o id: {idASerDeletado}");
                         
                         servicoVendaASerExcluido.Ativo = false;
                         _servicoVendaLogService.CriarLogsDeExclusao(servicoVendaASerExcluido, vendaParaAtualizar, _usuarioLogado);
                         servicosVenda.Remove(servicoVendaASerExcluido);
-                        _contexto.ServicosVendas.Update(servicoVendaASerExcluido);
+                        _contexto.ServicosVendas.Remove(servicoVendaASerExcluido);
                     }
                 }
 
@@ -462,7 +460,7 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     foreach (ItemVendaCreateDto itemIteradoDto in itensNovosDto)
                     {
-                        Produto produto = _contexto.Produtos.FirstOrDefault(p => p.Id == itemIteradoDto.IdProduto)
+                        Produto produto = _contexto.Produtos.FirstOrDefault(p => p.Id == itemIteradoDto.IdProduto && p.Ativo)
                             ?? throw new ExcecaoDeRegraDeNegocio(404, "produto não encontrado para o id: " + itemIteradoDto.IdProduto);
 
                         Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.ProdutoId == produto.Id);
@@ -490,7 +488,7 @@ namespace ApiEstagioBicicletaria.Services
                 {
                     foreach (ServicoVendaCreateDto servicoVendaIteradoDto in servicosVendaNovosDto)
                     {
-                        Servico servico = _contexto.Servicos.FirstOrDefault(s => s.Id == servicoVendaIteradoDto.IdServico)
+                        Servico servico = _contexto.Servicos.FirstOrDefault(s => s.Id == servicoVendaIteradoDto.IdServico && s.Ativo)
                             ?? throw new ExcecaoDeRegraDeNegocio(404, "serviço não encontrado para o id: " + servicoVendaIteradoDto.IdServico);
 
                         if (servicoVendaIteradoDto.DescontoServico > servico.Preco)
@@ -690,13 +688,17 @@ namespace ApiEstagioBicicletaria.Services
 
         public void DeletarVendaPorId(Guid idVenda)
         {
-            Venda? vendaASerDeletada = _contexto.Vendas.FirstOrDefault(v=>v.Id==idVenda && v.Ativo);
+            Venda? vendaASerDeletada = _contexto.Vendas.FirstOrDefault(v=>v.Id==idVenda);
 
             if(vendaASerDeletada== null)
             {
-                throw new ExcecaoDeRegraDeNegocio(400,"Venda não encontrada");
+                throw new ExcecaoDeRegraDeNegocio(400,"Venda não encontrada!!!");
             }
-            Transacao? transacaoDaVendaASerDeletada = _contexto.Transacoes.FirstOrDefault(t=>t.IdVenda==vendaASerDeletada.Id && t.Ativo);
+            if (vendaASerDeletada.Ativo == false)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "A venda já está cancelada");
+            }
+            Transacao? transacaoDaVendaASerDeletada = _contexto.Transacoes.FirstOrDefault(t=>t.IdVenda==vendaASerDeletada.Id);
 
             if (transacaoDaVendaASerDeletada == null)
             {
@@ -756,7 +758,7 @@ namespace ApiEstagioBicicletaria.Services
         public TransacaoOutputDto AtualizarQuantidadeDeParcelasPagasEmUmaTransacao(Guid idTransacaoEnviado, int quantidadeDeParcelasASerAtualizadaParaPaga)
         {
             Transacao? transacaoReferente = _contexto.Transacoes.Include(t=>t.Venda).FirstOrDefault(t => t.Id == idTransacaoEnviado && t.Ativo)
-                ?? throw new ExcecaoDeRegraDeNegocio(404, "Transação não encontrada");
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Transação não encontrada ou inativa!!!");
             if (transacaoReferente.Pago)
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"Essa transação já esta paga, não há mais parcelas para pagar");
@@ -971,7 +973,7 @@ namespace ApiEstagioBicicletaria.Services
             }
             return vendasDoClienteNoFormatoDto.OrderBy(vt => !vt.Transacao.TransacaoEmCurso ? 1 : vt.Transacao.TransacaoEmCurso && !vt.Transacao.Pago ? 2 : 3).ThenBy(vt => vt.Venda.DataCriacao).ToList(); ;
         }
-        public VendaTransacaoOutputDto BuscarVendaPorCodigoVenda(string codigoVenda)
+        public VendaTransacaoOutputDto BuscarVendaAtivaOuInativaPorCodigoVenda(string codigoVenda)
         {
             Venda? vendaVindaDoBanco = _contexto.Vendas.Include(v=>v.Cliente).ThenInclude(c=>c.Endereco).Where(v => v.CodigoVenda == codigoVenda).FirstOrDefault();
             if (vendaVindaDoBanco == null)

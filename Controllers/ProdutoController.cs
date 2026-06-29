@@ -75,6 +75,23 @@ namespace ApiEstagioBicicletaria.Controllers
                 return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
             }
         }
+        [HttpGet("inativos/{id}")]
+        [Authorize]
+        public ActionResult<ProdutoDtoOutPut> BuscarProdutoInativoPorId([FromRoute] Guid id)
+        {
+            try
+            {
+                return _produtoService.BuscarProdutoInativoPorId(id);
+            }
+            catch (ExcecaoDeRegraDeNegocio ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
+            }
+        }
         [HttpGet("busca-por-codigo-de-barra/{codigoDeBarra}")]
         [Authorize]
         public ActionResult<ProdutoDtoOutPut> BuscarProdutoPorCodigoDeBarra([FromRoute] string codigoDeBarra)

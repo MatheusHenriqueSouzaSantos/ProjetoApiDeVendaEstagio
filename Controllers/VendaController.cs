@@ -66,7 +66,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return Ok(_vendaService.BuscarVendaPorId(id));
+                return Ok(_vendaService.BuscarVendaAtivasOuInativasPorId(id));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -226,7 +226,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return _vendaService.BuscarVendaPorCodigoVenda(codigoVenda);
+                return _vendaService.BuscarVendaAtivaOuInativaPorCodigoVenda(codigoVenda);
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {

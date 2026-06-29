@@ -26,7 +26,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return Ok(_service.BuscarTodos());
+                return Ok(_service.BuscarTodosAtivos());
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -62,7 +62,7 @@ namespace ApiEstagioBicicletaria.Controllers
         {
             try
             {
-                return Ok(_service.BuscarPorId(id));
+                return Ok(_service.BuscarAtivoOuInativoPorId(id));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
