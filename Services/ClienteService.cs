@@ -203,8 +203,8 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O nome da cidade não deve conter numeros");
             }
-            ClienteJuridico? empresaExistenteRetornadoComEsseCnpj = _contextoDb.ClientesJuridicos.Where(c => c.Cnpj == cnpjSemPontoETracos).FirstOrDefault();
-            if (empresaExistenteRetornadoComEsseCnpj != null)
+            ClienteJuridico? clienteJuridicoExistenteComEsseCnpj = _contextoDb.ClientesJuridicos.Where(c => c.Cnpj == cnpjSemPontoETracos).FirstOrDefault();
+            if (clienteJuridicoExistenteComEsseCnpj != null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe uma empresa cadastrada com esse cnpj");
             }
@@ -240,10 +240,12 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um cliente cadastrado com esse E-mail");
             }
-            ClienteFisico? clienteFisicoVindoDoBanco= _contextoDb.ClientesFisicos.Include(c => c.Endereco).Where(c=>c.Id==id && c.Ativo).FirstOrDefault();
-            if(clienteFisicoVindoDoBanco== null)
+            ClienteFisico clienteFisicoVindoDoBanco= _contextoDb.ClientesFisicos.Include(c => c.Endereco).Where(c=>c.Id==id).FirstOrDefault()
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado");
+
+            if (clienteFisicoVindoDoBanco.Ativo == false)
             {
-                throw new ExcecaoDeRegraDeNegocio(404,"Cliente não encontrado");
+                throw new ExcecaoDeRegraDeNegocio(400, "Cliente está inativo, reative ele primeiro antes de atualiza-lo");
             }
             Endereco enderecoAntigo = clienteFisicoVindoDoBanco.Endereco.Copia();
 
@@ -295,10 +297,12 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um cliente cadastrado com esse E-mail");
             }
-            ClienteJuridico? clienteJuridicoVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c=>c.Endereco).Where(c => c.Id == id && c.Ativo).FirstOrDefault();
-            if (clienteJuridicoVindoDoBanco == null)
+            ClienteJuridico clienteJuridicoVindoDoBanco = _contextoDb.ClientesJuridicos.Include(c=>c.Endereco).Where(c => c.Id == id).FirstOrDefault()
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado");
+
+            if (clienteJuridicoVindoDoBanco.Ativo == false)
             {
-                throw new ExcecaoDeRegraDeNegocio(404, "Empresa não encontrado");
+                throw new ExcecaoDeRegraDeNegocio(400, "Cliente está inativo, reative ele primeiro antes de atualiza-lo");
             }
 
             Endereco enderecoAntigo = clienteJuridicoVindoDoBanco.Endereco.Copia();

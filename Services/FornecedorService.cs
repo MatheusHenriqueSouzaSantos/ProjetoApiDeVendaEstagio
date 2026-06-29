@@ -39,7 +39,7 @@ namespace ApiEstagioBicicletaria.Services
             _usuarioLogado = usuarioLogadoService.ObterUsuario();
         }
 
-        public List<Fornecedor> BuscarTodos()
+        public List<Fornecedor> BuscarTodosAtivos()
         {
             return _contexto.Fornecedores.Where(f => f.Ativo).ToList();
         }
@@ -49,14 +49,14 @@ namespace ApiEstagioBicicletaria.Services
             return _contexto.Fornecedores.Where(f => !f.Ativo).ToList();
         }
 
-        public Fornecedor BuscarPorId(Guid id)
+        public Fornecedor BuscarAtivoPorId(Guid id)
         {
             return _contexto.Fornecedores.FirstOrDefault(e=>e.Id==id && e.Ativo)
                 ?? throw new ExcecaoDeRegraDeNegocio(404,"Fornecedor nao encontrado");
         }
        
 
-        public Fornecedor BuscarPorCnpj(string cnpj)
+        public Fornecedor BuscarAtivoPorCnpj(string cnpj)
         {
             string cnpjSemPontoETracos = DocumentoUtil.RemoverPontosTracosEBarras(cnpj);
             if (!DocumentoUtil.VerificarSeAStringContemSomenteNumeros(cnpjSemPontoETracos))
@@ -72,9 +72,9 @@ namespace ApiEstagioBicicletaria.Services
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor nao encontrado");
         }
 
-        public List<Fornecedor> BuscarPorNome(string nome)
+        public List<Fornecedor> BuscarAtivoPorNome(string nome)
         {
-            return _contexto.Fornecedores.Where(v => v.RazaoSocial.Contains(nome) && v.Ativo).Take(10).ToList();
+            return _contexto.Fornecedores.Where(f => f.RazaoSocial.Contains(nome) && f.Ativo).Take(10).ToList();
         }
 
 
@@ -86,11 +86,11 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O CNPJ deve estar em um formato valido");
             }
-            if(_contexto.Fornecedores.Any(f=>f.Cnpj==cnpjSomenteNumeros && f.Ativo))
+            if(_contexto.Fornecedores.Any(f=>f.Cnpj==cnpjSomenteNumeros))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um fornecedor cadastrado com esse cnpj");
             }
-            if(_contexto.Fornecedores.Any(f=>f.Email == dto.Email && f.Ativo))
+            if(_contexto.Fornecedores.Any(f=>f.Email == dto.Email))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um fornecedor cadastrado com esse email");
             }
@@ -103,9 +103,13 @@ namespace ApiEstagioBicicletaria.Services
 
         public Fornecedor Atualizar(Guid id, FornecedorUpdateDto dto)
         {
-            Fornecedor fornecedorVindoDoBanco = _contexto.Fornecedores.FirstOrDefault(f => f.Id == id && f.Ativo)
+            Fornecedor fornecedorVindoDoBanco = _contexto.Fornecedores.FirstOrDefault(f => f.Id == id)
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor não encontrado");
-            if (_contexto.Fornecedores.Any(f => f.Email == dto.Email && f.Ativo && f.Id!=id))
+            if (fornecedorVindoDoBanco.Ativo == false)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Fornecedor está inativo, reative ele antes para poder atualiza-lo");
+            }
+            if (_contexto.Fornecedores.Any(f => f.Email == dto.Email && f.Id!=id))
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um fornecedor cadastrado com esse email");
             }
@@ -123,14 +127,32 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
-        public void Desativar(Guid id)
+        public void Inativar(Guid id)
         {
-            //não deixar ser desativado se fornecedor já tiver feito uma entrada de estoque
-            Fornecedor fornecedorVindoDoBanco = _contexto.Fornecedores.FirstOrDefault(f => f.Id == id && f.Ativo)
+            Fornecedor fornecedorVindoDoBanco = _contexto.Fornecedores.FirstOrDefault(f => f.Id == id)
                ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor não encontrado");
+            if (fornecedorVindoDoBanco.Ativo == false)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Fornecedor já está inativo");
+            }
             fornecedorVindoDoBanco.Ativo = false;
             _contexto.Fornecedores.Update(fornecedorVindoDoBanco);
-            _logService.CriarLogsDeExclusao(fornecedorVindoDoBanco, _usuarioLogado);
+            _logService.CriarLogsDeInativacao(fornecedorVindoDoBanco, _usuarioLogado);
+            _contexto.SaveChanges();
+
+        }
+
+        public void Reativar(Guid id)
+        {
+            Fornecedor fornecedorVindoDoBanco = _contexto.Fornecedores.FirstOrDefault(f => f.Id == id)
+               ?? throw new ExcecaoDeRegraDeNegocio(404, "Fornecedor não encontrado");
+            if (fornecedorVindoDoBanco.Ativo == true)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Fornecedor já está ativo");
+            }
+            fornecedorVindoDoBanco.Ativo = true;
+            _contexto.Fornecedores.Update(fornecedorVindoDoBanco);
+            _logService.CriarLogsDeReativacao(fornecedorVindoDoBanco, _usuarioLogado);
             _contexto.SaveChanges();
 
         }
