@@ -71,7 +71,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
         {
             ServicoVendaLog log = new(servicoVenda,
                 venda,
-                LogAcao.Exclusao,
+                LogAcao.Inativacao,
                 "Ativo",
                 "true",
                 "false",

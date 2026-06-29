@@ -4,6 +4,7 @@
     {
         Criacao,
         Atualizacao,
-        Exclusao
+        Inativacao,
+        Reativacao
     }
 }

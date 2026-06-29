@@ -70,7 +70,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
         public void CriarLogsDeExclusao(Venda venda, Usuario usuarioResponsavel)
         {
             VendaLog log = new(venda,
-                LogAcao.Exclusao,
+                LogAcao.Inativacao,
                 "Ativo",
                 "true",
                 "false",

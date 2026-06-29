@@ -47,7 +47,7 @@ namespace ApiEstagioBicicletaria.Services.LogServices
         }
         public void CriarLogsDeExclusao(Estoque estoque, Usuario usuarioResponsavel)
         {
-            _repositorio.CriarLog(new EstoqueLog(AcaoQueAlterouEstoque.ExclusaoEntradaEstoque,estoque,estoque.Produto, Entities.LogAcao.Exclusao, "Ativo", true.ToString(),
+            _repositorio.CriarLog(new EstoqueLog(AcaoQueAlterouEstoque.ExclusaoEntradaEstoque,estoque,estoque.Produto, Entities.LogAcao.Inativacao, "Ativo", true.ToString(),
                 false.ToString(), usuarioResponsavel));
         }
     }

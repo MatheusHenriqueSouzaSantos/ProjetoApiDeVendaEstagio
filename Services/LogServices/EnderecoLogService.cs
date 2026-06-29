@@ -69,9 +69,16 @@ namespace ApiEstagioBicicletaria.Services.LogServices
             }
         }
 
-        public void CriarLogsDeExclusao(Endereco endereco, Cliente cliente, Usuario usuarioResponsavel)
+        public void CriarLogsDeInativacao(Endereco endereco, Cliente cliente, Usuario usuarioResponsavel)
         {
-            EnderecoLog log = new EnderecoLog(endereco,cliente, LogAcao.Exclusao, "Ativo", true.ToString(), false.ToString(), usuarioResponsavel);
+            EnderecoLog log = new EnderecoLog(endereco,cliente, LogAcao.Inativacao, "Ativo", true.ToString(), false.ToString(), usuarioResponsavel);
+
+            _repositorio.CriarLog(log);
+        }
+
+        public void CriarLogsDeReativacao(Endereco endereco, Cliente cliente, Usuario usuarioResponsavel)
+        {
+            EnderecoLog log = new EnderecoLog(endereco, cliente, LogAcao.Reativacao, "Ativo", false.ToString(), true.ToString(), usuarioResponsavel);
 
             _repositorio.CriarLog(log);
         }

@@ -33,7 +33,7 @@ namespace ApiEstagioBicicletaria.Services
             _usuarioLogado = usuarioLogadoService.ObterUsuario();
         }
 
-        public List<ClienteDtoOutPut> BuscarClientes()
+        public List<ClienteDtoOutPut> BuscarClientesAtivos()
         {
             List<ClienteFisico> clientesFisicos = _contextoDb.Clientes
                 .OfType<ClienteFisico>()
@@ -108,7 +108,7 @@ namespace ApiEstagioBicicletaria.Services
             return todosClientesFormatoDto;
         }
 
-        public ClienteDtoOutPut BuscarClientePorId(Guid id)
+        public ClienteDtoOutPut BuscarClienteAtivoPorId(Guid id)
         {
             Cliente? cliente = _contextoDb.Clientes.Include(c => c.Endereco).FirstOrDefault(c => c.Id == id && c.Ativo);
             ClienteDtoOutPut clienteFormatoDto=null;
@@ -153,13 +153,12 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O nome da cidade não deve conter numeros");
             }
-            //como o sistema lida para mostrar clientes não ativos em vendas, devo deixar adicionar com o mesmo cpf acho que não??
-            ClienteFisico? clienteExistenteRetornadoComEsseCpf= _contextoDb.ClientesFisicos.Where(c => c.Cpf == cpfSemPontoETracos && c.Ativo).FirstOrDefault();
+            ClienteFisico? clienteExistenteRetornadoComEsseCpf= _contextoDb.ClientesFisicos.Where(c => c.Cpf == cpfSemPontoETracos).FirstOrDefault();
             if (clienteExistenteRetornadoComEsseCpf != null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um cliente cadastrado com esse cpf");
             }
-            Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.Where(c => c.Email == dto.Email && c.Ativo).FirstOrDefault();
+            Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.Where(c => c.Email == dto.Email).FirstOrDefault();
             if (clienteExistenteComEsseEmail != null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400,"Já existe um cliente cadastrado com esse E-mail");
@@ -204,12 +203,12 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O nome da cidade não deve conter numeros");
             }
-            ClienteJuridico? empresaExistenteRetornadoComEsseCnpj = _contextoDb.ClientesJuridicos.Where(c => c.Cnpj == cnpjSemPontoETracos && c.Ativo).FirstOrDefault();
+            ClienteJuridico? empresaExistenteRetornadoComEsseCnpj = _contextoDb.ClientesJuridicos.Where(c => c.Cnpj == cnpjSemPontoETracos).FirstOrDefault();
             if (empresaExistenteRetornadoComEsseCnpj != null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe uma empresa cadastrada com esse cnpj");
             }
-            Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.Where(c => c.Email == dto.Email && c.Ativo).FirstOrDefault();
+            Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.Where(c => c.Email == dto.Email).FirstOrDefault();
             if (clienteExistenteComEsseEmail != null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um cliente cadastrado com esse E-mail");
@@ -236,7 +235,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O nome da cidade não deve conter numeros");
             }
-            Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.FirstOrDefault(c=>c.Email==dto.Email && c.Ativo && c.Id!=id);
+            Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.FirstOrDefault(c=>c.Email==dto.Email && c.Id!=id);
             if (clienteExistenteComEsseEmail != null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um cliente cadastrado com esse E-mail");
@@ -291,7 +290,7 @@ namespace ApiEstagioBicicletaria.Services
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "O nome da cidade não deve conter numeros");
             }
-            Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.FirstOrDefault(c => c.Email == dto.Email && c.Ativo && c.Id != id);
+            Cliente? clienteExistenteComEsseEmail = _contextoDb.Clientes.FirstOrDefault(c => c.Email == dto.Email && c.Id != id);
             if (clienteExistenteComEsseEmail != null)
             {
                 throw new ExcecaoDeRegraDeNegocio(400, "Já existe um cliente cadastrado com esse E-mail");
@@ -323,26 +322,45 @@ namespace ApiEstagioBicicletaria.Services
             return clienteJuridicoVindoDoBanco;
         }
 
-        public void DeletarCLientePorId(Guid id)
+        public void InativarClientePorId(Guid id)
         {
-            Cliente? clienteExistente = _contextoDb.Clientes.Where(c => c.Id == id && c.Ativo).Include(c=>c.Endereco).FirstOrDefault();
+            Cliente clienteExistente = _contextoDb.Clientes.Where(c => c.Id == id).Include(c=>c.Endereco).FirstOrDefault()
+                ?? throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado");
 
-            if(clienteExistente == null)
+            if (clienteExistente.Ativo == false)
             {
-                throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado");
+                throw new ExcecaoDeRegraDeNegocio(400, "Cliente já esta inativo");
             }
-            bool clienteEstaEmAlgumaVenda = _contextoDb.Vendas.Where(v => v.IdCliente == clienteExistente.Id && v.Ativo).Any();
-            if (clienteEstaEmAlgumaVenda)
-            {
-                throw new ExcecaoDeRegraDeNegocio(400, "Esse cliente já realizou uma venda, exclua a venda antes de exclui-lo");
-            }
+
             clienteExistente.Ativo = false;
+            clienteExistente.Endereco.Ativo = false;
             _contextoDb.Update(clienteExistente);
-            _enderecoLogService.CriarLogsDeExclusao(clienteExistente.Endereco,clienteExistente, _usuarioLogado);
-            _logService.CriarLogsDeExclusao(clienteExistente, _usuarioLogado); 
+            _enderecoLogService.CriarLogsDeInativacao(clienteExistente.Endereco,clienteExistente, _usuarioLogado);
+            _logService.CriarLogsDeInativacao(clienteExistente, _usuarioLogado); 
             _contextoDb.SaveChanges();
             
         }
+
+        public void ReativarClientePorId(Guid id)
+        {
+            Cliente clienteExistente = _contextoDb.Clientes.Where(c => c.Id == id).Include(c => c.Endereco).FirstOrDefault()
+               ?? throw new ExcecaoDeRegraDeNegocio(404, "Cliente não encontrado");
+
+            if (clienteExistente.Ativo == true)
+            {
+                throw new ExcecaoDeRegraDeNegocio(400, "Cliente já esta ativo");
+            }
+
+            clienteExistente.Ativo = true;
+            clienteExistente.Endereco.Ativo=true;
+            _contextoDb.Update(clienteExistente);
+            _enderecoLogService.CriarLogsDeReativacao(clienteExistente.Endereco, clienteExistente, _usuarioLogado);
+            _logService.CriarLogsDeReativacao(clienteExistente, _usuarioLogado);
+            _contextoDb.SaveChanges();
+
+        }
+
+
 
         public List<ClienteDtoOutPut> BuscarClientesPorNome(string nome)
         {

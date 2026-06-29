@@ -69,14 +69,14 @@ namespace ApiEstagioBicicletaria.Services.LogServices
         public void CriarLogsDeExclusao(EntradaEstoque entradaEstoque,StatusEntradaEstoque statusAnterior, Usuario usuarioResponsavel)
         {
             EntradaEstoqueLog log = new(entradaEstoque,
-                LogAcao.Exclusao,
+                LogAcao.Inativacao,
                 "Ativo",
                 "true",
                 "false",
                 usuarioResponsavel);
             _repositorio.CriarLog(log);
             log = new(entradaEstoque,
-                LogAcao.Exclusao,
+                LogAcao.Inativacao,
                 "Status",
                 statusAnterior.ToString(),
                 StatusEntradaEstoque.Cancelada.ToString(),
