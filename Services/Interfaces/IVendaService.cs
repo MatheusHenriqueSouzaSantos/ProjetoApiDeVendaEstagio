@@ -12,7 +12,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         List<VendaTransacaoOutputDto> BuscarTodasVendasInativas();
 
-        VendaTransacaoOutputDto BuscarVendaPorId(Guid id);
+        VendaTransacaoOutputDto BuscarVendaAtivasOuInativasPorId(Guid id);
 
         VendaTransacaoOutputDto CadastrarVenda(VendaTransacaoCreateDto dto);
 
@@ -26,7 +26,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 
         List<VendaTransacaoOutputDto> BuscarVendasPorCpfOuCnpj(DocumentoClienteInputDto dto);
 
-        VendaTransacaoOutputDto BuscarVendaPorCodigoVenda(string codigoVenda);
+        VendaTransacaoOutputDto BuscarVendaAtivaOuInativaPorCodigoVenda(string codigoVenda);
 
         List<Object> BuscarLogsPorIdVenda(Guid idVenda);
 

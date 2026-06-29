@@ -16,7 +16,7 @@ namespace ApiEstagioBicicletaria.Repository.Repositorios
         public List<ItemEntradaEstoque> BuscarItensPorIdEntradaEstoque(Guid idEntradaEstoque)
         {
             return _contexto.ItensEntradaEstoque.Include(i=>i.Produto)
-                .Where(i=>i.IdEntradaEstoque==idEntradaEstoque && i.Ativo).ToList();
+                .Where(i=>i.IdEntradaEstoque==idEntradaEstoque).ToList();
         }
         public void Cadastrar(ItemEntradaEstoque item)
         {

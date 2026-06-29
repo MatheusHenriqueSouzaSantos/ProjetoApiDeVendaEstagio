@@ -6,11 +6,11 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 {
     public interface IEntradaEstoqueService
     {
-        List<EntradaEstoqueOutputDto> BuscarTodos();
+        List<EntradaEstoqueOutputDto> BuscarTodosAtivos();
 
         List<EntradaEstoqueOutputDto> BuscarTodosInativos();
 
-        EntradaEstoqueOutputDto BuscarPorId(Guid id);
+        EntradaEstoqueOutputDto BuscarAtivoOuInativoPorId(Guid id);
 
         EntradaEstoqueOutputDto Cadastrar(EntradaEstoqueCreateDto dto);
 
