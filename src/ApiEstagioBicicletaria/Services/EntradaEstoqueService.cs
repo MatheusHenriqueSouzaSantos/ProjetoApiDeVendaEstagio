@@ -67,7 +67,7 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<EntradaEstoqueOutputDto> BuscarEntradasAtivas()
         {
-            List<EntradaEstoque> entradasEstoque = _contexto.EntradasEstoque.Where(e=>e.Ativo).Include(e => e.Fornecedor).ToList();
+            List<EntradaEstoque> entradasEstoque = _contexto.EntradasEstoque.Where(e=>e.Ativo).Include(e => e.Fornecedor).OrderByDescending(e=>e.DataCriacao).ToList();
             List<EntradaEstoqueOutputDto> entradasEstoqueDto = new List<EntradaEstoqueOutputDto>();
 
             foreach(EntradaEstoque entradaEstoque in entradasEstoque)
@@ -84,7 +84,7 @@ namespace ApiEstagioBicicletaria.Services
 
         public List<EntradaEstoqueOutputDto> BuscarEntradasInativas()
         {
-            List<EntradaEstoque> entradasEstoque = _contexto.EntradasEstoque.Where(e=>!e.Ativo).Include(e => e.Fornecedor).ToList();
+            List<EntradaEstoque> entradasEstoque = _contexto.EntradasEstoque.Where(e=>!e.Ativo).Include(e => e.Fornecedor).OrderByDescending(e=>e.DataCriacao).ToList();
             List<EntradaEstoqueOutputDto> entradasEstoqueDto = new List<EntradaEstoqueOutputDto>();
 
             foreach (EntradaEstoque entradaEstoque in entradasEstoque)
