@@ -32,7 +32,7 @@ namespace ApiEstagioBicicletaria.Services
         private readonly EstoqueLogService _estoqueLogService;
         private readonly Usuario _usuarioLogado;
 
-        public ProdutoService(ContextoDb contextoDb, ProdutoLogService produtoLogService, EstoqueLogService estoqueLogService, UsuarioLogadoService userLogadoService)
+        public ProdutoService(ContextoDb contextoDb, ProdutoLogService produtoLogService, EstoqueLogService estoqueLogService, IUsuarioLogadoService userLogadoService)
         {
             _contextoDb = contextoDb;
             _produtoLogService = produtoLogService;

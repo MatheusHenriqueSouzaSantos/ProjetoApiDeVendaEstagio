@@ -15,6 +15,11 @@ namespace ApiEstagioBicicletaria.Dtos.VendedorDtos
         [MaxLength(100, ErrorMessage = "A quantidade máxima para o Nome Completo é 100 caracteres")]
         public string NomeCompleto { get; set; }
 
-
+        public VendedorUpdatedDto(string telefone, string email, string nomeCompleto)
+        {
+            Telefone = telefone;
+            Email = email;
+            NomeCompleto = nomeCompleto;
+        }
     }
 }

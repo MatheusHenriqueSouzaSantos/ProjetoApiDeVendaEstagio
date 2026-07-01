@@ -25,7 +25,7 @@ namespace ApiEstagioBicicletaria.Services
 
         private readonly Usuario _usuarioLogado;
 
-        public ClienteService(ContextoDb contextoDb, ClienteLogService logService, EnderecoLogService enderecoLogService, UsuarioLogadoService usuarioLogadoService)
+        public ClienteService(ContextoDb contextoDb, ClienteLogService logService, EnderecoLogService enderecoLogService, IUsuarioLogadoService usuarioLogadoService)
         {
             _contextoDb = contextoDb;
             _logService = logService;

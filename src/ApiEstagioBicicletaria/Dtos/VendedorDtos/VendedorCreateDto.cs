@@ -17,5 +17,12 @@ namespace ApiEstagioBicicletaria.Dtos.VendedorDtos
         [Required(ErrorMessage = "O campo Cpf Completo é origatório")]
         public string Cpf {  get; set; }
 
+        public VendedorCreateDto(string telefone, string email, string nomeCompleto, string cpf)
+        {
+            Telefone = telefone;
+            Email = email;
+            NomeCompleto = nomeCompleto;
+            Cpf = cpf;
+        }
     }
 }

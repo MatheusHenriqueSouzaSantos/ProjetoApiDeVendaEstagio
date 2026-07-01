@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace ApiEstagioBicicletaria.Seguranca
 {
-    public class UsuarioLogadoService
+    public class UsuarioLogadoService : IUsuarioLogadoService
     {
         private readonly IHttpContextAccessor _httpContext;
         private readonly ContextoDb _contextoDb;

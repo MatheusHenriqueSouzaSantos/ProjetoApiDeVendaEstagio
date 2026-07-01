@@ -7,6 +7,7 @@ using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Services.LogServices;
+using ApiEstagioBicicletaria.Services.LogServices.InterfacesLog;
 using ApiEstagioBicicletaria.Services.ServicesLogs;
 using ApiEstagioBicicletaria.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -50,7 +51,7 @@ namespace ApiEstagioBicicletaria
             builder.Services.AddScoped<UsuarioRepositorio>();
             builder.Services.AddScoped<SenhaService>();
             builder.Services.AddScoped<VendedorRepositorio>();
-            builder.Services.AddScoped<UsuarioLogadoService>();
+            builder.Services.AddScoped<IUsuarioLogadoService,UsuarioLogadoService>();
             builder.Services.AddScoped(typeof(LogRepositorio<>));
             builder.Services.AddScoped<ClienteLogService>();
             builder.Services.AddScoped<EnderecoLogService>();
@@ -58,7 +59,7 @@ namespace ApiEstagioBicicletaria
             builder.Services.AddScoped<FornecedorLogService>();
             builder.Services.AddScoped<ProdutoLogService>();
             builder.Services.AddScoped<ServicoLogService>();
-            builder.Services.AddScoped<VendedorLogService>();
+            builder.Services.AddScoped<IVendedorLogService,VendedorLogService>();
             builder.Services.AddScoped<VendaLogService>();
             builder.Services.AddScoped<ItemVendaLogService>();
             builder.Services.AddScoped<ServicoVendaLogService>();

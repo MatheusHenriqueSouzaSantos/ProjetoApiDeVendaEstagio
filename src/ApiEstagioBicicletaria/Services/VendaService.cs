@@ -51,7 +51,7 @@ namespace ApiEstagioBicicletaria.Services
         public VendaService(ContextoDb contexto, GeradorCodigoIndentificador<Venda> geradorCodigoVenda, 
             VendedorRepositorio vendedorRepositorio, VendaLogService vendaLogService,
             ServicoVendaLogService servicoVendaLogService,ItemVendaLogService itemVendaLogService,
-            UsuarioLogadoService usuarioLogadoService,TransacaoLogService transacaoLogService,
+            IUsuarioLogadoService usuarioLogadoService,TransacaoLogService transacaoLogService,
             ParcelaLogService parcelaLogService,EstoqueLogService estoqueLogService)
         {
             _contexto = contexto;

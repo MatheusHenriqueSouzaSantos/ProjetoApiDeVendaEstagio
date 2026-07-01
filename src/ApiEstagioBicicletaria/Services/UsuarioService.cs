@@ -26,11 +26,11 @@ namespace ApiEstagioBicicletaria.Services
 
         private readonly UsuarioLogService _usuarioLogService;
 
-        private readonly UsuarioLogadoService _usuarioLogadoService;
+        private readonly IUsuarioLogadoService _usuarioLogadoService;
         private readonly GeradorCodigoIndentificador<Usuario> _geradorCodigoIndentificador;
 
         public UsuarioService(UsuarioRepositorio repositorio, ServicoJwt servicoJwt, SenhaService senhaService, ContextoDb contexto,
-            UsuarioLogService usuarioLogService,UsuarioLogadoService usuarioLogadoService,GeradorCodigoIndentificador<Usuario> geradorCodigoIndentificador)
+            UsuarioLogService usuarioLogService,IUsuarioLogadoService usuarioLogadoService,GeradorCodigoIndentificador<Usuario> geradorCodigoIndentificador)
         {
             _repositorio = repositorio;
             _servicoJwt = servicoJwt;

@@ -10,6 +10,7 @@ using ApiEstagioBicicletaria.Seguranca;
 using ApiEstagioBicicletaria.Services.ClassesDeGeracaoDeRelatorios;
 using ApiEstagioBicicletaria.Services.Interfaces;
 using ApiEstagioBicicletaria.Services.LogServices;
+using ApiEstagioBicicletaria.Services.LogServices.InterfacesLog;
 using ApiEstagioBicicletaria.Validacao;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
@@ -22,10 +23,10 @@ namespace ApiEstagioBicicletaria.Services
     {
 
         private ContextoDb _contexto;
-        private VendedorLogService _logService;
+        private IVendedorLogService _logService;
         private readonly Usuario _usuarioLogado;
 
-        public VendedorService(ContextoDb contexto, VendedorLogService logService, UsuarioLogadoService usuarioLogadoService)
+        public VendedorService(ContextoDb contexto, IVendedorLogService logService, IUsuarioLogadoService usuarioLogadoService)
         {
             _contexto = contexto;
             _logService = logService;
