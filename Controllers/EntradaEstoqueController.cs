@@ -38,7 +38,7 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("inativos")]
         [Authorize]
         public ActionResult<List<EntradaEstoqueOutputDto>> BuscarEntradasInativas()
         {
