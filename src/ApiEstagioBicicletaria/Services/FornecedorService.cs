@@ -31,7 +31,7 @@ namespace ApiEstagioBicicletaria.Services
         private Usuario _usuarioLogado;
 
         public FornecedorService(ContextoDb contexto, FornecedorRepositorio fornecedorRepositorio, FornecedorLogService logService, 
-            UsuarioLogadoService usuarioLogadoService)
+            IUsuarioLogadoService usuarioLogadoService)
         {
             _contexto = contexto;
             _fornecedorRepositorio = fornecedorRepositorio;

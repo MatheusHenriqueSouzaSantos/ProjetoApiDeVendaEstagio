@@ -50,7 +50,7 @@ namespace ApiEstagioBicicletaria.Services
             ItemEntradaEstoqueRepositorio itemEntradaRepositorio, FornecedorRepositorio fornecedorRepositorio, 
             ProdutoRepositorio produtoRepositorio, EstoqueRepositorio estoqueRepositorio, GeradorCodigoIndentificador<EntradaEstoque> geradorCodigo,
             EntradaEstoqueLogService entradaEstoqueLogService,ItemEntradaEstoqueLogService itemEntradaEstoqueLogService,EstoqueLogService estoqueLogService
-            ,UsuarioLogadoService usuarioLogadoService)
+            ,IUsuarioLogadoService usuarioLogadoService)
         {
             _contexto = contexto;
             _repositorio = repositorio;

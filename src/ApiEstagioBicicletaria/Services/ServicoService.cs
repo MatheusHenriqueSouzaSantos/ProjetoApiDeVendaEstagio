@@ -18,7 +18,7 @@ namespace ApiEstagioBicicletaria.Services
         private Usuario _usuarioLogado;
         private ServicoLogService _logService;
 
-        public ServicoService(ContextoDb contextoDb, UsuarioLogadoService usuarioLogadoService, ServicoLogService logService)
+        public ServicoService(ContextoDb contextoDb, IUsuarioLogadoService usuarioLogadoService, ServicoLogService logService)
         {
             _contextoDb = contextoDb;
             _usuarioLogado = usuarioLogadoService.ObterUsuario();
