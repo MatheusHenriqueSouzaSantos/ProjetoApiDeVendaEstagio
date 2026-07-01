@@ -26,11 +26,11 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpGet]
         [Authorize]
-        public ActionResult<List<VendaTransacaoOutputDto>> BuscarTodasVendas()
+        public ActionResult<List<VendaTransacaoOutputDto>> BuscarVendasAtivas()
         {
             try
             {
-                return Ok(_vendaService.BuscarTodasVendas());
+                return Ok(_vendaService.BuscarVendasAtivas());
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -44,11 +44,11 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpGet("inativos")]
         [Authorize]
-        public ActionResult<List<VendaTransacaoOutputDto>> BuscarTodasVendasInativas()
+        public ActionResult<List<VendaTransacaoOutputDto>> BuscarVendasInativas()
         {
             try
             {
-                return Ok(_vendaService.BuscarTodasVendasInativas());
+                return Ok(_vendaService.BuscarVendasInativas());
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -62,11 +62,11 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        public ActionResult<VendaTransacaoOutputDto> BuscarVendaPorId([FromRoute]Guid id)
+        public ActionResult<VendaTransacaoOutputDto> BuscarVendaAtivaPorId([FromRoute]Guid id)
         {
             try
             {
-                return Ok(_vendaService.BuscarVendaAtivasOuInativasPorId(id));
+                return Ok(_vendaService.BuscarVendaAtivasPorId(id));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {

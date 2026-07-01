@@ -22,11 +22,11 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpGet]
         [Authorize]
-        public ActionResult<List<EntradaEstoqueOutputDto>> BuscarTodos()
+        public ActionResult<List<EntradaEstoqueOutputDto>> BuscarEntradasAtivas()
         {
             try
             {
-                return Ok(_service.BuscarTodosAtivos());
+                return Ok(_service.BuscarEntradasAtivas());
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -38,13 +38,13 @@ namespace ApiEstagioBicicletaria.Controllers
             }
         }
 
-        [HttpGet("inativos")]
+        [HttpGet]
         [Authorize]
-        public ActionResult<List<EntradaEstoqueOutputDto>> BuscarTodosInativos()
+        public ActionResult<List<EntradaEstoqueOutputDto>> BuscarEntradasInativas()
         {
             try
             {
-                return Ok(_service.BuscarTodosInativos());
+                return Ok(_service.BuscarEntradasInativas());
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
@@ -58,11 +58,11 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        public ActionResult<EntradaEstoqueOutputDto> BuscarPorId([FromRoute]Guid id)
+        public ActionResult<EntradaEstoqueOutputDto> BuscarEntradasAtivasPorId([FromRoute]Guid id)
         {
             try
             {
-                return Ok(_service.BuscarAtivoOuInativoPorId(id));
+                return Ok(_service.BuscarEntradasAtivasPorId(id));
             }
             catch (ExcecaoDeRegraDeNegocio ex)
             {
