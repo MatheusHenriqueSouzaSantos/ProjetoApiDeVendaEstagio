@@ -66,7 +66,7 @@ namespace ApiEstagioBicicletaria.Services
             _estoqueLogService = estoqueLogService;
         }
 
-        public List<VendaTransacaoOutputDto> BuscarTodasVendas()
+        public List<VendaTransacaoOutputDto> BuscarVendasAtivas()
         {
             List<Venda> vendas = _contexto.Vendas.Include(v => v.Vendedor).Include(v => v.Cliente).ThenInclude(c=>c.Endereco).Where(v=>v.Ativo).ToList();
 
@@ -80,9 +80,9 @@ namespace ApiEstagioBicicletaria.Services
             return vendaTransacaoDtos.OrderBy(vt => !vt.Transacao.TransacaoEmCurso ? 1 : vt.Transacao.TransacaoEmCurso && !vt.Transacao.Pago ? 2 : 3)
                 .ThenByDescending(vt=>vt.Venda.DataCriacao).ToList();
              
-        }
+        }//garantir integridade se um produto jáfoi excluido só em venda
 
-        public List<VendaTransacaoOutputDto> BuscarTodasVendasInativas()
+        public List<VendaTransacaoOutputDto> BuscarVendasInativas()
         {
             List<Venda> vendas = _contexto.Vendas.Include(v => v.Vendedor).Include(v => v.Cliente).ThenInclude(c => c.Endereco).Where(v => !v.Ativo).ToList();
 
@@ -97,7 +97,7 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
-        public VendaTransacaoOutputDto BuscarVendaAtivasOuInativasPorId(Guid id)
+        public VendaTransacaoOutputDto BuscarVendaAtivasPorId(Guid id)
         {
             Venda venda= _contexto.Vendas.Include(v => v.Vendedor).Include(v => v.Cliente).ThenInclude(c => c.Endereco).FirstOrDefault(v => v.Id == id)
              ?? throw new ExcecaoDeRegraDeNegocio(404, "Venda não encontrada!!!");
@@ -621,7 +621,7 @@ namespace ApiEstagioBicicletaria.Services
                         parcelaIterada.Ativo = false;
                         parcelasDaVenda.RemoveAll(p => p.Id == parcelaIterada.Id);
                         _parcelaLogService.CriarLogDeExclusao(parcelaIterada, transacaoDaVendaASerAtualizada, _usuarioLogado);
-                        _contexto.Parcelas.Update(parcelaIterada);
+                        _contexto.Parcelas.Remove(parcelaIterada);
                     }
 
                     for (int i = 0; i < parcelasDaVenda.Count; i++)

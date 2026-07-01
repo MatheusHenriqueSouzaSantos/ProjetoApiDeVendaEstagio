@@ -8,11 +8,11 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
 {
     public interface IVendaService
     {
-        List<VendaTransacaoOutputDto> BuscarTodasVendas();
+        List<VendaTransacaoOutputDto> BuscarVendasAtivas();
 
-        List<VendaTransacaoOutputDto> BuscarTodasVendasInativas();
+        List<VendaTransacaoOutputDto> BuscarVendasInativas();
 
-        VendaTransacaoOutputDto BuscarVendaAtivasOuInativasPorId(Guid id);
+        VendaTransacaoOutputDto BuscarVendaAtivasPorId(Guid id);
 
         VendaTransacaoOutputDto CadastrarVenda(VendaTransacaoCreateDto dto);
 

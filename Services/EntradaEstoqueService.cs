@@ -65,15 +65,15 @@ namespace ApiEstagioBicicletaria.Services
             _usuarioLogado = usuarioLogadoService.ObterUsuario();
         }
 
-        public List<EntradaEstoqueOutputDto> BuscarTodosAtivos()
+        public List<EntradaEstoqueOutputDto> BuscarEntradasAtivas()
         {
-            List<EntradaEstoque> entradasEstoque = _contexto.EntradasEstoque.Include(e => e.Fornecedor).Where(e => e.Ativo).ToList();
+            List<EntradaEstoque> entradasEstoque = _contexto.EntradasEstoque.Where(e=>e.Ativo).Include(e => e.Fornecedor).ToList();
             List<EntradaEstoqueOutputDto> entradasEstoqueDto = new List<EntradaEstoqueOutputDto>();
 
             foreach(EntradaEstoque entradaEstoque in entradasEstoque)
             {
-                List<ItemEntradaEstoque> itensEntradaEstoque = _itemEntradaRepositorio
-                    .BuscarItensPorIdEntradaEstoque(entradaEstoque.Id);
+                List<ItemEntradaEstoque> itensEntradaEstoque = _contexto.ItensEntradaEstoque.Include(i => i.Produto)
+                    .Where(i => i.IdEntradaEstoque == entradaEstoque.Id).ToList();
                 EntradaEstoqueOutputDto entradaEstoqueDto = EntidadeParaDto(entradaEstoque, itensEntradaEstoque);
                 entradasEstoqueDto.Add(entradaEstoqueDto);
             }
@@ -82,15 +82,15 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
-        public List<EntradaEstoqueOutputDto> BuscarTodosInativos()
+        public List<EntradaEstoqueOutputDto> BuscarEntradasInativas()
         {
-            List<EntradaEstoque> entradasEstoque = _contexto.EntradasEstoque.Include(e=>e.Fornecedor).Where(e => !e.Ativo).ToList();
+            List<EntradaEstoque> entradasEstoque = _contexto.EntradasEstoque.Where(e=>!e.Ativo).Include(e => e.Fornecedor).ToList();
             List<EntradaEstoqueOutputDto> entradasEstoqueDto = new List<EntradaEstoqueOutputDto>();
 
             foreach (EntradaEstoque entradaEstoque in entradasEstoque)
             {
-                List<ItemEntradaEstoque> itensEntradaEstoque = _contexto.ItensEntradaEstoque.Include(i=>i.Produto)
-                    .Where(i=>i.IdEntradaEstoque==entradaEstoque.Id && !i.Ativo).ToList();
+                List<ItemEntradaEstoque> itensEntradaEstoque = _contexto.ItensEntradaEstoque.Include(i => i.Produto)
+                    .Where(i => i.IdEntradaEstoque == entradaEstoque.Id).ToList();
                 EntradaEstoqueOutputDto entradaEstoqueDto = EntidadeParaDto(entradaEstoque, itensEntradaEstoque);
                 entradasEstoqueDto.Add(entradaEstoqueDto);
             }
@@ -98,12 +98,13 @@ namespace ApiEstagioBicicletaria.Services
             return entradasEstoqueDto;
 
         }
+        //colocar o end point de buscar inativas..., ajustar com o front
 
-        public EntradaEstoqueOutputDto BuscarAtivoOuInativoPorId(Guid id)
+        public EntradaEstoqueOutputDto BuscarEntradasAtivasPorId(Guid id)
         {
             EntradaEstoque entradaEstoque = _contexto.EntradasEstoque.FirstOrDefault(e=>e.Id==id)
                 ?? throw new ExcecaoDeRegraDeNegocio(404, "Entrada Estoque não Encontrada");
-            List<ItemEntradaEstoque> itensEntradaEstoque=_itemEntradaRepositorio.BuscarItensPorIdEntradaEstoque(entradaEstoque.Id);
+            List<ItemEntradaEstoque> itensEntradaEstoque=_contexto.ItensEntradaEstoque.Where(i=>i.IdEntradaEstoque==entradaEstoque.Id).ToList();
 
             return EntidadeParaDto(entradaEstoque, itensEntradaEstoque);
         }
@@ -184,7 +185,7 @@ namespace ApiEstagioBicicletaria.Services
                         ?? throw new ExcecaoDeRegraDeNegocio(500, "produto não encontrado");
                     if (!produtoDoItem.Ativo)
                     {
-                        throw new ExcecaoDeRegraDeNegocio(400, $"não é possível alterar esse item, pois o produto com id: {produtoDoItem.Id} está inativo");
+                        throw new ExcecaoDeRegraDeNegocio(400, $"não é possível alterar esse item, pois o produto com id: {produtoDoItem.Id} está inativo, exclua este item");
                     }
                     Estoque estoqueDoItem = _contexto.Estoques.Include(e=>e.Produto).First(e => e.ProdutoId==produtoDoItem.Id);
                     int quantidadeEmEstoqueAntiga = estoqueDoItem.QuantidadeEmEstoque;
@@ -208,7 +209,7 @@ namespace ApiEstagioBicicletaria.Services
                 foreach(ItemEntradaEstoqueCreateDto itemDto in dto.ItensNovos)
                 {
                     Produto produtoDoItem = _contexto.Produtos.FirstOrDefault(p => p.Id == itemDto.IdProduto && p.Ativo)
-                        ?? throw new ExcecaoDeRegraDeNegocio(404, $"Nenhum produto encontrado com o id: {itemDto.IdProduto}");
+                        ?? throw new ExcecaoDeRegraDeNegocio(404, $"Nenhum produto encontrado com o id: {itemDto.IdProduto} ou ele está inativo");
 
                     Estoque estoqueDoProduto = _contexto.Estoques.First(e => e.ProdutoId == produtoDoItem.Id && e.Ativo);
                     int quantidadeEmEstoqueAntiga = estoqueDoProduto.QuantidadeEmEstoque;
@@ -253,7 +254,7 @@ namespace ApiEstagioBicicletaria.Services
                 _estoqueLogService.CriarLogDeAtualizacaoQuantidadeEmEstoque(estoqueDoItem, estoqueDoItem.Produto, quantidadeEmEstoqueAntiga,
                     estoqueDoItem.QuantidadeEmEstoque, AcaoQueAlterouEstoque.ExclusaoEntradaEstoque, _usuarioLogado);
                 item.Ativo = false;
-                _itemEntradaRepositorio.InativarItem(item);
+                _contexto.ItensEntradaEstoque.Update(item);
                 _itemEntradaEstoqueLogService.CriarLogsDeExclusao(item, entrada, _usuarioLogado);
                 
             }
@@ -282,14 +283,14 @@ namespace ApiEstagioBicicletaria.Services
             return entradaEstoqueDto;
         }
 
-        public List<ItemEntradaEstoque> CriarItensEntradaEstoque(List<ItemEntradaEstoqueCreateDto> dtos,EntradaEstoque entradaEstoque)
+        private List<ItemEntradaEstoque> CriarItensEntradaEstoque(List<ItemEntradaEstoqueCreateDto> dtos,EntradaEstoque entradaEstoque)
         {
             List<ItemEntradaEstoque> itens=new List<ItemEntradaEstoque>();
             foreach(ItemEntradaEstoqueCreateDto itemDto in dtos)
             {
                 Produto produtoDoItem=_contexto.Produtos.FirstOrDefault(p=>p.Id==itemDto.IdProduto && p.Ativo)
                     ?? throw new ExcecaoDeRegraDeNegocio(400,$"Produto com id:{itemDto.IdProduto} não encontrado ou inativo");
-                Estoque estoqueDoItem=_contexto.Estoques.First(e=>e.ProdutoId==produtoDoItem.Id && e.Ativo);
+                Estoque estoqueDoItem=_contexto.Estoques.First(e=>e.ProdutoId==produtoDoItem.Id);
                 int quantidadeAnteriorDoEstoque = estoqueDoItem.QuantidadeEmEstoque;
                 ItemEntradaEstoque item = new(entradaEstoque, produtoDoItem, itemDto.Quantidade);
                 _itemEntradaRepositorio.Cadastrar(item);
