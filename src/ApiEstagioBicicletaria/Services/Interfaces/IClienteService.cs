@@ -10,7 +10,7 @@ namespace ApiEstagioBicicletaria.Services.Interfaces
         List<ClienteDtoOutPut> BuscarClientesAtivos();
         //ActionResult<Cliente> BuscarClientePorId(Guid id);
 
-        List<ClienteInativoOutputDto> BuscarClientesInativos();
+        List<Object> BuscarClientesInativos();
         ClienteDtoOutPut BuscarClienteAtivoPorId(Guid id);
 
         ClienteFisico CadastrarClienteFisico(ClienteFisicoCreateDto dto);

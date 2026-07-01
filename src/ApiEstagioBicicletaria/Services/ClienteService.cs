@@ -69,7 +69,7 @@ namespace ApiEstagioBicicletaria.Services
 
         }
 
-        public List<ClienteInativoOutputDto> BuscarClientesInativos()
+        public List<Object> BuscarClientesInativos()
         {
             List<ClienteFisico> clientesFisicos = _contextoDb.Clientes
                .OfType<ClienteFisico>()
@@ -103,7 +103,7 @@ namespace ApiEstagioBicicletaria.Services
                 clientesJuridicosFormatoDtoOutput.Add(clienteFormatoDtoOutput);
             }
             todosClientesFormatoDto.AddRange(clientesJuridicosFormatoDtoOutput);
-            return todosClientesFormatoDto;
+            return todosClientesFormatoDto.OrderByDescending(c=>c.DataCriacao).Cast<Object>().ToList();
         }
 
         public ClienteDtoOutPut BuscarClienteAtivoPorId(Guid id)

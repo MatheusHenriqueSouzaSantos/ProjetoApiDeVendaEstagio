@@ -45,7 +45,7 @@ namespace ApiEstagioBicicletaria.Controllers
 
         [HttpGet("inativos")]
         [Authorize]
-        public ActionResult<List<ClienteInativoOutputDto>> BuscarClientesInativos()
+        public ActionResult<List<Object>> BuscarClientesInativos()
         {
             try
             {
