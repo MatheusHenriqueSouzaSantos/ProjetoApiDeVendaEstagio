@@ -25,7 +25,7 @@ namespace ApiEstagioBicicletaria.Repository.ClassesDeMapeamento.UsuarioDomain
                 .IsRequired();
             builder.Property(u=>u.Senha)
                 .HasColumnName("senha")
-                .HasMaxLength(300)
+                .HasMaxLength(50)
                 .IsRequired();
             builder.Property(u => u.PerfilUsuario)
                 .HasColumnName("perfil_usuario")

@@ -15,7 +15,7 @@ namespace ApiEstagioBicicletaria.Dtos.UsuarioDtos
         public string Email { get; set; }
 
         [Required(ErrorMessage ="O campo senha é obrigatório")]
-        [MaxLength(20,ErrorMessage ="a senha deve conter no máximo 20 caracteres")]
+        [MaxLength(50,ErrorMessage ="a senha deve conter no máximo 50 caracteres")]
         public string Senha { get; set; }
 
         [Required(ErrorMessage ="O campo perfil usuário é obrigatório")]
