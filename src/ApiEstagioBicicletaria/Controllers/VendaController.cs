@@ -122,7 +122,8 @@ namespace ApiEstagioBicicletaria.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
+                //return StatusCode(500, "Erro Inesperado, entre em contato com o suporte");
+                return StatusCode(500, ex);
             }
         }
 
